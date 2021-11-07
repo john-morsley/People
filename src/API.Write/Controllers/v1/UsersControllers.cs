@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -14,16 +16,24 @@ namespace Users.API.Write.Controllers.v1
     public class UsersController : ControllerBase
     {
         private readonly ILogger<UsersController> _logger;
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public UsersController(ILogger<UsersController> logger)
+
+        public UsersController(
+            ILogger<UsersController> logger,
+            IMediator mediator,
+            IMapper mapper)
         {
             _logger = logger;
+            _mediator = mediator;
+            _mapper = mapper;
         }
-        
+
         /*
          * POST --> Create a User
          */
-        
+
         /// <summary>
         /// Create a user
         /// </summary>

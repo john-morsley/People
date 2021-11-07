@@ -8,7 +8,7 @@ namespace Users.Persistence.IoC
     {
         public static IServiceCollection AddPersistence(this IServiceCollection services)
         {
-            //services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserRepository, UserRepository>();
             
             return services;

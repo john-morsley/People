@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,12 +16,20 @@ namespace Users.API.Read.Controllers.v1
     public class UsersController : ControllerBase
     {
         private readonly ILogger<UsersController> _logger;
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public UsersController(ILogger<UsersController> logger)
+
+        public UsersController(
+            ILogger<UsersController> logger,
+            IMediator mediator,
+            IMapper mapper)
         {
             _logger = logger;
+            _mediator = mediator;
+            _mapper = mapper;
         }
-        
+
         /*
          * GET --> Get a single User
          */
@@ -37,34 +47,29 @@ namespace Users.API.Read.Controllers.v1
         [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetUser([FromRoute] Guid userId)
+        public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> GetUser([FromRoute] Guid userId)
         {
             if (userId == default) return BadRequest();
 
-            //var getUserRequest = new GetUserRequest(id);
-            //
-            // var getUserResponse = await GetUserResponse(getUserRequest);
-            //
-            // if (getUserResponse == null) return NoContent();
-            //
-            // return Ok(getUserResponse);
-
-            var userResponse = GetUserResponse(userId);
-            if (userResponse == null) return NotFound();
-            return Ok(userResponse);
+            var getUserRequest = new Users.API.Models.Request.v1.GetUserRequest(userId);
             
+            var getUserResponse = await GetUserResponse(getUserRequest);
+            
+            if (getUserResponse == null) return NoContent();
+            
+            return Ok(getUserResponse);
         }
 
-        private Users.API.Models.Response.v1.UserResponse GetUserResponse(Guid userId)
+        private async Task<Users.API.Models.Response.v1.UserResponse> GetUserResponse(Users.API.Models.Request.v1.GetUserRequest getUserRequest)
         {
-            // TODO --> Replace with real implementation
+            if (getUserRequest == null) throw new ArgumentNullException(nameof(getUserRequest));
 
-            var userResponse = new Users.API.Models.Response.v1.UserResponse
-            {
-                Id = userId,
-                FirstName = "John",
-                LastName = "Morsley"
-            };
+            var getUserQuery = _mapper.Map<Users.Application.Queries.GetUserQuery>(getUserRequest);
+
+            var user = await _mediator.Send(getUserQuery);
+            if (user == null) return null;
+
+            var userResponse = _mapper.Map<Users.API.Models.Response.v1.UserResponse>(user);
 
             return userResponse;
         }
@@ -87,7 +92,7 @@ namespace Users.API.Read.Controllers.v1
         [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetUsers([FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getUsersRequest)
+        public async Task<ActionResult<IEnumerable<Users.API.Models.Response.v1.UserResponse>>> GetUsers([FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getUsersRequest)
         {
             if (getUsersRequest == null) return BadRequest();
 
@@ -97,12 +102,12 @@ namespace Users.API.Read.Controllers.v1
             //
             // return Ok(userResponses);
 
-            var usersResponse = GetUsersResponse(getUsersRequest);
+            var usersResponse = GetUsersResponses(getUsersRequest);
             if (!usersResponse.Any()) return NotFound();
             return Ok(usersResponse);
         }
 
-        private IEnumerable<Users.API.Models.Response.v1.UserResponse> GetUsersResponse(Users.API.Models.Request.v1.GetPageOfUsersRequest getUsersRequest)
+        private IEnumerable<Users.API.Models.Response.v1.UserResponse> GetUsersResponses(Users.API.Models.Request.v1.GetPageOfUsersRequest getUsersRequest)
         {
             // TODO --> Replace with real implementation
 

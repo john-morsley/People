@@ -37,16 +37,18 @@ namespace Users.API.Read.Tests.v1.Methods
         {
             // Arrange...
             var userId = Guid.NewGuid();
+            // Put a user in the DB...
+
             var url = $"/api/v1/users/{userId}";
             
             // Act...
             var httpResponse = await _client.GetAsync(url);
             
             // Assert...
-            //httpResponse.IsSuccessStatusCode.Should().BeTrue();
-            //httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            //var response = await httpResponse.Content.ReadAsStringAsync();
-            //response.Length.Should().BeGreaterThan(0);
+            httpResponse.IsSuccessStatusCode.Should().BeTrue();
+            httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var response = await httpResponse.Content.ReadAsStringAsync();
+            response.Length.Should().BeGreaterThan(0);
         }
 
         [Test]

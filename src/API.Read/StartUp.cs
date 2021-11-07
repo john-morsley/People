@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Users.API.Shared.IoC;
+using Users.Application.IoC;
 using Users.Persistence.IoC;
 
 namespace Users.API.Read
@@ -37,6 +37,8 @@ namespace Users.API.Read
             //    Log.Fatal("Could not determine Persistence Key! :-(");
             //    return;
             //}
+
+            services.AddApplication();
 
             //services.AddPersistence(settings);
             services.AddPersistence();
