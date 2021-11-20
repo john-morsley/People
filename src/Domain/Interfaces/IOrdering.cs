@@ -1,11 +1,8 @@
-﻿using Users.Domain.Enumerations;
+﻿namespace Users.Domain.Interfaces;
 
-namespace Users.Domain.Interfaces
+public interface IOrdering
 {
-    public interface IOrdering
-    {
-        string Key { get; }
+    string Key { get; }
 
-        SortOrder Order { get; }
-    }
+    SortOrder Order { get; }
 }

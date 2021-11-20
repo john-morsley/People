@@ -1,58 +1,46 @@
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
-using NUnit.Framework;
+namespace Users.API.Read.Tests.v1;
 
-namespace Users.API.Read.Tests.v1
+public class ContentTypes
 {
-    public class ContentTypes
-    {
-        private TestServer _server;
-        private HttpClient _client;
+    private TestServer _server;
+    private HttpClient _client;
         
-        [SetUp]
-        public void Setup()
-        {
-            var webHostBuilder = new WebHostBuilder()
-                .ConfigureAppConfiguration((context, builder) =>
-                {
-                    builder.AddJsonFile("appsettings.json");
-                })
-                .UseEnvironment("Development")
-                .UseStartup<StartUp>();
-            _server = new TestServer(webHostBuilder);
-            _client = _server.CreateClient();
-        }
+    [SetUp]
+    public void Setup()
+    {
+        var webHostBuilder = new WebHostBuilder()
+            .ConfigureAppConfiguration((context, builder) =>
+            {
+                builder.AddJsonFile("appsettings.json");
+            })
+            .UseEnvironment("Development")
+            .UseStartup<StartUp>();
+        _server = new TestServer(webHostBuilder);
+        _client = _server.CreateClient();
+    }
 
-        [Test]
-        public async Task Attempting_To_Request_An_Unsupported_Media_Type_Should_Result_In_A_Not_Acceptable_Status_Code()
-        {
-            // Arrange...
-            var userId = Guid.NewGuid();
-            var url = $"/api/v1/users/{userId}";
+    [Test]
+    public async Task Attempting_To_Request_An_Unsupported_Media_Type_Should_Result_In_A_Not_Acceptable_Status_Code()
+    {
+        // Arrange...
+        var userId = Guid.NewGuid();
+        var url = $"/api/v1/users/{userId}";
 
-            _client.DefaultRequestHeaders.Clear();
-            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
+        _client.DefaultRequestHeaders.Clear();
+        _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
 
-            // Act...
-            var httpResponse = await _client.GetAsync(url);
+        // Act...
+        var httpResponse = await _client.GetAsync(url);
             
-            // Assert...
-            httpResponse.IsSuccessStatusCode.Should().BeFalse();
-            httpResponse.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
-        }
+        // Assert...
+        httpResponse.IsSuccessStatusCode.Should().BeFalse();
+        httpResponse.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
+    }
 
-        [TearDown]
-        public void TearDown()
-        {
-            _client.Dispose();
-            _server.Dispose();
-        }
+    [TearDown]
+    public void TearDown()
+    {
+        _client.Dispose();
+        _server.Dispose();
     }
 }

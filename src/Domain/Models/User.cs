@@ -14,17 +14,18 @@ namespace Users.Domain.Models
         private IList<Email> _emails;
         private IList<Phone> _phones;
 
-        public User(string firstName, string lastName)
+        public User()
         {
-            SetFirstName(firstName);
-            SetLastName(lastName);
-
             _addresses = new List<Address>();
             _emails = new List<Email>();
             _phones = new List<Phone>();
         }
 
-        public Title? Title { get; set; }
+        public User(string firstName, string lastName) : this()
+        {
+            SetFirstName(firstName);
+            SetLastName(lastName);
+        }
 
         public string FirstName
         {

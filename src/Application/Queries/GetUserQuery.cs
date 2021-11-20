@@ -1,10 +1,6 @@
-﻿using System;
-using MediatR;
+﻿namespace Users.Application.Queries;
 
-namespace Users.Application.Queries
+public sealed class GetUserQuery : IRequest<Users.Domain.Models.User>
 {
-    public sealed class GetUserQuery : IRequest<Users.Domain.Models.User>
-    {
-        public Guid Id { get; set; }
-    }
+    public Guid Id { get; set; }
 }

@@ -1,25 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿namespace Users.Domain.Interfaces;
 
-namespace Users.Domain.Interfaces
+public interface IRepository<TEntity> : IDisposable where TEntity : class
 {
-    public interface IRepository<TEntity> where TEntity : class, IEntity<Guid>
-    {
-        void Create(TEntity entity);
+    Task<bool> ExistsAsync(Guid id);
 
-        void Delete(TEntity entity);
+    Task<TEntity> GetByIdAsync(Guid id);
 
-        void Delete(Guid id);
+    Task<IPagedList<TEntity>> GetPageAsync(IGetOptions options);
 
-        Task<bool> Exists(Guid id);
+    Task CreateAsync(TEntity obj);
 
-        IEnumerable<TEntity> Find(Func<TEntity, bool> predicate);
+    Task UpdateAsync(TEntity obj);
 
-        Task<TEntity> Get(Guid id);
-
-        Task<IPagedList<TEntity>> Get(IGetOptions options);
-
-        void Update(TEntity entity);
-    }
+    Task DeleteAsync(Guid id);
 }

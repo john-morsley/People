@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
 
         <IsPackable>false</IsPackable>
 
@@ -12,11 +12,11 @@
 
     <ItemGroup>
         <PackageReference Include="FluentAssertions" Version="6.2.0" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.37" />
-        <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="5.0.11" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.38" />
+        <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
         <PackageReference Include="NUnit" Version="3.13.2" />
-        <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.1.0" />
         <PackageReference Include="coverlet.collector" Version="3.1.0" />
     </ItemGroup>
 
@@ -35,6 +35,10 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\src\API.Read\API.Read.csproj" />
+      <ProjectReference Include="..\..\..\src\API\Models\Models.csproj" />
+      <ProjectReference Include="..\..\..\src\API\Read\Read.csproj" />
+      <ProjectReference Include="..\API.Shared.Tests\API.Shared.Tests.csproj" />
+      <ProjectReference Include="..\MongoDBInDockerTestFixture\Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,15 +1,11 @@
-﻿using MediatR;
-using System;
+﻿namespace Users.Application.Queries;
 
-namespace Users.Application.Queries
+public sealed class UserExistsQuery : IRequest<bool>
 {
-    public sealed class UserExistsQuery : IRequest<bool>
+    public UserExistsQuery(Guid id)
     {
-        public UserExistsQuery(Guid id)
-        {
-            Id = id;
-        }
-
-        public Guid Id { get; private set; }
+        Id = id;
     }
+
+    public Guid Id { get; private set; }
 }

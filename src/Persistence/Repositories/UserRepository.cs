@@ -1,26 +1,68 @@
-﻿using Users.Domain.Interfaces;
-using Users.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿namespace Persistence.Repositories;
 
-namespace Users.Persistence.Repositories
+public class UserRepository : Repository<Users.Domain.Models.User>, IUserRepository
 {
-    public class UserRepository : Repository<User>, IUserRepository
+    public UserRepository(IMongoContext context) : base(context, "users") { }
+
+    protected override IQueryable<Users.Domain.Models.User> Filter(IQueryable<Users.Domain.Models.User> entities, IGetOptions options)
     {
-        //protected override IQueryable<User> Filter(IQueryable<User> entities, IGetOptions options)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        if (options == null) return entities;
+        if (options.Filters == null) return entities;
+        if (!options.Filters.Any()) return entities;
 
-        //protected override IQueryable<User> Search(IQueryable<User> entities, IGetOptions options)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        var users = base.Filter(entities, options);
 
-        //private IEnumerable<IFilter> ExtractUserSpecificFilters(IEnumerable<IFilter> originalFilters)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        var userFilters = ExtractUserSpecificFilters(options.Filters);
+
+        if (userFilters.Any())
+        {
+            foreach (var filter in userFilters)
+            {
+                users = users.Where(FilterPredicate(filter));
+            }
+        }
+
+        return users;
+    }
+
+    protected override IQueryable<Users.Domain.Models.User> Search(IQueryable<Users.Domain.Models.User> entities, IGetOptions options)
+    {
+        var users = base.Search(entities, options);
+
+        if (string.IsNullOrWhiteSpace(options.SearchQuery)) return users;
+
+        return users.Where(u => u.FirstName.Contains(options.SearchQuery) ||
+                                u.LastName.Contains(options.SearchQuery));
+    }
+
+    private IEnumerable<IFilter> ExtractUserSpecificFilters(IEnumerable<IFilter> originalFilters)
+    {
+        var userFilters = new List<IFilter>();
+
+        foreach (var filter in originalFilters)
+        {
+            if (IsFilterUserSpecific(filter))
+            {
+                userFilters.Add(filter);
+            }
+        }
+
+        return userFilters;
+    }
+
+    private string FilterPredicate(IFilter filter)
+    {
+        if (filter.Key.Equals("Sex", StringComparison.CurrentCultureIgnoreCase) ||
+            filter.Key.Equals("Title", StringComparison.CurrentCultureIgnoreCase))
+        {
+            return $"{filter.Key} = \"{filter.Value}\"";
+        }
+        return $"{filter.Key} = {filter.Value}";
+    }
+
+    private bool IsFilterUserSpecific(IFilter filter)
+    {
+        return filter.Key.Equals("Sex", StringComparison.CurrentCultureIgnoreCase) ||
+               filter.Key.Equals("Title", StringComparison.CurrentCultureIgnoreCase);
     }
 }

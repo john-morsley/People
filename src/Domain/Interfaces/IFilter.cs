@@ -1,9 +1,8 @@
-﻿namespace Users.Domain.Interfaces
-{
-    public interface IFilter
-    {
-        string Key { get; }
+﻿namespace Users.Domain.Interfaces;
 
-        string Value { get; }
-    }
+public interface IFilter
+{
+    string Key { get; }
+
+    string Value { get; }
 }

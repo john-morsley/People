@@ -1,10 +1,6 @@
-﻿using MediatR;
-using System;
+﻿namespace Users.Application.Commands;
 
-namespace Users.Application.Commands
+public class DeleteUserCommand : IRequest
 {
-    public class DeleteUserCommand : IRequest
-    {
-        public Guid Id { get; set; }
-    }
+    public Guid Id { get; set; }
 }

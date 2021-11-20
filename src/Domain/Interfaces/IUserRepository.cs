@@ -1,8 +1,5 @@
-﻿using Users.Domain.Models;
+﻿namespace Users.Domain.Interfaces;
 
-namespace Users.Domain.Interfaces
+public interface IUserRepository : IRepository<Users.Domain.Models.User>
 {
-    public interface IUserRepository : IRepository<User>
-    {
-    }
 }

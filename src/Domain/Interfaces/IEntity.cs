@@ -1,13 +1,10 @@
-﻿using System;
+﻿namespace Users.Domain.Interfaces;
 
-namespace Users.Domain.Interfaces
+public interface IEntity<T> : IEquatable<T>
 {
-    public interface IEntity<T> : IEquatable<T>
-    {
-        T Id { get; }
+    T Id { get; }
 
-        DateTime Created { get; set; }
+    DateTime Created { get; set; }
 
-        DateTime? Updated { get; set; }
-    }
+    DateTime? Updated { get; set; }
 }

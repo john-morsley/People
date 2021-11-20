@@ -1,17 +1,14 @@
-﻿using System.Collections.Generic;
+﻿namespace Users.Domain.Interfaces;
 
-namespace Users.Domain.Interfaces
+public interface IGetOptions
 {
-    public interface IGetOptions
-    {
-        int PageSize { get; }
+    int PageSize { get; }
 
-        int PageNumber { get; }
+    int PageNumber { get; }
 
-        string? SearchQuery { get; }
+    string? SearchQuery { get; }
 
-        IEnumerable<IFilter> Filters { get; }
+    IEnumerable<IFilter> Filters { get; }
 
-        IEnumerable<IOrdering> Orderings { get; }
-    }
+    IEnumerable<IOrdering> Orderings { get; }
 }

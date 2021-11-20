@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Users.Read.API.Tests.v1;
 
-namespace Users.Read.API.Tests.v1
+public class PUT : APIsTestBase<StartUp>
 {
-    class PUT
-    {
-    }
 }
+

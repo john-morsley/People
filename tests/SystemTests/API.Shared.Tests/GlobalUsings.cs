@@ -1,0 +1,14 @@
+﻿global using AutoFixture;
+global using Docker.DotNet;
+global using Docker.DotNet.Models;
+global using Microsoft.Extensions.Configuration;
+global using MongoDB.Driver;
+global using NUnit.Framework;
+global using Persistence.Configuration;
+global using System.Net;
+global using System.Net.Sockets;
+global using Shared.TestInfrastructure;
+global using Persistence.Contexts;
+global using FluentAssertions;
+global using Microsoft.AspNetCore.TestHost;
+global using Microsoft.AspNetCore.Hosting;

@@ -1,28 +1,22 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿namespace Users.Application.Handlers;
 
-namespace Users.Application.Handlers
+public sealed class DeleteUserCommandHandler : IRequestHandler<Users.Application.Commands.DeleteUserCommand>
 {
-    public sealed class DeleteUserCommandHandler : IRequestHandler<Users.Application.Commands.DeleteUserCommand>
+    private readonly Users.Domain.Interfaces.IUserRepository _userRepository;
+
+    public DeleteUserCommandHandler(Users.Domain.Interfaces.IUserRepository userRepository)
     {
-        private readonly Users.Domain.Interfaces.IUnitOfWork _unitOfWork;
+        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+    }
 
-        public DeleteUserCommandHandler(Users.Domain.Interfaces.IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        }
+    public async Task<Unit> Handle(Users.Application.Commands.DeleteUserCommand command, CancellationToken ct)
+    {
+        if (command == null) throw new ArgumentNullException(nameof(command));
 
-        public async Task<Unit> Handle(Users.Application.Commands.DeleteUserCommand command, CancellationToken ct)
-        {
-            if (command == null) throw new ArgumentNullException(nameof(command));
+        await _userRepository.DeleteAsync(command.Id);
+        //var numberOfRowsAffected = await _userRepository.CompleteAsync();
+        // ToDo --> Log!
 
-            _unitOfWork.UserRepository.Delete(command.Id);
-            var numberOfRowsAffected = await _unitOfWork.CompleteAsync();
-            // ToDo --> Log!
-
-            return Unit.Value;
-        }
+        return Unit.Value;
     }
 }

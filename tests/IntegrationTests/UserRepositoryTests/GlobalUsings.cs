@@ -1,0 +1,11 @@
+﻿global using AutoFixture;
+global using FluentAssertions;
+global using MongoDB.Driver;
+global using NUnit.Framework;
+global using Persistence.Contexts;
+global using Persistence.Models;
+global using Persistence.Repositories;
+global using Shared.TestInfrastructure;
+global using System;
+global using System.Linq;
+global using System.Threading.Tasks;

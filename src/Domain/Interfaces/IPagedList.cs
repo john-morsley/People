@@ -1,19 +1,16 @@
-﻿using System.Collections.Generic;
+﻿namespace Users.Domain.Interfaces;
 
-namespace Users.Domain.Interfaces
+public interface IPagedList<T> : IList<T>
 {
-    public interface IPagedList<T> : IList<T>
-    {
-        int CurrentPage { get; }
+    int CurrentPage { get; }
 
-        int TotalPages { get; }
+    int TotalPages { get; }
 
-        int PageSize { get; }
+    int PageSize { get; }
 
-        int TotalCount { get; }
+    int TotalCount { get; }
 
-        bool HasPrevious { get; }
+    bool HasPrevious { get; }
 
-        bool HasNext { get; }
-    }
+    bool HasNext { get; }
 }
