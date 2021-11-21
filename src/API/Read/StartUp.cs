@@ -27,10 +27,10 @@ public class StartUp
         //    return;
         //}
 
+        services.AddPersistence(Configuration);
         services.AddApplication();
 
-        //services.AddPersistence(settings);
-        services.AddPersistence();
+        //services.AddPersistence(settings);        
     }
 
 
