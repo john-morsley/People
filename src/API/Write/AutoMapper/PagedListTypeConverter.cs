@@ -10,7 +10,7 @@ public class PagedListTypeConverter : ITypeConverter<Users.Domain.Interfaces.IPa
     {
         if (source == null) return null;
 
-        var conversion = new Users.API.Models.PagedList<Users.API.Models.Response.v1.UserResponse>();
+        var conversion = new Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>();
 
         foreach (var user in source)
         {
@@ -21,7 +21,7 @@ public class PagedListTypeConverter : ITypeConverter<Users.Domain.Interfaces.IPa
         conversion.CurrentPage = source.CurrentPage;
         conversion.TotalPages = source.TotalPages;
         conversion.PageSize = source.PageSize;
-        conversion.TotalCount = source.TotalCount;
+        //conversion.TotalCount = source.TotalCount;
 
         return conversion;
     }

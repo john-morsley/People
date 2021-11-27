@@ -8,7 +8,7 @@ public interface IPagedList<T> : IList<T>
 
     int PageSize { get; }
 
-    int TotalCount { get; }
+    //int TotalCount { get; }
 
     bool HasPrevious { get; }
 

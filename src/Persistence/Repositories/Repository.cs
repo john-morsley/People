@@ -43,7 +43,9 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
 
         var entities = GetAll(options);
 
-        return PagedList<TEntity>.Create(entities, options.PageNumber, options.PageSize);
+        var pagedList = PagedList<TEntity>.Create(entities, options.PageNumber, options.PageSize);
+
+        return pagedList;
     }
 
     public virtual async Task CreateAsync(TEntity entity)
@@ -87,7 +89,6 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
 
     protected virtual IQueryable<TEntity> GetAll(IGetOptions options)
     {
-        //var entities = _collection.AsQueryable();
         var entities = AsQueryable();
 
         entities = Sort(entities, options);
@@ -146,5 +147,4 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
     {
         GC.SuppressFinalize(this);
     }
-
 }

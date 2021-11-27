@@ -10,7 +10,6 @@ public class UsersController : ControllerBase
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
-
     public UsersController(
         ILogger<UsersController> logger,
         IMediator mediator,
@@ -21,9 +20,9 @@ public class UsersController : ControllerBase
         _mapper = mapper;
     }
 
-    /*
-        * POST --> Create a User
-        */
+    /***********************************************************************************************************************
+     * POST --> CREATE                                                                                                     *
+     ***********************************************************************************************************************/                                                                                                                     
 
     /// <summary>
     /// Create a user
@@ -46,9 +45,9 @@ public class UsersController : ControllerBase
         return CreatedAtAction(nameof(CreateUser), response);
     }
 
-    /*
-        * DELETE --> Delete
-        */
+    /***********************************************************************************************************************
+     * DELETE                                                                                                              *
+     ***********************************************************************************************************************/
 
     /// <summary>
     /// Delete a user
@@ -72,11 +71,11 @@ public class UsersController : ControllerBase
 
         return NoContent();
     }
-        
-    /*
-        * PUT --> Upsert
-        */
-        
+
+    /***********************************************************************************************************************
+     * PUT -- UPSERT                                                                                                       *
+     ***********************************************************************************************************************/
+
     /// <summary>
     /// Upsert a user.
     /// </summary>
@@ -111,9 +110,9 @@ public class UsersController : ControllerBase
         return RedirectToAction(nameof(CreateUser), createUserRequest);
     }
 
-    /*
-        * PATCH --> Upsert
-        */
+    /***********************************************************************************************************************
+     * PATCH --> UPSERT                                                                                                    *
+     ***********************************************************************************************************************/
 
     /// <summary>
     /// Fully or partially update a user

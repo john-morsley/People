@@ -25,7 +25,6 @@
     <ProjectReference Include="..\..\..\src\Domain\Domain.csproj" />
     <ProjectReference Include="..\..\..\src\Persistence\Persistence.csproj" />
     <ProjectReference Include="..\..\Shared\TestInfrastructure\TestInfrastructure.csproj" />
-    <ProjectReference Include="..\..\SystemTests\MongoDBInDockerTestFixture\Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

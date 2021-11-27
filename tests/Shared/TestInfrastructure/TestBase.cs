@@ -1,10 +1,4 @@
-﻿using AutoFixture;
-using Microsoft.Extensions.Configuration;
-using MongoDB.Driver;
-using NUnit.Framework;
-using Persistence.Configuration;
-
-namespace Shared.TestInfrastructure;
+﻿namespace Shared.TestInfrastructure;
 
 public class TestBase
 {
@@ -35,7 +29,7 @@ public class TestBase
         get { return _testFixture.GetContainerPort(); }
     }
 
-    protected Dictionary<string, string> GetInMemoryConfiguration()
+    protected virtual Dictionary<string, string> GetInMemoryConfiguration()
     {
         var additional = new Dictionary<string, string>();
         additional.Add("MongoSettings:Port", ContainerPort.ToString());
@@ -46,10 +40,8 @@ public class TestBase
     {
         var builder = new ConfigurationBuilder();
 
-        // Add values from the 'appsettings.json' file...
         builder.AddJsonFile("appsettings.json");
 
-        // Add static values...
         if (additional != null && additional.Count > 0) builder.AddInMemoryCollection(additional);
 
         IConfiguration configuration = builder.Build();

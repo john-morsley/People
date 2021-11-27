@@ -1,4 +1,6 @@
-﻿namespace API.Shared.Tests;
+﻿using System.Text.Json;
+
+namespace API.Shared.Tests;
 
 public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
 {
@@ -34,5 +36,24 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
     {
         _client.Dispose();
         _server.Dispose();
+    }
+
+    public static Users.API.Models.Response.v1.UserResponse DeserializeUserResponse(string json)
+    {
+        var options = new JsonSerializerOptions()
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        return JsonSerializer.Deserialize<Users.API.Models.Response.v1.UserResponse>(json, options);
+    }
+
+    public static Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse> DeserializePagedListOfUserResponses(string json)
+    {
+        var options = new JsonSerializerOptions()
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        options.Converters.Add(new Users.API.Models.Shared.PagedListJsonConverter());
+        return JsonSerializer.Deserialize<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>(json, options);
     }
 }

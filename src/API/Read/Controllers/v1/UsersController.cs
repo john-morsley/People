@@ -1,4 +1,7 @@
-﻿namespace Users.API.Read.Controllers.v1;
+﻿using System.Text.Json;
+using Users.API.Models.Shared;
+
+namespace Users.API.Read.Controllers.v1;
 
 [ApiController]
 [ApiVersion("1.0")]
@@ -19,6 +22,10 @@ public class UsersController : ControllerBase
         _mapper = mapper;
     }
 
+    /***********************************************************************************************************************
+     * GET --> SINGLE                                                                                                      *
+     ***********************************************************************************************************************/
+
     /// <summary>
     /// Get a single user by their Id
     /// </summary>
@@ -32,7 +39,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> GetUser([FromRoute] Guid userId)
+    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> GetUserById([FromRoute] Guid userId)
     {
         if (userId == default) return BadRequest();
 
@@ -41,8 +48,122 @@ public class UsersController : ControllerBase
         var getUserResponse = await GetUserResponse(getUserRequest);
             
         if (getUserResponse == null) return NoContent();
-            
+
         return Ok(getUserResponse);
+    }
+
+    /***********************************************************************************************************************
+     * HEAD --> SINGLE                                                                                                     *
+     ***********************************************************************************************************************/
+
+    [HttpHead("{userId:guid}")]
+    [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> HeadUserById([FromRoute] Guid userId)
+    {
+        if (userId == default) return BadRequest();
+
+        var getUserRequest = new Users.API.Models.Request.v1.GetUserRequest(userId);
+
+        var getUserResponse = await GetUserResponse(getUserRequest);
+
+        if (getUserResponse == null) return NoContent();
+
+        Response.ContentLength = CalculateContentLength(getUserResponse);
+
+        return Ok();
+    }
+
+    /***********************************************************************************************************************
+     * GET --> MULTIPLE                                                                                                    *
+     ***********************************************************************************************************************/
+
+    /// <summary>
+    /// Gets a page of users
+    /// </summary>
+    /// <param name="getUsersRequest">
+    /// A GetUsersRequest object which contains fields for paging, searching, filtering, sorting and shaping user data</param>
+    /// <returns>A page of users</returns>
+    /// <response code="200">Success - OK - Returns the requested page of users</response>
+    /// <response code="204">Success - No Content - No users matched given criteria</response>
+    /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
+    [HttpGet]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>> GetPageOfUsers(
+        [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
+    {
+        if (getPageOfUsersRequest == null) return BadRequest();
+
+        var pageOfUserResponses = await GetPageOfUserResponses(getPageOfUsersRequest);
+
+        if (!pageOfUserResponses.Any()) return NoContent();
+
+        return Ok(pageOfUserResponses);
+    }
+
+    /***********************************************************************************************************************
+     * HEAD --> MULTIPLE                                                                                                   *
+     ***********************************************************************************************************************/
+
+    /// <summary>
+    /// Gets a page of users
+    /// </summary>
+    /// <param name="getUsersRequest">
+    /// A GetUsersRequest object which contains fields for paging, searching, filtering, sorting and shaping user data</param>
+    /// <returns>A page of users</returns>
+    /// <response code="200">Success - OK - Returns the requested page of users</response>
+    /// <response code="204">Success - No Content - No users matched given criteria</response>
+    /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
+    [HttpHead]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(Users.API.Models.Shared.PagedList < Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>> HeadPageOfUsers(
+        [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
+    {
+        if (getPageOfUsersRequest == null) return BadRequest();
+
+        var pageOfUserResponses = await GetPageOfUserResponses(getPageOfUsersRequest);
+
+        if (!pageOfUserResponses.Any()) return NoContent();
+
+        Response.ContentLength = CalculateContentLength(pageOfUserResponses);
+
+        return Ok();
+    }
+
+    private long CalculateContentLength(Models.Response.v1.UserResponse getUserResponse)
+    {
+        var json = JsonSerializer.Serialize(getUserResponse);
+        return json.Length;
+    }
+
+    private long CalculateContentLength(PagedList<Models.Response.v1.UserResponse> pageOfUserResponses)
+    {
+        var options = new JsonSerializerOptions
+        {
+            Converters = { new Users.API.Models.Shared.PagedListJsonConverter() }
+        };
+        var json = JsonSerializer.Serialize(pageOfUserResponses, options);
+        return json.Length;
+    }
+
+    private async Task<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>> GetPageOfUserResponses(Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
+    {
+        if (getPageOfUsersRequest == null) throw new ArgumentNullException(nameof(getPageOfUsersRequest));
+
+         var getPageOfUsersQuery = _mapper.Map<GetPageOfUsersQuery>(getPageOfUsersRequest);
+
+        var pageOfUsers = await _mediator.Send(getPageOfUsersQuery);
+
+        var pageOfUserResponses = _mapper.Map<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>(pageOfUsers);
+
+        return pageOfUserResponses;
     }
 
     private async Task<Users.API.Models.Response.v1.UserResponse> GetUserResponse(Users.API.Models.Request.v1.GetUserRequest getUserRequest)
@@ -59,47 +180,4 @@ public class UsersController : ControllerBase
         return userResponse;
     }
 
-    /// <summary>
-    /// Gets a page of users
-    /// </summary>
-    /// <param name="getUsersRequest">
-    /// A GetUsersRequest object which contains fields for paging, searching, filtering, sorting and shaping user data</param>
-    /// <returns>A page of users</returns>
-    /// <response code="200">Success - OK - Returns the requested page of users</response>
-    /// <response code="204">Success - No Content - No users matched given criteria</response>
-    /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
-    [HttpGet]
-    [Produces("application/json")]
-    [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IEnumerable<Users.API.Models.Response.v1.UserResponse>>> GetUsers([FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getUsersRequest)
-    {
-        if (getUsersRequest == null) return BadRequest();
-
-        // var userResponses = await GetUserResponses(getUsersRequest);
-        //
-        // if (userResponses == null || !userResponses.Any()) return NoContent();
-        //
-        // return Ok(userResponses);
-
-        var usersResponse = GetUsersResponses(getUsersRequest);
-        if (!usersResponse.Any()) return NotFound();
-        return Ok(usersResponse);
-    }
-
-    private IEnumerable<Users.API.Models.Response.v1.UserResponse> GetUsersResponses(Users.API.Models.Request.v1.GetPageOfUsersRequest getUsersRequest)
-    {
-        // TODO --> Replace with real implementation
-
-        var userResponse = new Users.API.Models.Response.v1.UserResponse
-        {
-            Id = Guid.NewGuid(),
-            FirstName = "John",
-            LastName = "Morsley"
-        };
-
-        var usersResponse = new List<Users.API.Models.Response.v1.UserResponse> { userResponse };
-        return usersResponse;
-    }
 }

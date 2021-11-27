@@ -30,7 +30,7 @@ public class PagedList<T> : List<T>, IPagedList<T>
 
     public bool HasNext => CurrentPage < TotalPages;
 
-    public static PagedList<T> Create(IQueryable<T> source, int pageNumber, int pageSize)
+    public static IPagedList<T> Create(IQueryable<T> source, int pageNumber, int pageSize)
     {
         if (source == null) throw new ArgumentNullException(nameof(source), "Cannot be null!");
         if (pageNumber == 0) throw new ArgumentOutOfRangeException(nameof(pageNumber), "Must be greater than zero!");
@@ -44,7 +44,8 @@ public class PagedList<T> : List<T>, IPagedList<T>
         else
         {
             var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(); // ToListAsync();
-            return new PagedList<T>(items, count, pageNumber, pageSize);
+            var pagedList = new PagedList<T>(items, count, pageNumber, pageSize);
+            return pagedList;
         }
     }
 }

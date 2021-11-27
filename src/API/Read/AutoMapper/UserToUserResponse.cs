@@ -1,8 +1,8 @@
 ﻿namespace Users.API.Read.AutoMapper;
 
-public class UserToGetUserResponse : Profile
+public class UserToUserResponse : Profile
 {
-    public UserToGetUserResponse()
+    public UserToUserResponse()
     {
         CreateMap<Users.Domain.Models.User, Users.API.Models.Response.v1.UserResponse>();
     }
