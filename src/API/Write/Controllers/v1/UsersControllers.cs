@@ -21,28 +21,32 @@ public class UsersController : ControllerBase
     }
 
     /***********************************************************************************************************************
-     * POST --> CREATE                                                                                                     *
+     * POST --> ADD                                                                                                     *
      ***********************************************************************************************************************/                                                                                                                     
 
     /// <summary>
-    /// Create a user
+    /// Add a user
     /// </summary>
-    /// <param name="request">A CreateUserRequest object which contains all the necessary data to create a user</param>
-    /// <returns>A URI to the newly created user in the header (location)</returns>
-    /// <response code="201">Success - Created - The user was successfully created</response>
+    /// <param name="request">An AddUserRequest object which contains all the necessary data to create a user</param>
+    /// <returns>A URI to the newly added user in the header (location)</returns>
+    /// <response code="201">Success - Added - The user was successfully Added</response>
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response> 
     [HttpPost]
     [MapToApiVersion("1.0")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult CreateUser([FromBody] Users.API.Models.Request.v1.CreateUserRequest request)
+    public async Task<IActionResult> AddUser([FromBody] Users.API.Models.Request.v1.AddUserRequest request)
     {
         if (request == null) return BadRequest();
 
-        var response = AddUser(request);
+        var addUserCommand = _mapper.Map<Users.Application.Commands.AddUserCommand>(request);
 
-        return CreatedAtAction(nameof(CreateUser), response);
+        var user = await _mediator.Send(addUserCommand);
+
+        var userResponse = _mapper.Map<Users.API.Models.Response.v1.UserResponse>(user);
+
+        return Created($"http://localhost/api/v1/users/{userResponse.Id}", userResponse);
     }
 
     /***********************************************************************************************************************
@@ -61,13 +65,15 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult DeleteUser([FromRoute] Guid userId)
+    public async Task<IActionResult> DeleteUser([FromRoute] Guid userId)
     {
         if (userId == default) return BadRequest();
 
-        var request = new Users.API.Models.Request.v1.DeleteUserRequest(userId);
-            
-        DeleteUser(request);
+        var deleteUserRequest = new Users.API.Models.Request.v1.DeleteUserRequest(userId);
+
+        var deleteUserCommand = _mapper.Map<Users.Application.Commands.DeleteUserCommand>(deleteUserRequest);
+
+        await _mediator.Send(deleteUserCommand);
 
         return NoContent();
     }
@@ -88,7 +94,7 @@ public class UsersController : ControllerBase
     /// <response code="200">Success - OK - The user was successfully updated</response>
     /// <response code="201">Success - Created - The user was successfully created</response>
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
-    [HttpPut("{guid:userId}")]
+    [HttpPut("{userId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -106,8 +112,8 @@ public class UsersController : ControllerBase
             return Ok(updatedUser);
         }
 
-        var createUserRequest = new Users.API.Models.Request.v1.CreateUserRequest();
-        return RedirectToAction(nameof(CreateUser), createUserRequest);
+        var createUserRequest = new Users.API.Models.Request.v1.AddUserRequest();
+        return RedirectToAction(nameof(AddUser), createUserRequest);
     }
 
     /***********************************************************************************************************************
@@ -161,30 +167,12 @@ public class UsersController : ControllerBase
             return Ok(updatedUser);
         }
             
-        var createUserRequest = new Users.API.Models.Request.v1.CreateUserRequest();
-        return RedirectToAction(nameof(CreateUser), createUserRequest);
+        var createUserRequest = new Users.API.Models.Request.v1.AddUserRequest();
+        return RedirectToAction(nameof(AddUser), createUserRequest);
             
         throw new NotImplementedException();
     }
         
-    private Users.API.Models.Response.v1.UserResponse AddUser(Users.API.Models.Request.v1.CreateUserRequest request)
-    {
-        if (request == null) throw new ArgumentNullException(nameof(request));
-            
-        // Here's where we'll add the user...
-            
-        throw new NotImplementedException();
-    }
-
-    private void DeleteUser(Users.API.Models.Request.v1.DeleteUserRequest request)
-    {
-        if (request == null) throw new ArgumentNullException(nameof(request));
-
-        // Here's where we'll delete the user...
-
-        throw new NotImplementedException();
-    }
-
     private async Task<bool> DoesUserExist(Guid id)
     {
         await Task.CompletedTask;

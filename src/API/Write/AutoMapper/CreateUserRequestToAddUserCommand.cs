@@ -10,6 +10,6 @@ public class CreateUserRequestToAddUserCommand : Profile
         //CreateMap<string?, Domain.Enumerations.Title?>()
         //    .ConvertUsing(new StringTitleToEnumTitleConverter());
 
-        CreateMap<Users.API.Models.Request.v1.CreateUserRequest, Users.Application.Commands.AddUserCommand>();
+        CreateMap<Users.API.Models.Request.v1.AddUserRequest, Users.Application.Commands.AddUserCommand>();
     }
 }

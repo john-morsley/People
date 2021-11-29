@@ -11,7 +11,7 @@ internal class Add : UserRepositoryTests
         var user = GenerateTestUser(userId);
 
         // Act...
-        await sut.CreateAsync(user);
+        await sut.AddAsync(user);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);

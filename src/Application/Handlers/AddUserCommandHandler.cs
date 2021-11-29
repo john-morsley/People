@@ -1,6 +1,6 @@
 ﻿namespace Users.Application.Handlers;
 
-public sealed class AddUserCommandHandler : IRequestHandler<Users.Application.Commands.AddUserCommand, Guid>
+public sealed class AddUserCommandHandler : IRequestHandler<Users.Application.Commands.AddUserCommand, Users.Domain.Models.User>
 {
     private readonly Users.Domain.Interfaces.IUserRepository _userRepository;
     private readonly IMapper _mapper;
@@ -11,16 +11,14 @@ public sealed class AddUserCommandHandler : IRequestHandler<Users.Application.Co
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<Guid> Handle(Users.Application.Commands.AddUserCommand command, CancellationToken ct)
+    public async Task<Users.Domain.Models.User> Handle(Users.Application.Commands.AddUserCommand command, CancellationToken ct)
     {
         if (command == null) throw new ArgumentNullException(nameof(command));
 
         Domain.Models.User user = _mapper.Map<Domain.Models.User>(command);
 
-        await _userRepository.CreateAsync(user);
-        //var numberOfRowsAffected = await _userRepository.CompleteAsync();
-        // ToDo --> Log!
+        await _userRepository.AddAsync(user);
 
-        return user.Id;
+        return user;
     }
 }

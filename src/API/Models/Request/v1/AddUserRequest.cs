@@ -1,6 +1,6 @@
 ﻿namespace Users.API.Models.Request.v1;
 
-public class CreateUserRequest
+public class AddUserRequest
 {
     public string FirstName { get; set; }
 

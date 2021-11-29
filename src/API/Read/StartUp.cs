@@ -15,6 +15,8 @@ public class StartUp
     {
         services.AddVersioningAndSwagger(Configuration, Assembly.GetExecutingAssembly().GetName().Name);
 
+        services.AddLogging(builder => builder.AddConsole().AddFilter(level => level >= LogLevel.Trace));
+
         services.AddControllers(configure =>
         {
             configure.ReturnHttpNotAcceptable = true;
@@ -23,20 +25,8 @@ public class StartUp
             options.JsonSerializerOptions.Converters.Add(new Users.API.Models.Shared.PagedListJsonConverter());
         });
 
-        //var settings = Shared.Environment.GetEnvironmentVariableValueByKey(Shared.Constants.EnvironmentVariables.UsersPersistenceKey);
-
-        //if (string.IsNullOrEmpty(settings))
-        //{
-        //    Log.Fatal("Could not determine Persistence Key! :-(");
-        //    return;
-        //}
-
         services.AddPersistence(Configuration);
         services.AddApplication();
-
-        
-
-        //services.AddPersistence(settings);        
     }
 
 

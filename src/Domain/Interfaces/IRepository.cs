@@ -8,7 +8,7 @@ public interface IRepository<TEntity> : IDisposable where TEntity : class
 
     Task<IPagedList<TEntity>> GetPageAsync(IGetOptions options);
 
-    Task CreateAsync(TEntity obj);
+    Task AddAsync(TEntity obj);
 
     Task UpdateAsync(TEntity obj);
 

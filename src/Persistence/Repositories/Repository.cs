@@ -48,7 +48,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
         return pagedList;
     }
 
-    public virtual async Task CreateAsync(TEntity entity)
+    public virtual async Task AddAsync(TEntity entity)
     {
         try
         {
