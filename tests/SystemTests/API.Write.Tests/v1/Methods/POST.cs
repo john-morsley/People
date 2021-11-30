@@ -9,18 +9,9 @@ public class POST : APIsTestBase<StartUp>
     public async Task Given_The_User_Does_Not_Exist___When_That_User_Is_Added___Then_That_User_Should_Exist()
     {
         // Arrange...
-        //var userId = Guid.NewGuid();
-        //var expected = GenerateTestUser(userId);
-        //AddUserToDatabase(expected);
         NumberOfUsersInDatabase().Should().Be(0);
 
-        //HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url)
-        //{
-        //    Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json"),
-        //};
-
         // Act...
-        //var httpResponse = await _client.SendAsync(request);
         var url = $"/api/v1/users/";
         var addUserRequest = new Users.API.Models.Request.v1.AddUserRequest
         {
@@ -42,4 +33,25 @@ public class POST : APIsTestBase<StartUp>
         var actualUser = GetUserFromDatabase(userResponse.Id);
         httpResponse.Headers.Location.Should().Be($"http://localhost/api/v1/users/{userResponse.Id}");
     }
+
+    [Test]
+    public async Task When_An_Unsupported_Method_Is_Called___Then_It_Should_Be_Rejected()
+    {
+        // Arrange...
+        NumberOfUsersInDatabase().Should().Be(0);
+
+        // Act...
+        var url = $"/api/v1/users/{Guid.NewGuid}";
+        //var addUserRequest = new Users.API.Models.Request.v1.AddUserRequest()
+        //var addUserRequestJson = JsonSerializer.Serialize(addUserRequest);
+        var payload = new StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
+        var httpResponse = await _client.PostAsync(url, payload);
+
+        // Assert...
+        httpResponse.IsSuccessStatusCode.Should().BeFalse();
+        httpResponse.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
+        var content = await httpResponse.Content.ReadAsStringAsync();
+        content.Length.Should().Be(0);
+    }
+
 }

@@ -172,7 +172,14 @@ public class UsersController : ControllerBase
             
         throw new NotImplementedException();
     }
-        
+
+    [HttpOptions]
+    public IActionResult GetOptions()
+    {
+        Response.Headers.Add("Allow", "DELETE,OPTIONS,PATCH,POST,PUT");
+        return Ok();
+    }
+
     private async Task<bool> DoesUserExist(Guid id)
     {
         await Task.CompletedTask;

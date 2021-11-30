@@ -37,7 +37,6 @@ public class ExceptionHandler
         response.Length.Should().Be(0);
     }
 
-
     [TearDown]
     public void TearDown()
     {

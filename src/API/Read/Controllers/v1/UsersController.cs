@@ -137,6 +137,13 @@ public class UsersController : ControllerBase
         return Ok();
     }
 
+    [HttpOptions]
+    public IActionResult GetOptions()
+    {
+        Response.Headers.Add("Allow", "GET,HEAD,OPTIONS");
+        return Ok();
+    }
+
     private long CalculateContentLength(Models.Response.v1.UserResponse getUserResponse)
     {
         var json = JsonSerializer.Serialize(getUserResponse);
