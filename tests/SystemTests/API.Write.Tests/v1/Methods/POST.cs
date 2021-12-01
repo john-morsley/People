@@ -1,7 +1,4 @@
-﻿
-
-
-namespace Users.API.Write.Tests.v1;
+﻿namespace Users.API.Write.Tests.v1.Methods;
 
 public class POST : APIsTestBase<StartUp>
 {
@@ -35,6 +32,61 @@ public class POST : APIsTestBase<StartUp>
     }
 
     [Test]
+    public async Task When_Posting_Invalid_Data___Then_Validation_Should_Prevent_Addition()
+    {
+        // Arrange...
+        NumberOfUsersInDatabase().Should().Be(0);
+
+        // Act...
+        var url = $"/api/v1/users/";
+        var addUserRequestJson = JsonSerializer.Serialize("");
+        var payload = new StringContent(addUserRequestJson, System.Text.Encoding.UTF8, "application/json");
+        var httpResponse = await _client.PostAsync(url, payload);
+
+        // Assert...
+        httpResponse.IsSuccessStatusCode.Should().BeFalse();
+        httpResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var content = await httpResponse.Content.ReadAsStringAsync();
+
+        //userResponseJson.Length.Should().BeGreaterThan(0);
+        //var userResponse = DeserializeUserResponse(userResponseJson);
+        //userResponse.Should().NotBeNull();
+        //var actualUser = GetUserFromDatabase(userResponse.Id);
+        //httpResponse.Headers.Location.Should().Be($"http://localhost/api/v1/users/{userResponse.Id}");
+    }
+
+    [Test]
+    public async Task When_An_Attempt_To_Add_An_Invalid_User___Then_Validation_Should_Prevent_Addition()
+    {
+        // Arrange...
+        NumberOfUsersInDatabase().Should().Be(0);
+
+        // Act...
+        var url = $"/api/v1/users/";
+        var addUserRequest = new Users.API.Models.Request.v1.AddUserRequest
+        {
+            FirstName = "",
+            LastName = ""
+        };
+        var addUserRequestJson = JsonSerializer.Serialize(addUserRequest);
+        var payload = new StringContent(addUserRequestJson, System.Text.Encoding.UTF8, "application/json");
+        var httpResponse = await _client.PostAsync(url, payload);
+
+        // Assert...
+        httpResponse.IsSuccessStatusCode.Should().BeFalse();
+        httpResponse.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        
+        var content = await httpResponse.Content.ReadAsStringAsync();
+        
+        //userResponseJson.Length.Should().BeGreaterThan(0);
+        //var userResponse = DeserializeUserResponse(userResponseJson);
+        //userResponse.Should().NotBeNull();
+        //var actualUser = GetUserFromDatabase(userResponse.Id);
+        //httpResponse.Headers.Location.Should().Be($"http://localhost/api/v1/users/{userResponse.Id}");
+    }
+
+    [Test]
     public async Task When_An_Unsupported_Method_Is_Called___Then_It_Should_Be_Rejected()
     {
         // Arrange...
@@ -42,8 +94,6 @@ public class POST : APIsTestBase<StartUp>
 
         // Act...
         var url = $"/api/v1/users/{Guid.NewGuid}";
-        //var addUserRequest = new Users.API.Models.Request.v1.AddUserRequest()
-        //var addUserRequestJson = JsonSerializer.Serialize(addUserRequest);
         var payload = new StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
         var httpResponse = await _client.PostAsync(url, payload);
 

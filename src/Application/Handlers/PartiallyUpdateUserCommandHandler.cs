@@ -33,6 +33,6 @@ public sealed class PartiallyUpdateUserCommandHandler : IRequestHandler<Users.Ap
         //if (command.TitleChanged && user.Title != command.Title) user.Title = command.Title;
         if (command.FirstNameChanged && user.FirstName != command.FirstName) user.FirstName = command.FirstName;
         if (command.LastNameChanged && user.LastName != command.LastName) user.LastName = command.LastName;
-        if (command.SexChanged && user.Sex != command.Sex) user.Sex = command.Sex;
+        //if (command.SexChanged && user.Sex != command.Sex) user.Sex = command.Sex;
     }
 }

@@ -23,10 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Docker" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\Application\Application.csproj" />
       <ProjectReference Include="..\..\Persistence\Persistence.csproj" />
       <ProjectReference Include="..\Models\Models.csproj" />

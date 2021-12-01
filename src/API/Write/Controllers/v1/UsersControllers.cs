@@ -4,7 +4,7 @@
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/users")]
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-public class UsersController : ControllerBase
+public class UsersController : API.Shared.Controllers.v1.BaseController
 {
     private readonly ILogger<UsersController> _logger;
     private readonly IMediator _mediator;
@@ -27,7 +27,7 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Add a user
     /// </summary>
-    /// <param name="request">An AddUserRequest object which contains all the necessary data to create a user</param>
+    /// <param name="addUserRequest">An AddUserRequest object which contains all the necessary data to create a user</param>
     /// <returns>A URI to the newly added user in the header (location)</returns>
     /// <response code="201">Success - Added - The user was successfully Added</response>
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response> 
@@ -36,11 +36,11 @@ public class UsersController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> AddUser([FromBody] Users.API.Models.Request.v1.AddUserRequest request)
+    public async Task<IActionResult> AddUser([FromBody] Users.API.Models.Request.v1.AddUserRequest addUserRequest)
     {
-        if (request == null) return BadRequest();
+        if (addUserRequest == null) return BadRequest();
 
-        var addUserCommand = _mapper.Map<Users.Application.Commands.AddUserCommand>(request);
+        var addUserCommand = _mapper.Map<Users.Application.Commands.AddUserCommand>(addUserRequest);
 
         var user = await _mediator.Send(addUserCommand);
 
