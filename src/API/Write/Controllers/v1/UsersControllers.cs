@@ -108,8 +108,12 @@ public class UsersController : API.Shared.Controllers.v1.BaseController
 
         if (await DoesUserExist(userId))
         {
-            var updatedUser = await UpdateUser(userId, upsertUserRequest);
-            return Ok(updatedUser);
+            var updateUserCommand = _mapper.Map<Application.Commands.UpdateUserCommand>(upsertUserRequest);
+            updateUserCommand.Id = userId;
+
+            var updatedUser = await _mediator.Send(updateUserCommand);
+
+            return Ok();
         }
 
         var createUserRequest = new Users.API.Models.Request.v1.AddUserRequest();
@@ -173,31 +177,37 @@ public class UsersController : API.Shared.Controllers.v1.BaseController
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// List the HTTP methods allowed
+    /// </summary>
     [HttpOptions]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetOptions()
     {
         Response.Headers.Add("Allow", "DELETE,OPTIONS,PATCH,POST,PUT");
         return Ok();
     }
 
-    private async Task<bool> DoesUserExist(Guid id)
+    private async Task<bool> DoesUserExist(Guid userId)
     {
-        await Task.CompletedTask;
-            
-        throw new NotImplementedException();
+        var userExistsQuery = new Application.Queries.UserExistsQuery(userId);
+
+        var doesUserExist = await _mediator.Send(userExistsQuery);
+        
+        return doesUserExist;
     }
         
-    private async Task<Users.API.Models.Response.v1.UserResponse> UpdateUser(
-        Guid userId,
-        Users.API.Models.Request.v1.UpsertUserRequest request)
-    {
-        if (request == null) throw new ArgumentNullException(nameof(request));
+    //private async Task<Users.API.Models.Response.v1.UserResponse> UpdateUser(
+    //    Guid userId,
+    //    Users.API.Models.Request.v1.UpsertUserRequest request)
+    //{
+    //    if (request == null) throw new ArgumentNullException(nameof(request));
 
-        // Update User...
-        await Task.CompletedTask;
+    //    // Update User...
+    //    await Task.CompletedTask;
             
-        throw new NotImplementedException();
-    }
+    //    throw new NotImplementedException();
+    //}
 
     private async Task<Users.API.Models.Response.v1.UserResponse> PartiallyUpdateUser(
         Guid userId,
