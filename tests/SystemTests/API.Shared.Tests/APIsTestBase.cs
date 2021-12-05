@@ -4,9 +4,11 @@ namespace API.Shared.Tests;
 
 public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
 {
+    protected const string API_MEDIA_TYPE = "application/json";
+
     protected MongoContext _mongoContext;
 
-    private  TestServer _server;
+    private TestServer _server;
     protected HttpClient _client;
 
     [SetUp]
@@ -56,4 +58,15 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         options.Converters.Add(new Users.API.Models.Shared.PagedListJsonConverter());
         return JsonSerializer.Deserialize<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>(json, options);
     }
+
+    protected Users.API.Models.Request.v1.AddUserRequest GenerateTestAddUserRequest()
+    {
+        return _autoFixture.Create<Users.API.Models.Request.v1.AddUserRequest>();
+    }
+
+    protected Users.API.Models.Request.v1.UpdateUserRequest GenerateTestUpdateUserRequest()
+    {
+        return _autoFixture.Create<Users.API.Models.Request.v1.UpdateUserRequest>();
+    }
+
 }

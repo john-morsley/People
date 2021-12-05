@@ -90,8 +90,7 @@ public class TestBase
 
     protected Users.Domain.Models.User GenerateTestUser()
     {
-        var user = _autoFixture.Create<Users.Domain.Models.User>();
-        return user;
+        return _autoFixture.Create<Users.Domain.Models.User>();
     }
 
     protected Users.Domain.Models.User GenerateTestUser(Guid userId)

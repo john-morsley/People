@@ -15,7 +15,7 @@
         </member>
         <member name="M:Users.API.Write.Controllers.v1.UsersController.DeleteUser(System.Guid)">
             <summary>
-            Delete a user
+            Delete an existing user
             </summary>
             <param name="userId">The unique identifier of the user</param>
             <returns>Nothing</returns>
@@ -23,33 +23,28 @@
             <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
             <response code="404">Error - Not Found - No user matched the given identifier</response>
         </member>
-        <member name="M:Users.API.Write.Controllers.v1.UsersController.UpsertUser(System.Guid,Users.API.Models.Request.v1.UpsertUserRequest)">
+        <member name="M:Users.API.Write.Controllers.v1.UsersController.UpsertUser(System.Guid,Users.API.Models.Request.v1.UpdateUserRequest)">
             <summary>
-            Upsert a user.
+            Update an existing user.
             </summary>
             <param name="userId">The unique identifier of the user</param>
-            <param name="upsertUserRequest">
-            An UpsertUserRequest object which contains all the
-            data required to either update or create a user.
-            </param>
-            <returns>The upserted user</returns>
+            <param name="updateUserRequest">An UpdateUserRequest object which contains the data required to update a user.</param>
+            <returns>The updated user</returns>
             <response code="200">Success - OK - The user was successfully updated</response>
-            <response code="201">Success - Created - The user was successfully created</response>
-            <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
+            <response code="404">Error - Not Found - Could not find the corresponding user for the given identifier</response>
+            <response code="422">Error - Unprocessable Entity - It was not possible to bind the request JSON</response>
         </member>
-        <member name="M:Users.API.Write.Controllers.v1.UsersController.UpsertUser(System.Guid,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{Users.API.Models.Request.v1.PartiallyUpsertUserRequest})">
+        <member name="M:Users.API.Write.Controllers.v1.UsersController.PartiallyUser(System.Guid,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{Users.API.Models.Request.v1.PartiallyUpdateUserRequest})">
             <summary>
-            Fully or partially update a user
+            Fully or partially update an existing user
             </summary>
             <param name="userId">The unique identifier of the user</param>
-            <param name="patchDocument">
-            A JSON Patch Document detailing the full or partial updates to the user
-            </param>
+            <param name="patchDocument">A JSON Patch Document detailing the full or partial updates to the user</param>
             <returns>The updated user</returns>
             <response code="200">Success - OK - The user was successfully updated</response>
             <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
-            <response code="404">Error - Not Found - No user matched the given identifier</response>
-            <response code="422">Error - Unprocessable Entity - Unable to process the contained instructions.</response>
+            <response code="404">Error - Not Found - Could not find the corresponding user for the given identifier</response>
+            <response code="422">Error - Unprocessable Entity - Unable to process the contained instructions</response>
             <remarks>
             Sample request (this request updates the user's first name): \
             PATCH /users/id \
@@ -61,6 +56,11 @@
                 } \
             ] \
             </remarks>
+        </member>
+        <member name="M:Users.API.Write.Controllers.v1.UsersController.GetOptions">
+            <summary>
+            List the HTTP methods allowed
+            </summary>
         </member>
     </members>
 </doc>

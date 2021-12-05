@@ -7,9 +7,9 @@ namespace Users.Domain.Models
 {
     public abstract class Entity<T> : IEntity<T>
     {
-        protected Entity() { }
+        protected Entity() {}
 
-        private T _id;
+        protected T _id;
 
         public T Id
         {

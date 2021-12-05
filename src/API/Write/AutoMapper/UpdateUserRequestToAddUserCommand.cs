@@ -1,8 +1,8 @@
 ﻿namespace Users.API.Write.AutoMapper;
 
-public class UpdateUserRequestToUpdateUserCommand : Profile
+public class UpdateUserRequestToAddUserCommand : Profile
 {
-    public UpdateUserRequestToUpdateUserCommand()
+    public UpdateUserRequestToAddUserCommand()
     {
         //CreateMap<string?, Domain.Enumerations.Sex?>()
         //    .ConvertUsing(new StringSexToEnumSexConverter());
@@ -11,6 +11,6 @@ public class UpdateUserRequestToUpdateUserCommand : Profile
         //    .ConvertUsing(new StringTitleToEnumTitleConverter());
 
         CreateMap<Users.API.Models.Request.v1.UpdateUserRequest,
-                  Users.Application.Commands.UpdateUserCommand>();
+                  Users.Application.Commands.AddUserCommand>();
     }
 }

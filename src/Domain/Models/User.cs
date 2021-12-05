@@ -11,6 +11,7 @@ public class User : Entity<Guid>
 
     public User()
     {
+        _id = Guid.NewGuid();
         _addresses = new List<Address>();
         _emails = new List<Email>();
         _phones = new List<Phone>();

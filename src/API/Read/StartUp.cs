@@ -15,7 +15,7 @@ public class StartUp
     {
         services.AddVersioningAndSwagger(Configuration, Assembly.GetExecutingAssembly().GetName().Name);
 
-        services.AddLogging(builder => builder.AddConsole().AddFilter(level => level >= LogLevel.Trace));
+        services.AddLogging(builder => builder.AddConsole().AddFilter(level => level >= LogLevel.Debug));
 
         services.AddControllers(configure =>
         {

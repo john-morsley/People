@@ -1,8 +1,8 @@
 ﻿namespace Users.API.Write.AutoMapper;
 
-public class PartiallyUpsertUserRequestToPartiallyUpdateUserCommand : Profile
+public class PartiallyUpdateUserRequestToPartiallyUpdateUserCommand : Profile
 {
-    public PartiallyUpsertUserRequestToPartiallyUpdateUserCommand()
+    public PartiallyUpdateUserRequestToPartiallyUpdateUserCommand()
     {
         //CreateMap<string?, Domain.Enumerations.Sex?>()
         //    .ConvertUsing(new StringSexToEnumSexConverter());
@@ -10,6 +10,6 @@ public class PartiallyUpsertUserRequestToPartiallyUpdateUserCommand : Profile
         //CreateMap<string?, Domain.Enumerations.Title?>()
         //    .ConvertUsing(new StringTitleToEnumTitleConverter());
 
-        CreateMap<Users.API.Models.Request.v1.PartiallyUpsertUserRequest, Users.Application.Commands.PartiallyUpdateUserCommand>();
+        CreateMap<Users.API.Models.Request.v1.PartiallyUpdateUserRequest, Users.Application.Commands.PartiallyUpdateUserCommand>();
     }
 }
