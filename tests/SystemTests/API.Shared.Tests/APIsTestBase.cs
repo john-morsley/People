@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace API.Shared.Tests;
+﻿namespace API.Shared.Tests;
 
 public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
 {
@@ -64,9 +62,11 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         return _autoFixture.Create<Users.API.Models.Request.v1.AddUserRequest>();
     }
 
-    protected Users.API.Models.Request.v1.UpdateUserRequest GenerateTestUpdateUserRequest()
+    protected Users.API.Models.Request.v1.UpdateUserRequest GenerateTestUpdateUserRequest(Sex? sex = null, Gender? gender = null)
     {
-        return _autoFixture.Create<Users.API.Models.Request.v1.UpdateUserRequest>();
+        var testUpdateUser = _autoFixture.Create<Users.API.Models.Request.v1.UpdateUserRequest>();
+        if (testUpdateUser.Sex == sex) testUpdateUser.Sex = GenerateDifferentSex(sex);
+        if (testUpdateUser.Gender == gender) testUpdateUser.Gender = GenerateDifferentGender(gender);
+        return testUpdateUser;
     }
-
 }

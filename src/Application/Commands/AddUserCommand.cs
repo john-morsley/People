@@ -15,5 +15,7 @@ public sealed class AddUserCommand : IRequest<Users.Domain.Models.User>
 
     public string LastName { get; set; }
 
-    //public Users.Domain.Enumerations.Sex? Sex { get; set; }
+    public Sex? Sex { get; set; }
+
+    public Gender? Gender { get; set; }
 }

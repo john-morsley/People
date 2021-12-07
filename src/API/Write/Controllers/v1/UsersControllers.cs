@@ -1,4 +1,6 @@
-﻿namespace Users.API.Write.Controllers.v1;
+﻿
+
+namespace Users.API.Write.Controllers.v1;
 
 [ApiController]
 [ApiVersion("1.0")]
@@ -83,7 +85,6 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-
     public async Task<IActionResult> UpsertUser(
         [FromRoute] Guid userId,
         [FromBody] Users.API.Models.Request.v1.UpdateUserRequest updateUserRequest)
@@ -105,7 +106,7 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
         var userResponse = _mapper.Map<Users.API.Models.Response.v1.UserResponse>(user);
 
         return Created($"http://localhost/api/v1/users/{userResponse.Id}", userResponse);
-    }
+    }        
 
     /// <summary>
     /// Fully or partially update an existing user
@@ -133,7 +134,7 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> PartiallyUser(
+    public async Task<IActionResult> UpsertUser(
         [FromRoute] Guid userId,
         [FromBody] JsonPatchDocument<Users.API.Models.Request.v1.PartiallyUpdateUserRequest> patchDocument)
     {
@@ -148,12 +149,19 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
             
         if (await DoesUserExist(userId))
         {
-            var updatedUser = await PartiallyUpdateUser(userId, partiallyUpdateUserRequest);
-            return Ok(updatedUser);
+            //var updatedUser = await PartiallyUpdateUser(userId, partiallyUpdateUserRequest);
+
+            var partiallyUpdateUserCommand = _mapper.Map<Users.Application.Commands.PartiallyUpdateUserCommand>(partiallyUpdateUserRequest);
+
+            var updatedUser = await _mediator.Send(partiallyUpdateUserCommand);
+
+            var updatedUserResponse = _mapper.Map<Users.API.Models.Response.v1.UserResponse>(updatedUser);
+
+            return Ok(updatedUserResponse);
         }
-            
-        var createUserRequest = new Users.API.Models.Request.v1.AddUserRequest();
-        return RedirectToAction(nameof(AddUser), createUserRequest);
+
+        //var createUserRequest = new Users.API.Models.Request.v1.AddUserRequest();
+        //return RedirectToAction(nameof(AddUser), createUserRequest);
             
         throw new NotImplementedException();
     }

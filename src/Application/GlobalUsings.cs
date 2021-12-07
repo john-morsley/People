@@ -9,3 +9,4 @@ global using System.Threading;
 global using System.Threading.Tasks;
 global using Users.Domain.Interfaces;
 global using Users.Domain.Models;
+global using Users.Domain.Enumerations;

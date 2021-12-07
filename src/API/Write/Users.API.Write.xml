@@ -34,7 +34,7 @@
             <response code="404">Error - Not Found - Could not find the corresponding user for the given identifier</response>
             <response code="422">Error - Unprocessable Entity - It was not possible to bind the request JSON</response>
         </member>
-        <member name="M:Users.API.Write.Controllers.v1.UsersController.PartiallyUser(System.Guid,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{Users.API.Models.Request.v1.PartiallyUpdateUserRequest})">
+        <member name="M:Users.API.Write.Controllers.v1.UsersController.UpsertUser(System.Guid,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{Users.API.Models.Request.v1.PartiallyUpdateUserRequest})">
             <summary>
             Fully or partially update an existing user
             </summary>

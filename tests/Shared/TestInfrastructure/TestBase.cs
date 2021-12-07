@@ -88,6 +88,33 @@ public class TestBase
         collection.InsertMany(users);
     }
 
+    protected string GetTestString(string prepend = "")
+    {
+        return prepend + _autoFixture.Create<string>();
+    }
+
+    protected Gender? GenerateDifferentGender(Gender? gender)
+    {
+        Gender? differentGender;
+        do
+        {
+            differentGender = _autoFixture.Create<Gender?>();
+        } while (differentGender == gender);
+
+        return differentGender;
+    }
+
+    protected Sex? GenerateDifferentSex(Sex? sex)
+    {
+        Sex? differentSex;
+        do
+        {
+            differentSex = _autoFixture.Create<Sex?>();
+        } while (differentSex == sex);
+        
+        return differentSex;
+    }
+
     protected Users.Domain.Models.User GenerateTestUser()
     {
         return _autoFixture.Create<Users.Domain.Models.User>();

@@ -4,19 +4,23 @@ public sealed class PartiallyUpdateUserCommand : IRequest<Users.Domain.Models.Us
 {
     public Guid Id { get; set; }
 
-    public Users.Domain.Enumerations.Title? Title { get; set; }
+    //public Users.Domain.Enumerations.Title? Title { get; set; }
 
-    public string? FirstName { get; set; }
+    public string FirstName { get; set; }
 
-    public string? LastName { get; set; }
+    public string LastName { get; set; }
 
-    public Users.Domain.Enumerations.Sex? Sex { get; set; }
+    public Sex? Sex { get; set; }
 
-    public bool TitleChanged { get; set; }
+    public Gender? Gender { get; set; }
+
+    //public bool TitleChanged { get; set; }
 
     public bool FirstNameChanged { get; set; }
 
     public bool LastNameChanged { get; set; }
 
     public bool SexChanged { get; set; }
+
+    public bool GenderChanged { get; set; }
 }

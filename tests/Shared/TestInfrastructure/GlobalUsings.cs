@@ -1,10 +1,10 @@
 ﻿global using AutoFixture;
+global using Docker.DotNet;
+global using Docker.DotNet.Models;
 global using Microsoft.Extensions.Configuration;
 global using MongoDB.Driver;
 global using NUnit.Framework;
 global using Persistence.Configuration;
-global using Docker.DotNet;
-global using Docker.DotNet.Models;
-global using MongoDB.Driver;
 global using System.Net;
 global using System.Net.Sockets;
+global using Users.Domain.Enumerations;

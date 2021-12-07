@@ -6,4 +6,7 @@ public class UpdateUserRequest
 
     public string LastName { get; set; }
 
+    public Sex? Sex { get; set; }
+
+    public Gender? Gender { get; set; }
 }

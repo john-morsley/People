@@ -19,9 +19,9 @@ public class POST : APIsTestBase<StartUp>
         NumberOfUsersInDatabase().Should().Be(1);
         httpResponse.IsSuccessStatusCode.Should().BeTrue();
         httpResponse.StatusCode.Should().Be(HttpStatusCode.Created);        
-        var userResponseJson = await httpResponse.Content.ReadAsStringAsync();
-        userResponseJson.Length.Should().BeGreaterThan(0);
-        var userResponse = DeserializeUserResponse(userResponseJson);
+        var content = await httpResponse.Content.ReadAsStringAsync();
+        content.Length.Should().BeGreaterThan(0);
+        var userResponse = DeserializeUserResponse(content);
         userResponse.Should().NotBeNull();        
         var actualUser = GetUserFromDatabase(userResponse.Id);
         httpResponse.Headers.Location.Should().Be($"http://localhost/api/v1/users/{userResponse.Id}");

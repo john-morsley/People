@@ -16,19 +16,21 @@ public class StartUp
     {
         services.AddVersioningAndSwagger(Configuration, Assembly.GetExecutingAssembly().GetName().Name);
 
-        services.AddLogging(builder => builder.AddConsole().AddFilter(level => level >= LogLevel.Debug));
+        services.AddLogging(builder => builder.AddConsole().AddFilter(level => level >= LogLevel.Trace));
 
         services.AddControllers(configure =>
         {
             configure.ReturnHttpNotAcceptable = true;
-        }).ConfigureApiBehaviorOptions(setupAction =>
+        })
+        .AddNewtonsoftJson()
+        .ConfigureApiBehaviorOptions(setupAction =>
         {
             setupAction.InvalidModelStateResponseFactory = context =>
             {
                 var factory = context.HttpContext.RequestServices.GetRequiredService<ProblemDetailsFactory>();
                 var details = factory.CreateValidationProblemDetails(context.HttpContext, context.ModelState);
 
-                details.Detail = "See the errors field for deatils.";
+                details.Detail = "See the errors field for details.";
                 details.Instance = context.HttpContext.Request.Path;
                 
                 if (AreWeDealingWithValidationErrors(context))

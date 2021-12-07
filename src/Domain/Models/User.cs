@@ -23,21 +23,21 @@ public class User : Entity<Guid>
         SetLastName(lastName);
     }
 
-    [Required]
     public string FirstName
     {
         get => _firstName;
         set => SetFirstName(value);
     }
 
-    [Required]
     public string LastName
     {
         get => _lastName;
         set => SetLastName(value);
     }
 
-    //public Sex? Sex { get; set; }
+    public Sex? Sex { get; set; }
+
+    public Gender? Gender { get; set; }
 
     public IReadOnlyList<Email> Emails => _emails.ToList();
 
@@ -71,13 +71,13 @@ public class User : Entity<Guid>
 
     private void SetFirstName(string firstName)
     {
-        if (string.IsNullOrWhiteSpace(firstName)) throw new ArgumentException("Cannot be null or empty!", nameof(firstName));
+        if (string.IsNullOrWhiteSpace(firstName)) throw new ArgumentException("Cannot be empty!", nameof(firstName));
         _firstName = firstName;
     }
 
     private void SetLastName(string lastName)
     {
-        if (string.IsNullOrWhiteSpace(lastName)) throw new ArgumentException("Cannot be null or empty!", nameof(lastName));
+        if (string.IsNullOrWhiteSpace(lastName)) throw new ArgumentException("Cannot be empty!", nameof(lastName));
         _lastName = lastName;
     }
 }

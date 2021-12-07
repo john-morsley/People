@@ -12,3 +12,5 @@ global using Persistence.Contexts;
 global using FluentAssertions;
 global using Microsoft.AspNetCore.TestHost;
 global using Microsoft.AspNetCore.Hosting;
+global using Users.Domain.Enumerations;
+global using System.Text.Json;

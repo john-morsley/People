@@ -2,8 +2,8 @@
 {
     public enum Sex
     {
-        Neither = 0,
         Male = 1,
-        Female = 2
+        Female = 2,
+        Intersex = 3
     }
 }

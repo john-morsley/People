@@ -25,7 +25,8 @@ public sealed class UpdateUserCommandHandler : IRequestHandler<Users.Application
         //if (user.Title != command.Title) user.Title = command.Title;
         if (user.FirstName != command.FirstName) user.FirstName = command.FirstName;
         if (user.LastName != command.LastName) user.LastName = command.LastName;
-        //if (user.Sex != command.Sex) user.Sex = command.Sex;
+        if (user.Sex != command.Sex) user.Sex = command.Sex;
+        if (user.Gender != command.Gender) user.Gender = command.Gender;
 
         await _userRepository.UpdateAsync(user);
         //var numberOfRowsAffected = await _userRepository.CompleteAsync();
