@@ -13,14 +13,4 @@ public sealed class PartiallyUpdateUserCommand : IRequest<Users.Domain.Models.Us
     public Sex? Sex { get; set; }
 
     public Gender? Gender { get; set; }
-
-    //public bool TitleChanged { get; set; }
-
-    public bool FirstNameChanged { get; set; }
-
-    public bool LastNameChanged { get; set; }
-
-    public bool SexChanged { get; set; }
-
-    public bool GenderChanged { get; set; }
 }

@@ -3,6 +3,7 @@
 public class POST : APIsTestBase<StartUp>
 {
     [Test]
+    [Category("Happy")]
     public async Task Given_User_Does_Not_Exist___When_Post_Add_User___Then_200_OK_And_User_Should_Be_Added()
     {
         // Arrange...
@@ -28,6 +29,7 @@ public class POST : APIsTestBase<StartUp>
     }
 
     [Test]
+    [Category("Unhappy")]
     public async Task When_Post_Invalid_Data___Then_400_BadRequest_And_Errors_Object_Should_Detail_Issues()
     {
         // Arrange...
@@ -55,6 +57,7 @@ public class POST : APIsTestBase<StartUp>
     }
 
     [Test]
+    [Category("Unhappy")]
     public async Task When_Post_Invalid_Add_User___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
     {
         // Arrange...
@@ -87,6 +90,7 @@ public class POST : APIsTestBase<StartUp>
     }
 
     [Test]
+    [Category("Unhappy")]
     public async Task When_An_Unsupported_Method_Is_Called___Then_405_MethoNotAllowed()
     {
         // Arrange...

@@ -1,7 +1,4 @@
-﻿using System.Text.Json;
-using Users.API.Models.Shared;
-
-namespace Users.API.Read.Controllers.v1;
+﻿namespace Users.API.Read.Controllers.v1;
 
 [ApiController]
 [ApiVersion("1.0")]
@@ -22,10 +19,6 @@ public class UsersController : ControllerBase
         _mapper = mapper;
     }
 
-    /***********************************************************************************************************************
-     * GET --> SINGLE                                                                                                      *
-     ***********************************************************************************************************************/
-
     /// <summary>
     /// Get a single user by their Id
     /// </summary>
@@ -39,7 +32,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> GetUserById([FromRoute] Guid userId)
+    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> GetById([FromRoute] Guid userId)
     {
         if (userId == default) return BadRequest();
 
@@ -52,15 +45,11 @@ public class UsersController : ControllerBase
         return Ok(getUserResponse);
     }
 
-    /***********************************************************************************************************************
-     * HEAD --> SINGLE                                                                                                     *
-     ***********************************************************************************************************************/
-
     [HttpHead("{userId:guid}")]
     [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> HeadUserById([FromRoute] Guid userId)
+    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> HeadById([FromRoute] Guid userId)
     {
         if (userId == default) return BadRequest();
 
@@ -74,10 +63,6 @@ public class UsersController : ControllerBase
 
         return Ok();
     }
-
-    /***********************************************************************************************************************
-     * GET --> MULTIPLE                                                                                                    *
-     ***********************************************************************************************************************/
 
     /// <summary>
     /// Gets a page of users
@@ -93,7 +78,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>> GetPageOfUsers(
+    public async Task<ActionResult<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>> GetPage(
         [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     {
         if (getPageOfUsersRequest == null) return BadRequest();
@@ -104,10 +89,6 @@ public class UsersController : ControllerBase
 
         return Ok(pageOfUserResponses);
     }
-
-    /***********************************************************************************************************************
-     * HEAD --> MULTIPLE                                                                                                   *
-     ***********************************************************************************************************************/
 
     /// <summary>
     /// Gets a page of users
@@ -123,7 +104,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(Users.API.Models.Shared.PagedList < Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>> HeadPageOfUsers(
+    public async Task<ActionResult<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>> HeadPage(
         [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     {
         if (getPageOfUsersRequest == null) return BadRequest();
@@ -146,17 +127,17 @@ public class UsersController : ControllerBase
 
     private long CalculateContentLength(Models.Response.v1.UserResponse getUserResponse)
     {
-        var json = JsonSerializer.Serialize(getUserResponse);
+        var json = System.Text.Json.JsonSerializer.Serialize(getUserResponse);
         return json.Length;
     }
 
-    private long CalculateContentLength(PagedList<Models.Response.v1.UserResponse> pageOfUserResponses)
+    private long CalculateContentLength(Users.API.Models.Shared.PagedList<Models.Response.v1.UserResponse> pageOfUserResponses)
     {
-        var options = new JsonSerializerOptions
+        var options = new System.Text.Json.JsonSerializerOptions
         {
             Converters = { new Users.API.Models.Shared.PagedListJsonConverter() }
         };
-        var json = JsonSerializer.Serialize(pageOfUserResponses, options);
+        var json = System.Text.Json.JsonSerializer.Serialize(pageOfUserResponses, options);
         return json.Length;
     }
 
@@ -186,5 +167,4 @@ public class UsersController : ControllerBase
 
         return userResponse;
     }
-
 }

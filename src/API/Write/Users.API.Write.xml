@@ -4,7 +4,7 @@
         <name>Users.API.Write</name>
     </assembly>
     <members>
-        <member name="M:Users.API.Write.Controllers.v1.UsersController.AddUser(Users.API.Models.Request.v1.AddUserRequest)">
+        <member name="M:Users.API.Write.Controllers.v1.UsersController.Post(Users.API.Models.Request.v1.AddUserRequest)">
             <summary>
             Add a user
             </summary>
@@ -13,7 +13,7 @@
             <response code="201">Success - Added - The user was successfully Added</response>
             <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response> 
         </member>
-        <member name="M:Users.API.Write.Controllers.v1.UsersController.DeleteUser(System.Guid)">
+        <member name="M:Users.API.Write.Controllers.v1.UsersController.Delete(System.Guid)">
             <summary>
             Delete an existing user
             </summary>
@@ -23,7 +23,7 @@
             <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
             <response code="404">Error - Not Found - No user matched the given identifier</response>
         </member>
-        <member name="M:Users.API.Write.Controllers.v1.UsersController.UpsertUser(System.Guid,Users.API.Models.Request.v1.UpdateUserRequest)">
+        <member name="M:Users.API.Write.Controllers.v1.UsersController.Put(System.Guid,Users.API.Models.Request.v1.UpdateUserRequest)">
             <summary>
             Update an existing user.
             </summary>
@@ -34,7 +34,7 @@
             <response code="404">Error - Not Found - Could not find the corresponding user for the given identifier</response>
             <response code="422">Error - Unprocessable Entity - It was not possible to bind the request JSON</response>
         </member>
-        <member name="M:Users.API.Write.Controllers.v1.UsersController.UpsertUser(System.Guid,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{Users.API.Models.Request.v1.PartiallyUpdateUserRequest})">
+        <member name="M:Users.API.Write.Controllers.v1.UsersController.Patch(System.Guid,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{Users.API.Models.Request.v1.PartiallyUpdateUserRequest})">
             <summary>
             Fully or partially update an existing user
             </summary>

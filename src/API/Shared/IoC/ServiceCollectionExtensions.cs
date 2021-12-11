@@ -16,7 +16,9 @@ public static class ServiceCollectionExtensions
             options.OperationFilter<SwaggerDefaultValues>();
             options.IncludeXmlComments(GetXmlCommentsFilePath(callingAssemblyName));
         });
-        
+
+        services.AddSwaggerGenNewtonsoftSupport();
+
         services.AddApiVersioning(options =>
         {
             options.AssumeDefaultVersionWhenUnspecified = true;
