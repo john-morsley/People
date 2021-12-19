@@ -135,6 +135,7 @@ public class PagedListTests
         pagedList.CurrentPage = 1;
         pagedList.PageSize = 1;
         pagedList.TotalPages = 1;
+        pagedList.TotalCount = 1;
 
         // Act...
 
@@ -165,6 +166,7 @@ public class PagedListTests
         pagedList.CurrentPage = 2;
         pagedList.PageSize = 1;
         pagedList.TotalPages = 3;
+        pagedList.TotalCount = 3;
 
         // Act...
         var serializeOptions = new JsonSerializerOptions

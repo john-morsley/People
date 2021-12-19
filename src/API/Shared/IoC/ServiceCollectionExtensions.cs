@@ -11,10 +11,13 @@ public static class ServiceCollectionExtensions
         
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
+        var methodsOrder = new string[] { "OPTIONS", "HEAD", "GET", "POST", "PUT", "PATCH", "DELETE", "TRACE" };
+
         services.AddSwaggerGen(options =>
         {
             options.OperationFilter<SwaggerDefaultValues>();
             options.IncludeXmlComments(GetXmlCommentsFilePath(callingAssemblyName));
+            options.OrderActionsBy(apiDesc => $"{apiDesc.ActionDescriptor.RouteValues["controller"]}_{Array.IndexOf(methodsOrder, apiDesc.HttpMethod.ToUpper())}");
         });
 
         services.AddSwaggerGenNewtonsoftSupport();

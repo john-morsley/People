@@ -32,14 +32,12 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> GetById([FromRoute] Guid userId)
+    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> Get([FromRoute] Guid userId)
     {
         if (userId == default) return BadRequest();
 
-        var getUserRequest = new Users.API.Models.Request.v1.GetUserRequest(userId);
-            
-        var getUserResponse = await GetUserResponse(getUserRequest);
-            
+        var getUserResponse = await GetUserResponse(userId);
+
         if (getUserResponse == null) return NoContent();
 
         return Ok(getUserResponse);
@@ -49,13 +47,11 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> HeadById([FromRoute] Guid userId)
+    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> Head([FromRoute] Guid userId)
     {
         if (userId == default) return BadRequest();
 
-        var getUserRequest = new Users.API.Models.Request.v1.GetUserRequest(userId);
-
-        var getUserResponse = await GetUserResponse(getUserRequest);
+        var getUserResponse = await GetUserResponse(userId);
 
         if (getUserResponse == null) return NoContent();
 
@@ -65,20 +61,23 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Gets a page of users
+    /// Get a page of users
     /// </summary>
-    /// <param name="getUsersRequest">
-    /// A GetUsersRequest object which contains fields for paging, searching, filtering, sorting and shaping user data</param>
+    /// <param name="getPageOfUsersRequest">
+    /// A GetPageOfUsersRequest object contains fields for paging, searching, filtering, sorting and shaping user data</param>
     /// <returns>A page of users</returns>
     /// <response code="200">Success - OK - Returns the requested page of users</response>
     /// <response code="204">Success - No Content - No users matched given criteria</response>
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
-    [HttpGet]
+    [HttpGet(Name = "Getusers")]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
+    //[ProducesResponseType(typeof(Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>> GetPage(
+    //public async Task<ActionResult<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>> Get(
+    //    [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
+    public async Task<ActionResult<IEnumerable<Users.API.Models.Response.v1.UserResponse>>> Get(
         [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     {
         if (getPageOfUsersRequest == null) return BadRequest();
@@ -87,7 +86,15 @@ public class UsersController : ControllerBase
 
         if (!pageOfUserResponses.Any()) return NoContent();
 
-        return Ok(pageOfUserResponses);
+        var pagination = GetPagination(pageOfUserResponses, getPageOfUsersRequest);
+        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination));
+
+        return Ok(GetUserResponses(pageOfUserResponses));
+    }
+
+    private object GetUserResponses(PagedList<Users.API.Models.Response.v1.UserResponse> pageOfUserResponses)
+    {
+        return _mapper.Map<IEnumerable<Users.API.Models.Response.v1.UserResponse>>(pageOfUserResponses);
     }
 
     /// <summary>
@@ -101,10 +108,13 @@ public class UsersController : ControllerBase
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
     [HttpHead]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(Users.API.Models.Shared.PagedList < Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
+    //[ProducesResponseType(typeof(Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>> HeadPage(
+    //public async Task<ActionResult<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>> Head(
+    //    [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
+    public async Task<ActionResult<IEnumerable<Users.API.Models.Response.v1.UserResponse>>> Head(
         [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     {
         if (getPageOfUsersRequest == null) return BadRequest();
@@ -131,27 +141,95 @@ public class UsersController : ControllerBase
         return json.Length;
     }
 
-    private long CalculateContentLength(Users.API.Models.Shared.PagedList<Models.Response.v1.UserResponse> pageOfUserResponses)
+    //private long CalculateContentLength(Users.API.Models.Shared.PagedList<Models.Response.v1.UserResponse> pageOfUserResponses)
+    //{
+    //    var options = new System.Text.Json.JsonSerializerOptions
+    //    {
+    //        Converters = { new Users.API.Models.Shared.PagedListJsonConverter() }
+    //    };
+    //    var json = System.Text.Json.JsonSerializer.Serialize(pageOfUserResponses, options);
+    //    return json.Length;
+    //}
+
+    private long CalculateContentLength(IEnumerable<Models.Response.v1.UserResponse> pageOfUserResponses)
     {
         var options = new System.Text.Json.JsonSerializerOptions
         {
-            Converters = { new Users.API.Models.Shared.PagedListJsonConverter() }
+            //Converters = { new Users.API.Models.Shared.PagedListJsonConverter() }
         };
         var json = System.Text.Json.JsonSerializer.Serialize(pageOfUserResponses, options);
         return json.Length;
+    }
+
+    private string CreateUsersResourceUri(Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest, ResourceUriType type)
+    {
+        switch (type)
+        {
+            case ResourceUriType.PreviousPage:
+                return Url.Link(
+                    "GetUsers", 
+                    new 
+                    { 
+                        pageNumber = getPageOfUsersRequest.PageNumber - 1, 
+                        pageSize = getPageOfUsersRequest.PageSize, 
+                        filter = getPageOfUsersRequest.Filter,
+                        search = getPageOfUsersRequest.SearchQuery
+                    });
+            case ResourceUriType.NextPage:
+                return Url.Link(
+                    "GetUsers",
+                    new
+                    {
+                        pageNumber = getPageOfUsersRequest.PageNumber + 1,
+                        pageSize = getPageOfUsersRequest.PageSize,
+                        filter = getPageOfUsersRequest.Filter,
+                        search = getPageOfUsersRequest.SearchQuery
+                    });
+        }
+
+        throw new NotImplementedException("Hmm, we should never get here!");
     }
 
     private async Task<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>> GetPageOfUserResponses(Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     {
         if (getPageOfUsersRequest == null) throw new ArgumentNullException(nameof(getPageOfUsersRequest));
 
-         var getPageOfUsersQuery = _mapper.Map<GetPageOfUsersQuery>(getPageOfUsersRequest);
+        var getPageOfUsersQuery = _mapper.Map<GetPageOfUsersQuery>(getPageOfUsersRequest);
 
         var pageOfUsers = await _mediator.Send(getPageOfUsersQuery);
 
         var pageOfUserResponses = _mapper.Map<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>(pageOfUsers);
 
         return pageOfUserResponses;
+    }
+
+    private Pagination GetPagination(
+    Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse> pageOfUserResponses,
+    Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
+    {
+        var previousPageLink = pageOfUserResponses.HasPrevious ? CreateUsersResourceUri(getPageOfUsersRequest, ResourceUriType.PreviousPage) : null;
+        var nextPageLink = pageOfUserResponses.HasNext ? CreateUsersResourceUri(getPageOfUsersRequest, ResourceUriType.NextPage) : null;
+
+        var pagination = new Pagination()
+        {
+            TotalCount = pageOfUserResponses.TotalCount,
+            TotalPages = pageOfUserResponses.TotalPages,
+            CurrentPage = pageOfUserResponses.CurrentPage,
+            PageSize = pageOfUserResponses.PageSize,
+            PreviousPageLink = previousPageLink,
+            NextPageLink = nextPageLink
+        };
+
+        return pagination;
+    }
+
+    private async Task<Users.API.Models.Response.v1.UserResponse> GetUserResponse(Guid userId)
+    {
+        var getUserRequest = new Users.API.Models.Request.v1.GetUserRequest(userId);
+
+        var getUserResponse = await GetUserResponse(getUserRequest);
+
+        return getUserResponse;
     }
 
     private async Task<Users.API.Models.Response.v1.UserResponse> GetUserResponse(Users.API.Models.Request.v1.GetUserRequest getUserRequest)

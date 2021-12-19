@@ -22,7 +22,8 @@ public class OPTIONS
     }
 
     [Test]
-    public async Task Given_An_API_With_Unknown_Capabilities___When_An_Options_Call_Is_Made___Then_Allowed_HTTP_Methods_Are_Returned()
+    [Category("Happy")]
+    public async Task Given_An_API_With_Unknown_Capabilities___When_An_Options_Call_Is_Made___Then_200_OK_And_Allowed_HTTP_Methods_Are_Returned()
     {
         // Arrange...
         var expectedOptions = new List<string>() { "HEAD", "GET", "OPTIONS" };

@@ -43,7 +43,7 @@ public class PagedList<T> : List<T>, IPagedList<T>
         }
         else
         {
-            var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(); // ToListAsync();
+            var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
             var pagedList = new PagedList<T>(items, count, pageNumber, pageSize);
             return pagedList;
         }

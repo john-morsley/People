@@ -24,8 +24,6 @@ public class PagedListJsonConverter : JsonConverter<Users.API.Models.Shared.Page
 
             switch (reader.TokenType)
             {
-                //case JsonTokenType.EndObject: return pagedList;
-
                 case JsonTokenType.PropertyName:
 
                     var propertyName = reader.GetString();
@@ -44,9 +42,9 @@ public class PagedListJsonConverter : JsonConverter<Users.API.Models.Shared.Page
                         case nameof(pagedList.PageSize):
                             pagedList.PageSize = reader.GetInt32();
                             break;
-                        //case nameof(pagedList.TotalCount):
-                        //    pagedList.TotalCount = reader.GetInt32();
-                        //    break;
+                        case nameof(pagedList.TotalCount):
+                            pagedList.TotalCount = reader.GetInt32();
+                            break;
                         case "Items":
                             if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException("Expected StartArray token");
 
@@ -80,7 +78,7 @@ public class PagedListJsonConverter : JsonConverter<Users.API.Models.Shared.Page
         writer.WriteNumber("CurrentPage", value.CurrentPage);
         writer.WriteNumber("PageSize", value.PageSize);
         writer.WriteNumber("TotalPages", value.TotalPages);
-        //writer.WriteNumber("TotalCount", value.TotalCount);
+        writer.WriteNumber("TotalCount", value.TotalCount);
         writer.WriteBoolean("HasPrevious", value.HasPrevious);
         writer.WriteBoolean("HasNext", value.HasNext);
 
@@ -88,7 +86,6 @@ public class PagedListJsonConverter : JsonConverter<Users.API.Models.Shared.Page
         foreach(var item in value)
         {
             var json = JsonSerializer.Serialize(item, options).Replace("\\", "");
-            //writer.WriteStringValue(json);
             writer.WriteRawValue(json);
         }
         writer.WriteEndArray();

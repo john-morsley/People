@@ -21,7 +21,7 @@
             conversion.CurrentPage = source.CurrentPage;
             conversion.TotalPages = source.TotalPages;
             conversion.PageSize = source.PageSize;
-            //conversion.TotalCount = source.TotalCount;
+            conversion.TotalCount = source.TotalCount;
 
             return conversion;
         }

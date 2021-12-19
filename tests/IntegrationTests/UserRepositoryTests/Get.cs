@@ -35,7 +35,14 @@ internal class Get : UserRepositoryTests
         var pageOfUsers = await sut.GetPageAsync(getUsersOptions);
 
         // Assert...
+        NumberOfUsersInDatabase().Should().Be(10);
         pageOfUsers.Count.Should().Be(10);
+        pageOfUsers.Count().Should().Be(10);
+        pageOfUsers.CurrentPage.Should().Be(1);
+        pageOfUsers.TotalPages.Should().Be(1);
+        pageOfUsers.TotalCount.Should().Be(10);
+        pageOfUsers.HasPrevious.Should().BeFalse();
+        pageOfUsers.HasNext.Should().BeFalse();
         var usersInDatabase = GetUsersFromDatabase().ToList();
         var firstUserOnPage = pageOfUsers.First();
         var lastUserOnPage = pageOfUsers.Last();
@@ -60,6 +67,7 @@ internal class Get : UserRepositoryTests
         var pageOfUsers = await sut.GetPageAsync(getUsersOptions);
 
         // Assert...
+        NumberOfUsersInDatabase().Should().Be(10);
         pageOfUsers.Count.Should().Be(1);
         var usersInDatabase = GetUsersFromDatabase().ToList();
         var firstUserOnPage = pageOfUsers.First();
@@ -67,6 +75,31 @@ internal class Get : UserRepositoryTests
         var firstUserInDatabase = usersInDatabase.First();
         firstUserOnPage.Should().Equals(firstUserInDatabase);
         lastUserOnPage.Should().Equals(firstUserInDatabase);
+    }
+
+    [Test]
+    public async Task Getting_A_Page_Of_Users_With_Pagination_Options_Should_Result_In_The_Correct_Page_Of_Users_Being_Returned()
+    {
+        // Arrange...
+        var sut = new UserRepository(_mongoContext);
+        AddUsersToDatabase(25);
+        NumberOfUsersInDatabase().Should().Be(25);
+
+        // Act...
+        var getUsersOptions = new GetOptions();
+        getUsersOptions.PageSize = 10;
+        getUsersOptions.PageNumber = 2;
+        var pageOfUsers = await sut.GetPageAsync(getUsersOptions);
+
+        // Assert...
+        NumberOfUsersInDatabase().Should().Be(25);
+        //pageOfUsers.Count.Should().Be(1);
+        pageOfUsers.Count.Should().Be(10);
+        pageOfUsers.CurrentPage.Should().Be(2);
+        pageOfUsers.TotalPages.Should().Be(3);
+        pageOfUsers.TotalCount.Should().Be(25);
+        pageOfUsers.HasPrevious.Should().BeTrue();
+        pageOfUsers.HasNext.Should().BeTrue();
     }
 
     [Test]
@@ -88,6 +121,7 @@ internal class Get : UserRepositoryTests
         var pageOfUsers = await sut.GetPageAsync(getUsersOptions);
 
         // Assert...
+        NumberOfUsersInDatabase().Should().Be(11);
         pageOfUsers.Count.Should().Be(1);
         var firstUserOnPage = pageOfUsers.First();
         firstUserOnPage.Should().Equals(expected);
@@ -114,6 +148,7 @@ internal class Get : UserRepositoryTests
         var pageOfUsers = await sut.GetPageAsync(getUsersOptions);
 
         // Assert...
+        NumberOfUsersInDatabase().Should().Be(12);
         pageOfUsers.Count.Should().Be(2);
         var firstUserOnPage = pageOfUsers.First();
         firstUserOnPage.Should().Equals(john);

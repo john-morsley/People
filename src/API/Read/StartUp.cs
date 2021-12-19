@@ -63,11 +63,11 @@ public class StartUp
 
         applicationBuilder.ConfigureVersioningAndSwagger(apiVersionDescriptionProvider);
             
-        applicationBuilder.UseHttpsRedirection();
+        //applicationBuilder.UseHttpsRedirection();
 
         applicationBuilder.UseRouting();
 
-        applicationBuilder.UseAuthorization();
+        //applicationBuilder.UseAuthorization();
 
         applicationBuilder.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }

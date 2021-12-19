@@ -3,6 +3,7 @@
 public class DELETE : APIsTestBase<StartUp>
 {
     [Test]
+    [Category("Happy")]
     public async Task Given_User_Exists___When_Delete_Is_Attempted___Then_NoContent_And_User_Deleted()
     {
         // Arrange...
@@ -26,6 +27,7 @@ public class DELETE : APIsTestBase<StartUp>
     }
 
     [Test]
+    [Category("Unhappy")]
     public async Task Given_User_Does_Not_Exist___When_Delete_Is_Attempted___Then_404_NotFound()
     {
         // Arrange...

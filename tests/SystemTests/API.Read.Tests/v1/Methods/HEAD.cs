@@ -3,6 +3,7 @@
 public class HEAD : APIsTestBase<StartUp>
 {
     [Test]
+    [Category("Happy")]
     public async Task Given_The_User_Does_Not_Exist_In_The_Database___When_That_User_Is_Requested___Then_That_User_Should_Not_Found()
     {
         // Arrange...
@@ -22,7 +23,8 @@ public class HEAD : APIsTestBase<StartUp>
     }
 
     [Test]
-    public async Task Given_The_User_Exists_In_The_Database___When_That_User_Is_Requested___Then_That_User_Should_Be_Found()
+    [Category("Happy")]
+    public async Task Given_The_User_Exists___When_That_User_Is_Requested___Then_200_OK_And_Content_Length_Returned()
     {
         // Arrange...
         var userId = Guid.NewGuid();
@@ -43,7 +45,8 @@ public class HEAD : APIsTestBase<StartUp>
     }
 
     [Test]
-    public async Task Given_No_Users_Exist_In_The_Database___When_A_Page_Of_Users_Is_Requested___Then_No_Users_Should_Be_Returned()
+    [Category("Happy")]
+    public async Task Given_No_Users_Exist___When_A_Page_Of_Users_Is_Requested___Then_204_NoContent()
     {
         // Arrange...
         var url = $"/api/v1/users?PageNumber=1&PageSize=10";
@@ -60,7 +63,8 @@ public class HEAD : APIsTestBase<StartUp>
     }
 
     [Test]
-    public async Task Given_One_User_Exists_In_The_Database___When_A_Page_Of_Users_Is_Requested___Then_A_Page_Of_Users_Should_Be_Returned()
+    [Category("Happy")]
+    public async Task Given_One_User_Exists___When_A_Page_Of_Users_Is_Requested___Then_200_OK_And_Content_Length_Returned()
     {
         // Arrange...
         var user = GenerateTestUser();

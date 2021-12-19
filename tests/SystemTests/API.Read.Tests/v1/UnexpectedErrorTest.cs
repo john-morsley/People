@@ -19,6 +19,7 @@ public class ExceptionHandler
      * This was the only way I could think of to get the API to throw an internal Server Error.
      */
     [Test]
+    [Category("Unhappy")]
     public async Task Given_The_API_Is_In_Production_Mode___When_It_Is_Not_Passed_Vital_Configuration___Then_An_Error_Code_And_Error_Message_Is_Returned()
     {
         // Arrange...

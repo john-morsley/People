@@ -24,7 +24,7 @@ public class PagedList<T> : Domain.Interfaces.IPagedList<T>
 
     public int PageSize { get; set; }
 
-    //public int TotalCount { get; set; }
+    public int TotalCount { get; set; }
 
     public bool HasPrevious => CurrentPage > 1;
 
