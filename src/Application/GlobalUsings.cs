@@ -7,6 +7,7 @@ global using System.Linq;
 global using System.Reflection;
 global using System.Threading;
 global using System.Threading.Tasks;
+global using Users.Application.Models;
+global using Users.Domain.Enumerations;
 global using Users.Domain.Interfaces;
 global using Users.Domain.Models;
-global using Users.Domain.Enumerations;

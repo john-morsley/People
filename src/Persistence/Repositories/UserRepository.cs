@@ -1,4 +1,6 @@
-﻿namespace Persistence.Repositories;
+﻿using Users.Domain.Models;
+
+namespace Persistence.Repositories;
 
 public class UserRepository : Repository<Users.Domain.Models.User>, IUserRepository
 {
@@ -64,5 +66,10 @@ public class UserRepository : Repository<Users.Domain.Models.User>, IUserReposit
     {
         return filter.Key.Equals("Sex", StringComparison.CurrentCultureIgnoreCase) ||
                filter.Key.Equals("Title", StringComparison.CurrentCultureIgnoreCase);
+    }
+
+    protected override IQueryable<User> Sort(IQueryable<User> entities, IGetOptions options)
+    {
+        return base.Sort(entities, options);
     }
 }

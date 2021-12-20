@@ -1,4 +1,6 @@
-﻿namespace Users.Application.Handlers;
+﻿using Users.Application.Models;
+
+namespace Users.Application.Handlers;
 
 public sealed class GetPageOfUsersQueryHandler : IRequestHandler<Users.Application.Queries.GetPageOfUsersQuery, Users.Domain.Interfaces.IPagedList<Users.Domain.Models.User>>
 {
@@ -16,6 +18,14 @@ public sealed class GetPageOfUsersQueryHandler : IRequestHandler<Users.Applicati
         if (query == null) throw new ArgumentNullException(nameof(query));
 
         var getOptions = _mapper.Map<Users.Application.Models.GetOptions>(query);
+
+
+
+        //var ordering = new Ordering("FirstName", SortOrder.Ascending);
+        //getOptions.AddOrdering(ordering);
+
+
+
         var pageOfUsers = await _userRepository.GetPageAsync(getOptions);
 
         return pageOfUsers;

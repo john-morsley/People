@@ -31,4 +31,6 @@ public class GetPageOfUsersRequest
     public string Filter { get; set; }
 
     public string SearchQuery { get; set; }
+
+    public string OrderBy { get; set; } = "LastName";
 }

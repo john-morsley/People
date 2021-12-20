@@ -34,16 +34,16 @@ public class PagedListJsonConverter : JsonConverter<Users.API.Models.Shared.Page
                         case nameof(pagedList.HasPrevious):
                             break;
                         case nameof(pagedList.CurrentPage):
-                            pagedList.CurrentPage = reader.GetInt32();
+                            pagedList.CurrentPage = reader.GetUInt32();
                             break;
                         case nameof(pagedList.TotalPages):
-                            pagedList.TotalPages = reader.GetInt32();
+                            pagedList.TotalPages = reader.GetUInt32();
                             break;
                         case nameof(pagedList.PageSize):
-                            pagedList.PageSize = reader.GetInt32();
+                            pagedList.PageSize = reader.GetUInt32();
                             break;
                         case nameof(pagedList.TotalCount):
-                            pagedList.TotalCount = reader.GetInt32();
+                            pagedList.TotalCount = reader.GetUInt32();
                             break;
                         case "Items":
                             if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException("Expected StartArray token");

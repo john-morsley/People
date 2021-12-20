@@ -2,11 +2,11 @@
 
 public interface IGetOptions
 {
-    int PageSize { get; }
+    uint PageSize { get; }
 
-    int PageNumber { get; }
+    uint PageNumber { get; }
 
-    string? SearchQuery { get; }
+    string SearchQuery { get; }
 
     IEnumerable<IFilter> Filters { get; }
 

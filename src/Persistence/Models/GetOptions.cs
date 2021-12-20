@@ -11,11 +11,11 @@ public class GetOptions : IGetOptions
         _orderings = new List<IOrdering>();
     }
 
-    public int PageSize { get; set; } = 25;
+    public uint PageSize { get; set; } = 25;
 
-    public int PageNumber { get; set; } = 1;
+    public uint PageNumber { get; set; } = 1;
 
-    public string? SearchQuery { get; set; }
+    public string SearchQuery { get; set; }
 
     public IEnumerable<IFilter> Filters => _filters;
 

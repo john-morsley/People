@@ -11,11 +11,11 @@ public class GetOptions : Users.Domain.Interfaces.IGetOptions
         _orderings = new List<Users.Domain.Interfaces.IOrdering>();
     }
 
-    public int PageSize { get; set; } = 25;
+    public uint PageSize { get; set; } = 25;
 
-    public int PageNumber { get; set; } = 1;
+    public uint PageNumber { get; set; } = 1;
 
-    public string? SearchQuery { get; set; }
+    public string SearchQuery { get; set; }
 
     public IEnumerable<Users.Domain.Interfaces.IFilter> Filters => _filters;
 

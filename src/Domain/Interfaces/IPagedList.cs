@@ -2,17 +2,17 @@
 
 public interface IPagedList<T> : IList<T>
 {
-    int CurrentPage { get; }
+    uint CurrentPage { get; }
 
-    int TotalPages { get; }
+    uint TotalPages { get; }
 
-    int PageSize { get; }
+    uint PageSize { get; }
 
     /// <summary>
     /// The total number of T. 
     /// i.e. If we have 10 complete pages with a page size of 10 TotalCount will be 100.
     /// </summary>
-    int TotalCount { get; }
+    uint TotalCount { get; }
 
     bool HasPrevious { get; }
 

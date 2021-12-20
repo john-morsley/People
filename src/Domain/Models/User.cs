@@ -4,6 +4,7 @@ public class User : Entity<Guid>
 {
     private string _firstName;
     private string _lastName;
+    private DateOfBirth _dateOfBirth;
 
     private IList<Address> _addresses;
     private IList<Email> _emails;
@@ -38,6 +39,12 @@ public class User : Entity<Guid>
     public Sex? Sex { get; set; }
 
     public Gender? Gender { get; set; }
+
+    public DateOfBirth DateOfBirth
+    {
+        get => _dateOfBirth;
+        set => _dateOfBirth = value;
+    }
 
     public IReadOnlyList<Email> Emails => _emails.ToList();
 

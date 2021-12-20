@@ -2,13 +2,13 @@
 
 public class Pagination
 {
-    public int TotalCount { get; set; }
+    public uint TotalCount { get; set; }
 
-    public int TotalPages { get; set; }
+    public uint TotalPages { get; set; }
 
-    public int CurrentPage { get; set; }
+    public uint CurrentPage { get; set; }
 
-    public int PageSize { get; set; }
+    public uint PageSize { get; set; }
 
     public string PreviousPageLink { get; set; }
 

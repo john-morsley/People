@@ -5,11 +5,11 @@ public class PagedList<T> : List<T>, Users.Domain.Interfaces.IPagedList<T>
     protected PagedList(
         IEnumerable<T> items,
         int count,
-        int pageNumber,
-        int pageSize)
+        uint pageNumber,
+        uint pageSize)
     {
         AddRange(items);
-        TotalCount = count;
+        TotalCount = (uint)count;
         CurrentPage = pageNumber;
         PageSize = pageSize;
         if (count == 0)
@@ -18,17 +18,17 @@ public class PagedList<T> : List<T>, Users.Domain.Interfaces.IPagedList<T>
         }
         else
         {
-            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+            TotalPages = (uint)((int)Math.Ceiling(count / (double)pageSize));
         }
     }
 
-    public int CurrentPage { get; private set; }
+    public uint CurrentPage { get; private set; }
 
-    public int TotalPages { get; private set; }
+    public uint TotalPages { get; private set; }
 
-    public int PageSize { get; private set; }
+    public uint PageSize { get; private set; }
 
-    public int TotalCount { get; private set; }
+    public uint TotalCount { get; private set; }
 
     public bool HasPrevious => CurrentPage > 1;
 
@@ -36,8 +36,8 @@ public class PagedList<T> : List<T>, Users.Domain.Interfaces.IPagedList<T>
 
     public static PagedList<T> Create(
         IQueryable<T> source,
-        int pageNumber,
-        int pageSize)
+        uint pageNumber,
+        uint pageSize)
     {
         if (source == null) {throw new ArgumentNullException(nameof(source), "Cannot be null!");}
         if (pageNumber == 0) throw new ArgumentOutOfRangeException(nameof(pageNumber), "Must be greater than zero!");
@@ -50,7 +50,7 @@ public class PagedList<T> : List<T>, Users.Domain.Interfaces.IPagedList<T>
         }
         else
         {
-            var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            var items = source.Skip((int)((pageNumber - 1) * pageSize)).Take((int)pageSize).ToList();
             return new PagedList<T>(items, count, pageNumber, pageSize);
         }
     }

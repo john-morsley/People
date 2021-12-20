@@ -142,7 +142,6 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
         return string.Join(",", orderBys);
     }
 
-
     public void Dispose()
     {
         GC.SuppressFinalize(this);

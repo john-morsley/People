@@ -104,6 +104,7 @@ public class GET : APIsTestBase<StartUp>
     {
         // Arrange...
         AddUsersToDatabase(15);
+        NumberOfUsersInDatabase().Should().Be(15);
         var url = $"/api/v1/users?PageNumber=1&PageSize=10";
 
         // Act...
@@ -161,4 +162,45 @@ public class GET : APIsTestBase<StartUp>
         pagination.TotalCount.Should().Be(5);
         pagination.PageSize.Should().Be(10);
     }
+
+    [Test]
+    [Category("Happy")]
+    public async Task Given_Three_Users_Exist___When_A_Page_Of_Users_Is_Requested_With_Sorting___Then_200_OK_And_Users_Returned_In_Correct_Order()
+    {
+        // Arrange...
+        var john = new Users.Domain.Models.User() { FirstName = "John", LastName = "Morsley" };
+        AddUserToDatabase(john);
+        var fabio = new Users.Domain.Models.User() { FirstName = "Fabio", LastName = "Sereno" };
+        AddUserToDatabase(fabio);
+        var glen = new Users.Domain.Models.User() { FirstName = "Glen", LastName = "Clark" };
+        AddUserToDatabase(glen);
+        NumberOfUsersInDatabase().Should().Be(3);
+
+        var url = $"/api/v1/users?orderBy=FirstName|Asc,LastName|Desc";
+
+        // Act...
+        var httpResponse = await _client.GetAsync(url);
+
+        // Assert...
+        NumberOfUsersInDatabase().Should().Be(3);
+        httpResponse.IsSuccessStatusCode.Should().BeTrue();
+        httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var response = await httpResponse.Content.ReadAsStringAsync();
+        response.Length.Should().BeGreaterThan(0);
+        var pageOfUsers = DeserializeListOfUserResponses(response);
+        pageOfUsers.Should().NotBeNull();
+        pageOfUsers.Count().Should().Be(3);
+        IEnumerable<string> values;
+        httpResponse.Headers.TryGetValues("X-Pagination", out values);
+        values.Should().NotBeNull();
+        values.Count().Should().Be(1);
+        var pagination = JsonSerializer.Deserialize<Pagination>(values.FirstOrDefault());
+        pagination.PreviousPageLink.Should().BeNull();
+        pagination.NextPageLink.Should().BeNull();
+        pagination.CurrentPage.Should().Be(1);
+        pagination.TotalPages.Should().Be(1);
+        pagination.TotalCount.Should().Be(3);
+        pagination.PageSize.Should().Be(10);
+    }
+
 }

@@ -71,12 +71,9 @@ public class UsersController : ControllerBase
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
     [HttpGet(Name = "Getusers")]
     [Produces("application/json")]
-    //[ProducesResponseType(typeof(Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IEnumerable<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //public async Task<ActionResult<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>> Get(
-    //    [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     public async Task<ActionResult<IEnumerable<Users.API.Models.Response.v1.UserResponse>>> Get(
         [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     {
@@ -108,12 +105,9 @@ public class UsersController : ControllerBase
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
     [HttpHead]
     [Produces("application/json")]
-    //[ProducesResponseType(typeof(Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IEnumerable<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //public async Task<ActionResult<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>> Head(
-    //    [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     public async Task<ActionResult<IEnumerable<Users.API.Models.Response.v1.UserResponse>>> Head(
         [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     {
@@ -140,16 +134,6 @@ public class UsersController : ControllerBase
         var json = System.Text.Json.JsonSerializer.Serialize(getUserResponse);
         return json.Length;
     }
-
-    //private long CalculateContentLength(Users.API.Models.Shared.PagedList<Models.Response.v1.UserResponse> pageOfUserResponses)
-    //{
-    //    var options = new System.Text.Json.JsonSerializerOptions
-    //    {
-    //        Converters = { new Users.API.Models.Shared.PagedListJsonConverter() }
-    //    };
-    //    var json = System.Text.Json.JsonSerializer.Serialize(pageOfUserResponses, options);
-    //    return json.Length;
-    //}
 
     private long CalculateContentLength(IEnumerable<Models.Response.v1.UserResponse> pageOfUserResponses)
     {

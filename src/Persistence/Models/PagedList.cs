@@ -2,7 +2,7 @@
 
 public class PagedList<T> : List<T>, IPagedList<T>
 {
-    protected PagedList(IEnumerable<T> items, int count, int pageNumber, int pageSize)
+    protected PagedList(IEnumerable<T> items, uint count, uint pageNumber, uint pageSize)
     {
         AddRange(items);
         TotalCount = count;
@@ -14,23 +14,23 @@ public class PagedList<T> : List<T>, IPagedList<T>
         }
         else
         {
-            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+            TotalPages = (uint)Math.Ceiling(count / (double)pageSize);
         }
     }
 
-    public int CurrentPage { get; private set; }
+    public uint CurrentPage { get; private set; }
 
-    public int TotalPages { get; private set; }
+    public uint TotalPages { get; private set; }
 
-    public int PageSize { get; private set; }
+    public uint PageSize { get; private set; }
 
-    public int TotalCount { get; private set; }
+    public uint TotalCount { get; private set; }
 
     public bool HasPrevious => CurrentPage > 1;
 
     public bool HasNext => CurrentPage < TotalPages;
 
-    public static IPagedList<T> Create(IQueryable<T> source, int pageNumber, int pageSize)
+    public static IPagedList<T> Create(IQueryable<T> source, uint pageNumber, uint pageSize)
     {
         if (source == null) throw new ArgumentNullException(nameof(source), "Cannot be null!");
         if (pageNumber == 0) throw new ArgumentOutOfRangeException(nameof(pageNumber), "Must be greater than zero!");
@@ -43,8 +43,8 @@ public class PagedList<T> : List<T>, IPagedList<T>
         }
         else
         {
-            var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-            var pagedList = new PagedList<T>(items, count, pageNumber, pageSize);
+            var items = source.Skip((int)((pageNumber - 1) * pageSize)).Take((int)pageSize).ToList();
+            var pagedList = new PagedList<T>(items, (uint)count, pageNumber, pageSize);
             return pagedList;
         }
     }

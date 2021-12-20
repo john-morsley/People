@@ -18,13 +18,13 @@ public class PagedList<T> : Domain.Interfaces.IPagedList<T>
         _items = new List<T>();
     }
 
-    public int CurrentPage { get; set; }
+    public uint CurrentPage { get; set; }
 
-    public int TotalPages { get; set; }
+    public uint TotalPages { get; set; }
 
-    public int PageSize { get; set; }
+    public uint PageSize { get; set; }
 
-    public int TotalCount { get; set; }
+    public uint TotalCount { get; set; }
 
     public bool HasPrevious => CurrentPage > 1;
 
