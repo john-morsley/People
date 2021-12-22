@@ -20,10 +20,11 @@ public class StartUp
         services.AddControllers(configure =>
         {
             configure.ReturnHttpNotAcceptable = true;
-        }).AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.Converters.Add(new Users.API.Models.Shared.PagedListJsonConverter());
         });
+        //.AddJsonOptions(options =>
+        //{
+        //    options.JsonSerializerOptions.Converters.Add(new Users.API.Models.Shared.PagedListJsonConverter());
+        //});
 
         services.AddPersistence(Configuration);
         services.AddApplication();

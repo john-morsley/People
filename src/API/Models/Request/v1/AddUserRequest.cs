@@ -9,4 +9,6 @@ public class AddUserRequest
     public Sex? Sex { get; set; }
 
     public Gender? Gender { get; set; }
+
+    public string DateOfBirth { get; set; }
 }

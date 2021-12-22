@@ -1,4 +1,5 @@
 ﻿global using AutoFixture;
+global using AutoFixture.Kernel;
 global using Docker.DotNet;
 global using Docker.DotNet.Models;
 global using Microsoft.Extensions.Configuration;
@@ -7,4 +8,5 @@ global using NUnit.Framework;
 global using Persistence.Configuration;
 global using System.Net;
 global using System.Net.Sockets;
+global using TestInfrastructure.AutoFixture;
 global using Users.Domain.Enumerations;

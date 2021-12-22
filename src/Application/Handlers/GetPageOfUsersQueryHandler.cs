@@ -19,13 +19,6 @@ public sealed class GetPageOfUsersQueryHandler : IRequestHandler<Users.Applicati
 
         var getOptions = _mapper.Map<Users.Application.Models.GetOptions>(query);
 
-
-
-        //var ordering = new Ordering("FirstName", SortOrder.Ascending);
-        //getOptions.AddOrdering(ordering);
-
-
-
         var pageOfUsers = await _userRepository.GetPageAsync(getOptions);
 
         return pageOfUsers;

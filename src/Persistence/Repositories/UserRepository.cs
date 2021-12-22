@@ -68,8 +68,20 @@ public class UserRepository : Repository<Users.Domain.Models.User>, IUserReposit
                filter.Key.Equals("Title", StringComparison.CurrentCultureIgnoreCase);
     }
 
-    protected override IQueryable<User> Sort(IQueryable<User> entities, IGetOptions options)
-    {
-        return base.Sort(entities, options);
-    }
+    //protected override IQueryable<User> Sort(IQueryable<User> entities, IGetOptions options)
+    //{
+    //    //var users = base.Sort(entities, options);
+
+    //    if (!options.Orderings.Any()) return entities;
+
+    //    foreach(var ordering in options.Orderings)
+    //    {
+    //        if (ordering.Key == "Age")
+    //        {
+
+    //        }
+    //    }
+
+    //    return entities;
+    //}
 }

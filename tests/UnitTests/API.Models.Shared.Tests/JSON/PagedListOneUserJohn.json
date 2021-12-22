@@ -11,7 +11,8 @@
       "FirstName": "John",
       "LastName": "Morsley",
       "Sex": "Male",
-      "Gender": "Cisgender"
+      "Gender": "Cisgender",
+      "DateOfBirth": null
     }
   ]
 }

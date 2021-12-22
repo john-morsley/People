@@ -69,7 +69,7 @@ public class UsersController : ControllerBase
     /// <response code="200">Success - OK - Returns the requested page of users</response>
     /// <response code="204">Success - No Content - No users matched given criteria</response>
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
-    [HttpGet(Name = "Getusers")]
+    [HttpGet(Name = "GetUsers")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(IEnumerable<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -89,7 +89,7 @@ public class UsersController : ControllerBase
         return Ok(GetUserResponses(pageOfUserResponses));
     }
 
-    private object GetUserResponses(PagedList<Users.API.Models.Response.v1.UserResponse> pageOfUserResponses)
+    private object GetUserResponses(Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse> pageOfUserResponses)
     {
         return _mapper.Map<IEnumerable<Users.API.Models.Response.v1.UserResponse>>(pageOfUserResponses);
     }
@@ -145,11 +145,11 @@ public class UsersController : ControllerBase
         return json.Length;
     }
 
-    private string CreateUsersResourceUri(Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest, ResourceUriType type)
+    private string CreateUsersResourceUri(Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest, Users.API.Models.Shared.ResourceUriType type)
     {
         switch (type)
         {
-            case ResourceUriType.PreviousPage:
+            case Users.API.Models.Shared.ResourceUriType.PreviousPage:
                 return Url.Link(
                     "GetUsers", 
                     new 
@@ -157,9 +157,10 @@ public class UsersController : ControllerBase
                         pageNumber = getPageOfUsersRequest.PageNumber - 1, 
                         pageSize = getPageOfUsersRequest.PageSize, 
                         filter = getPageOfUsersRequest.Filter,
-                        search = getPageOfUsersRequest.SearchQuery
+                        search = getPageOfUsersRequest.SearchQuery,
+                        orderBy = getPageOfUsersRequest.OrderBy
                     });
-            case ResourceUriType.NextPage:
+            case Users.API.Models.Shared.ResourceUriType.NextPage:
                 return Url.Link(
                     "GetUsers",
                     new
@@ -167,11 +168,21 @@ public class UsersController : ControllerBase
                         pageNumber = getPageOfUsersRequest.PageNumber + 1,
                         pageSize = getPageOfUsersRequest.PageSize,
                         filter = getPageOfUsersRequest.Filter,
-                        search = getPageOfUsersRequest.SearchQuery
+                        search = getPageOfUsersRequest.SearchQuery,
+                        orderBy = getPageOfUsersRequest.OrderBy
+                    });
+            default:
+                return Url.Link(
+                    "GetUsers",
+                    new
+                    {
+                        pageNumber = getPageOfUsersRequest.PageNumber,
+                        pageSize = getPageOfUsersRequest.PageSize,
+                        filter = getPageOfUsersRequest.Filter,
+                        search = getPageOfUsersRequest.SearchQuery,
+                        orderBy = getPageOfUsersRequest.OrderBy
                     });
         }
-
-        throw new NotImplementedException("Hmm, we should never get here!");
     }
 
     private async Task<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>> GetPageOfUserResponses(Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
@@ -187,14 +198,14 @@ public class UsersController : ControllerBase
         return pageOfUserResponses;
     }
 
-    private Pagination GetPagination(
-    Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse> pageOfUserResponses,
-    Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
+    private Users.API.Models.Shared.Pagination GetPagination(
+        Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse> pageOfUserResponses,
+        Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     {
-        var previousPageLink = pageOfUserResponses.HasPrevious ? CreateUsersResourceUri(getPageOfUsersRequest, ResourceUriType.PreviousPage) : null;
-        var nextPageLink = pageOfUserResponses.HasNext ? CreateUsersResourceUri(getPageOfUsersRequest, ResourceUriType.NextPage) : null;
+        var previousPageLink = pageOfUserResponses.HasPrevious ? CreateUsersResourceUri(getPageOfUsersRequest, Users.API.Models.Shared.ResourceUriType.PreviousPage) : null;
+        var nextPageLink = pageOfUserResponses.HasNext ? CreateUsersResourceUri(getPageOfUsersRequest, Users.API.Models.Shared.ResourceUriType.NextPage) : null;
 
-        var pagination = new Pagination()
+        var pagination = new Users.API.Models.Shared.Pagination()
         {
             TotalCount = pageOfUserResponses.TotalCount,
             TotalPages = pageOfUserResponses.TotalPages,

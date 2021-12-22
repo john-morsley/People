@@ -14,6 +14,8 @@ public class TestBase
 
         _testFixture = new TestFixture(settings.Username, settings.Password);
         _autoFixture = new Fixture();
+        _autoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
+        _autoFixture.Customizations.Add(new AddUserRequestSpecimenBuilder());
 
         await _testFixture.RunBeforeTests();
     }
