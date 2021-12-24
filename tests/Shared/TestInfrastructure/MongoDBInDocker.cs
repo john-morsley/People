@@ -3,7 +3,7 @@
 public class MongoDBInDocker
 {
     public const string MONGODB_IMAGE = "mongo";
-    public const string MONGODB_IMAGE_TAG = "5.0.3-focal";
+    public const string MONGODB_IMAGE_TAG = "5.0.5-focal";
     public const string MONGODB_CONTAINER_NAME = "IntegrationTesting_MongoDB";
     public const string MONGODB_AUTHENTICATION_MECHANISM = "SCRAM-SHA-1";
     public const int MONGODB_PORT = 27017;

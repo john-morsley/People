@@ -12,14 +12,14 @@ public class DateOfBirthSpecimenBuilder : ISpecimenBuilder
 
         if (type == null) return new NoSpecimen();
 
-        if (type != typeof(Users.Domain.Models.DateOfBirth)) return new NoSpecimen();
+        if (type != typeof(DateOnly)) return new NoSpecimen();
 
         return GenerateRandomDateOfBirth();
     }
 
-    private Users.Domain.Models.DateOfBirth GenerateRandomDateOfBirth()
+    private DateOnly GenerateRandomDateOfBirth()
     {
         var dob = RandomDateGeneratorHelper.GenerateRandomDateOfBirth();
-        return new Users.Domain.Models.DateOfBirth(dob.Year, dob.Month, dob.Day);
+        return new DateOnly(dob.Year, dob.Month, dob.Day);
     }
 }

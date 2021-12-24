@@ -219,20 +219,20 @@ public class GET : APIsTestBase<StartUp>
 
     [Test]
     [Category("Happy")]
-    public async Task Given_Users_Exist___When_A_Page_Of_Users_Is_Requested_With_Sorting_By_Age___Then_200_OK_And_Users_Returned_In_Correct_Order()
+    public async Task Given_Users_Exist___When_A_Page_Of_Users_Is_Requested_With_Sorting_By_DateOfBirth___Then_200_OK_And_Users_Returned_In_Correct_Order()
     {
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
-        var johnSmith = new Users.Domain.Models.User() { FirstName = "John", LastName = "Smith", DateOfBirth = new Users.Domain.Models.DateOfBirth(1950, 4, 1) };
-        AddUserToDatabase(johnSmith);
-        var johnDoe = new Users.Domain.Models.User() { FirstName = "John", LastName = "Doe", DateOfBirth = new Users.Domain.Models.DateOfBirth(1967, 11, 11) };
-        AddUserToDatabase(johnDoe);
-        var janeDoe = new Users.Domain.Models.User() { FirstName = "Jane", LastName = "Doe", DateOfBirth = new Users.Domain.Models.DateOfBirth(1967, 11, 10) };
-        AddUserToDatabase(janeDoe);
-        var joeBloggs = new Users.Domain.Models.User() { FirstName = "Joe", LastName = "Bloggs", DateOfBirth = new Users.Domain.Models.DateOfBirth(1967, 10, 11) };
-        AddUserToDatabase(joeBloggs);
-        var fredBloggs = new Users.Domain.Models.User() { FirstName = "Fred", LastName = "Bloggs", DateOfBirth = new Users.Domain.Models.DateOfBirth(1964, 2,29) };
-        AddUserToDatabase(fredBloggs);
+        var user1 = GenerateTestUser(1950, 4, 1);
+        AddUserToDatabase(user1);
+        var user2 = GenerateTestUser(1967, 11, 11);
+        AddUserToDatabase(user2);
+        var user3 = GenerateTestUser(1967, 11, 10);
+        AddUserToDatabase(user3);
+        var user4 = GenerateTestUser(1967, 10, 11);
+        AddUserToDatabase(user4);
+        var user5 = GenerateTestUser(1964, 2,29);
+        AddUserToDatabase(user5);
         NumberOfUsersInDatabase().Should().Be(5);
 
         // Act...
@@ -253,14 +253,11 @@ public class GET : APIsTestBase<StartUp>
         var thirdUser = pageOfUsers.Skip(2).Take(1).Single();
         var fourthUser = pageOfUsers.Skip(3).Take(1).Single();
         var fithUser = pageOfUsers.Skip(4).Take(1).Single();
-        //firstUser.FirstName.Should().Be("Fred");
-        //firstUser.LastName.Should().Be("Bloggs");
-        //secondUser.FirstName.Should().Be("Joe");
-        //secondUser.LastName.Should().Be("Bloggs");
-        //thirdUser.FirstName.Should().Be("John");
-        //thirdUser.LastName.Should().Be("Morsley");
-        //fourthUser.FirstName.Should().Be("John");
-        //fourthUser.LastName.Should().Be("Smith");
+        firstUser.DateOfBirth.Should().BeEquivalentTo(user1.DateOfBirth.InternationalFormat());
+        secondUser.DateOfBirth.Should().BeEquivalentTo(user5.DateOfBirth.InternationalFormat());
+        thirdUser.DateOfBirth.Should().BeEquivalentTo(user4.DateOfBirth.InternationalFormat());
+        fourthUser.DateOfBirth.Should().BeEquivalentTo(user3.DateOfBirth.InternationalFormat());
+        fithUser.DateOfBirth.Should().BeEquivalentTo(user2.DateOfBirth.InternationalFormat());
         IEnumerable<string> values;
         httpResponse.Headers.TryGetValues("X-Pagination", out values);
         values.Should().NotBeNull();
@@ -276,7 +273,7 @@ public class GET : APIsTestBase<StartUp>
 
     [Test]
     [Category("Unhappy")]
-    public async Task Given_Users_Exist___When_A_Page_Of_Users_Is_Requested_With_Invalid_Sorting___Then_400_Bad_Request()
+    public async Task Given_Users_Exist___When_A_Page_Of_Users_Is_Requested_With_Invalid_Sorting___Then_TBC()
     {
         // Arrange...
 
@@ -287,9 +284,8 @@ public class GET : APIsTestBase<StartUp>
         // Assert...
         NumberOfUsersInDatabase().Should().Be(0);
         httpResponse.IsSuccessStatusCode.Should().BeFalse();
-        //httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        //httpResponse.StatusCode.Should().Be(HttpStatusCode.OK); // What should this be? 422 maybe? Not a 500!
         //var response = await httpResponse.Content.ReadAsStringAsync();
         //response.Length.Should().BeGreaterThan(0);
     }
-
 }

@@ -18,7 +18,7 @@ public class DateOfBirthTests
     public void Given_Valid_Parameters___When_Instantiated___Then_Should_Be_Correct(int year, int month, int day, int todayYear, int todayMonth, int todayDay, int age)
     {
         // Act...
-        var sut = new DateOfBirth(year, month, day);
+        var sut = new DateOnly(year, month, day);
 
         // Assert...
         sut.Year.Should().Be(year);
@@ -42,7 +42,7 @@ public class DateOfBirthTests
     public void Given_Invalid_Parameters___When_Trying_To_Instantiate___Then_An_Error_Should_Be_Thrown(int year, int month, int day)
     {
         // Act...
-        var exception = Assert.Throws<ArgumentOutOfRangeException>(() => new DateOfBirth(year, month, day));
+        var exception = Assert.Throws<ArgumentOutOfRangeException>(() => new DateOnly(year, month, day));
 
         // Assert...
         //sut.Year.Should().Be(year);

@@ -1,4 +1,5 @@
-﻿using Persistence.Contexts;
+﻿using MongoDB.Bson.Serialization;
+using Persistence.Contexts;
 
 namespace Users.Persistence.IoC;
 
@@ -8,7 +9,7 @@ public static class PersistenceServiceCollectionExtensions
     {
         var mongoContext = new MongoContext(configuration);
         services.AddSingleton<IMongoContext>(mongoContext);
-        services.AddScoped<IUserRepository, UserRepository>();            
+        services.AddScoped<IUserRepository, UserRepository>();
         return services;
     }
 }

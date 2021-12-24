@@ -67,8 +67,8 @@ public class TestBase
         var connectionString = _testFixture.MongoDBConnectionString;
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
-        var users = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
-        users.InsertOne(user);
+        var usersTable = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
+        usersTable.InsertOne(user);
     }
 
     protected void AddUsersToDatabase(int numberOfUsersToAdd)
@@ -80,14 +80,14 @@ public class TestBase
         var connectionString = _testFixture.MongoDBConnectionString;
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
-        var collection = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
+        var usersTable = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
         var users = new List<Users.Domain.Models.User>();
         for (int i = 0; i < numberOfUsersToAdd; i++)
         {
             var user = GenerateTestUser();
             users.Add(user);
         }
-        collection.InsertMany(users);
+        usersTable.InsertMany(users);
     }
 
     protected string GetTestString(string prepend = "")
@@ -119,13 +119,23 @@ public class TestBase
 
     protected Users.Domain.Models.User GenerateTestUser()
     {
-        return _autoFixture.Create<Users.Domain.Models.User>();
+        var user = _autoFixture.Create<Users.Domain.Models.User>();
+        user.Created = DateTime.UtcNow;
+        user.Updated = null;
+        return user;
     }
 
     protected Users.Domain.Models.User GenerateTestUser(Guid userId)
     {
         var user = GenerateTestUser();
         user.Id = userId;
+        return user;
+    }
+
+    protected Users.Domain.Models.User GenerateTestUser(uint dateOfBirthYear, uint dateOfBirthMonth, uint dateOfBirthDay)
+    {
+        var user = GenerateTestUser();
+        user.DateOfBirth = new DateTime((int)dateOfBirthYear, (int)dateOfBirthMonth, (int)dateOfBirthDay, 0, 0, 0, 0, DateTimeKind.Utc);
         return user;
     }
 
@@ -138,8 +148,8 @@ public class TestBase
         var connectionString = _testFixture.MongoDBConnectionString;
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
-        var users = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
-        var user = users.Find<Users.Domain.Models.User>(user => user.Id == userId).SingleOrDefault();
+        var usersTable = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
+        var user = usersTable.Find<Users.Domain.Models.User>(user => user.Id == userId).SingleOrDefault();
         return user;
     }
 
@@ -152,8 +162,8 @@ public class TestBase
         var connectionString = _testFixture.MongoDBConnectionString;
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
-        var users = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
-        return users.AsQueryable();
+        var usersTable = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
+        return usersTable.AsQueryable();
     }
 
     protected long NumberOfUsersInDatabase()
@@ -165,8 +175,8 @@ public class TestBase
         var connectionString = _testFixture.MongoDBConnectionString;
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
-        var users = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
-        var numberOfUsers = users.Find(_ => true).CountDocuments();
+        var usersTable = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
+        var numberOfUsers = usersTable.Find(_ => true).CountDocuments();
         return numberOfUsers;
     }
 }

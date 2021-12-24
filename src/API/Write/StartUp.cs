@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Users.API.Models.IoC;
-
 namespace Users.API.Write;
 
 public class StartUp
@@ -70,30 +67,6 @@ public class StartUp
         services.AddApplication();
     }
 
-    private bool AreWeDealingWithValidationErrors(ActionContext context)
-    {
-        if (context?.ModelState.ErrorCount <= 0) return false;
-
-        var actionExecutingContext = context as Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext;
-        if (actionExecutingContext != null)
-        {
-            return actionExecutingContext?.ActionArguments.Count == context.ActionDescriptor.Parameters.Count;
-        }
-
-        foreach (var value in context.ModelState.Values)
-        {
-            if (value.ValidationState == ModelValidationState.Invalid)
-            {
-                foreach (var error in value.Errors)
-                {
-                    if (error.GetType().FullName == "Microsoft.AspNetCore.Mvc.ModelBinding.ModelError") return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     public void Configure(
         IApplicationBuilder applicationBuilder, 
         IWebHostEnvironment webHostEnvironment,
@@ -134,5 +107,29 @@ public class StartUp
         applicationBuilder.UseAuthorization();
 
         applicationBuilder.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+    }
+
+    private bool AreWeDealingWithValidationErrors(ActionContext context)
+    {
+        if (context?.ModelState.ErrorCount <= 0) return false;
+
+        var actionExecutingContext = context as Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext;
+        if (actionExecutingContext != null)
+        {
+            return actionExecutingContext?.ActionArguments.Count == context.ActionDescriptor.Parameters.Count;
+        }
+
+        foreach (var value in context.ModelState.Values)
+        {
+            if (value.ValidationState == ModelValidationState.Invalid)
+            {
+                foreach (var error in value.Errors)
+                {
+                    if (error.GetType().FullName == "Microsoft.AspNetCore.Mvc.ModelBinding.ModelError") return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
