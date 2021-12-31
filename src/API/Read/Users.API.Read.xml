@@ -4,11 +4,12 @@
         <name>Users.API.Read</name>
     </assembly>
     <members>
-        <member name="M:Users.API.Read.Controllers.v1.UsersController.Get(System.Guid)">
+        <member name="M:Users.API.Read.Controllers.v1.UsersController.Get(System.Guid,System.String)">
             <summary>
             Get a single user by their Id
             </summary>
             <param name="userId">The unique identifier of the user</param>
+            <param name="fields">A comma seperated list of fields to be returned</param>
             <returns>The requested user</returns>
             <response code="200">Success - OK - Returns the requested user</response>
             <response code="204">Success - No Content - No user matched the given identifier</response>

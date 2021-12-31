@@ -30,9 +30,8 @@ public class GET : APIsTestBase<StartUp>
         var expected = GenerateTestUser(userId);
         AddUserToDatabase(expected);
 
-        var url = $"/api/v1/users/{userId}";
-            
         // Act...
+        var url = $"/api/v1/users/{userId}";
         var httpResponse = await _client.GetAsync(url);
             
         // Assert...
@@ -435,5 +434,34 @@ public class GET : APIsTestBase<StartUp>
         pagination.TotalPages.Should().Be(1);
         pagination.TotalCount.Should().Be(2);
         pagination.PageSize.Should().Be(10);
+    }
+    [Test]
+    [Category("Happy")]
+    public async Task Given_Users_Exist___When_A_User_Is_Requested_With_Data_Shaping___Then_200_OK_And_Users_Should_Be_Shaped()
+    {
+        // Arrange...
+        NumberOfUsersInDatabase().Should().Be(0);
+        var userId = Guid.NewGuid();
+        var expected = GenerateTestUser(userId);
+        AddUserToDatabase(expected);
+        NumberOfUsersInDatabase().Should().Be(1);
+
+        // Act...
+        var url = $"/api/v1/users/{userId}?fields=id,lastname";
+        var httpResponse = await _client.GetAsync(url);
+
+        // Assert...
+        NumberOfUsersInDatabase().Should().Be(1);
+        httpResponse.IsSuccessStatusCode.Should().BeTrue();
+        httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var response = await httpResponse.Content.ReadAsStringAsync();
+        response.Length.Should().BeGreaterThan(0);
+        var actual = DeserializeUserResponse(response);
+        actual.Should().NotBeNull();
+        actual.Id.Should().Be(expected.Id);
+        actual.FirstName.Should().BeNull();
+        actual.LastName.Should().Be(expected.LastName);
+        actual.Sex.Should().BeNull();
+        actual.Gender.Should().BeNull();
     }
 }

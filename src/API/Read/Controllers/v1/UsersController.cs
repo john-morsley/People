@@ -23,6 +23,7 @@ public class UsersController : ControllerBase
     /// Get a single user by their Id
     /// </summary>
     /// <param name="userId">The unique identifier of the user</param>
+    /// <param name="fields">A comma seperated list of fields to be returned</param>
     /// <returns>The requested user</returns>
     /// <response code="200">Success - OK - Returns the requested user</response>
     /// <response code="204">Success - No Content - No user matched the given identifier</response>
@@ -32,7 +33,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> Get([FromRoute] Guid userId)
+    public async Task<IActionResult> Get([FromRoute] Guid userId, string fields = null)
     {
         if (userId == default) return BadRequest();
 
@@ -40,7 +41,7 @@ public class UsersController : ControllerBase
 
         if (getUserResponse == null) return NoContent();
 
-        return Ok(getUserResponse);
+        return Ok(getUserResponse.ShapeData(fields));
     }
 
     [HttpHead("{userId:guid}")]
