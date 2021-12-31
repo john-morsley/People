@@ -7,6 +7,9 @@ public class GetPageOfUsersRequest
     private int _pageNumber = 1;
     private int _pageSize = 10;
 
+    /// <summary>
+    /// The page number of the page numbers available.
+    /// </summary>
     public int PageNumber
     {
         get => _pageNumber;
@@ -17,6 +20,9 @@ public class GetPageOfUsersRequest
         }
     }
 
+    /// <summary>
+    /// The size of the page that is to be returned.
+    /// </summary>
     public int PageSize
     {
         get => _pageSize;
@@ -28,9 +34,18 @@ public class GetPageOfUsersRequest
         }
     }
 
+    /// <summary>
+    /// The filter is used for filtering results. i.e. filter=sex:male
+    /// </summary>
     public string Filter { get; set; }
 
-    public string SearchQuery { get; set; }
+    /// <summary>
+    /// The search is used for searching within text searchable fields. i.e. search=abc
+    /// </summary>
+    public string Search { get; set; }
 
+    /// <summary>
+    /// The order by is used for sorting results. i.e. orderBy=FirstName:asc,LastName:asc
+    /// </summary>
     public string OrderBy { get; set; } = "LastName";
 }

@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-
-namespace Users.API.Models.v1.Validators
+﻿namespace Users.API.Models.v1.Validators
 {
     public class AddUserRequestValidator : AbstractValidator<Users.API.Models.Request.v1.AddUserRequest>
     {

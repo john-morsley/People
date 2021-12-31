@@ -6,7 +6,9 @@ public sealed class GetPageOfUsersQuery : IRequest<IPagedList<User>>
 
     public uint PageSize { get; set; }
 
-    public string SearchQuery { get; set; }
+    public string Search { get; set; }
 
     public string OrderBy { get; set; }
+
+    public string Filter { get; set; }
 }

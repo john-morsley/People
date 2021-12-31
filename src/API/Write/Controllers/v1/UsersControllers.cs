@@ -38,6 +38,8 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
 
         var userResponse = await AddUser(addUserRequest);
 
+        var pd = new ProblemDetails();
+
         return Created($"http://localhost/api/v1/users/{userResponse.Id}", userResponse);
     }
 

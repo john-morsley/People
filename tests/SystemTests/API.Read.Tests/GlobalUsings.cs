@@ -15,3 +15,4 @@ global using System.Text.Json;
 global using System.Threading.Tasks;
 global using Users.API.Models.Shared;
 global using Users.Domain.Models;
+global using Microsoft.AspNetCore.Mvc;

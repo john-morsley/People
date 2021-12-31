@@ -57,6 +57,7 @@ public class StartUp
         //    options.JsonSerializerOptions.Converters.Add(new Users.API.Models.Shared.PagedListJsonConverter());
         //});
 
+        services.AddModelValidation();
         services.AddPersistence(Configuration);
         services.AddApplication();
     }

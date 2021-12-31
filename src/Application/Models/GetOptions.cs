@@ -15,7 +15,7 @@ public class GetOptions : Users.Domain.Interfaces.IGetOptions
 
     public uint PageNumber { get; set; } = 1;
 
-    public string SearchQuery { get; set; }
+    public string Search { get; set; }
 
     public IEnumerable<Users.Domain.Interfaces.IFilter> Filters => _filters;
 

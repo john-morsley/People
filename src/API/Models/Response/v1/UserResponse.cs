@@ -16,6 +16,12 @@ public class UserResponse
 
     public override string ToString()
     {
-        return $"Id:{Id}|FirstName:{FirstName}|LastName:{LastName}|Sex:{Enum.GetName(typeof(Sex), Sex)}|Gender:{Enum.GetName(typeof(Gender), Gender)}";
+        var sex = "[Null]";
+        var gender = "[Null]";
+
+        if (Sex != null) sex = Enum.GetName(typeof(Sex), Sex);
+        if (Gender != null) gender = Enum.GetName(typeof(Gender), Gender);
+
+        return $"Id:{Id}|FirstName:{FirstName}|LastName:{LastName}|Sex:{sex}|Gender:{gender}";
     }
 }

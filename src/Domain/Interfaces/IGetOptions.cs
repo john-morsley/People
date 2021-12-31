@@ -6,7 +6,7 @@ public interface IGetOptions
 
     uint PageNumber { get; }
 
-    string SearchQuery { get; }
+    string Search { get; }
 
     IEnumerable<IFilter> Filters { get; }
 

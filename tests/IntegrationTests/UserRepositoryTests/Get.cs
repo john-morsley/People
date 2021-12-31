@@ -117,7 +117,7 @@ internal class Get : UserRepositoryTests
         var getUsersOptions = new GetOptions();
         getUsersOptions.PageSize = 1;
         getUsersOptions.PageNumber = 1;
-        getUsersOptions.SearchQuery = "orsle";
+        getUsersOptions.Search = "orsle";
         var pageOfUsers = await sut.GetPageAsync(getUsersOptions);
 
         // Assert...

@@ -157,7 +157,7 @@ public class UsersController : ControllerBase
                         pageNumber = getPageOfUsersRequest.PageNumber - 1, 
                         pageSize = getPageOfUsersRequest.PageSize, 
                         filter = getPageOfUsersRequest.Filter,
-                        search = getPageOfUsersRequest.SearchQuery,
+                        search = getPageOfUsersRequest.Search,
                         orderBy = getPageOfUsersRequest.OrderBy
                     });
             case Users.API.Models.Shared.ResourceUriType.NextPage:
@@ -168,7 +168,7 @@ public class UsersController : ControllerBase
                         pageNumber = getPageOfUsersRequest.PageNumber + 1,
                         pageSize = getPageOfUsersRequest.PageSize,
                         filter = getPageOfUsersRequest.Filter,
-                        search = getPageOfUsersRequest.SearchQuery,
+                        search = getPageOfUsersRequest.Search,
                         orderBy = getPageOfUsersRequest.OrderBy
                     });
             default:
@@ -179,7 +179,7 @@ public class UsersController : ControllerBase
                         pageNumber = getPageOfUsersRequest.PageNumber,
                         pageSize = getPageOfUsersRequest.PageSize,
                         filter = getPageOfUsersRequest.Filter,
-                        search = getPageOfUsersRequest.SearchQuery,
+                        search = getPageOfUsersRequest.Search,
                         orderBy = getPageOfUsersRequest.OrderBy
                     });
         }

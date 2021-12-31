@@ -52,7 +52,7 @@ public class GET : APIsTestBase<StartUp>
     public async Task Given_No_Users_Exist___When_Page_Of_Users_Is_Requested___Then_204_NoContent()
     {
         // Arrange...
-        var url = $"/api/v1/users?PageNumber=1&PageSize=10";
+        var url = $"/api/v1/users?pageNumber=1&pageSize=10";
             
         // Act...
         var httpResponse = await _client.GetAsync(url);
@@ -71,7 +71,7 @@ public class GET : APIsTestBase<StartUp>
         // Arrange...
         var user = GenerateTestUser();
         AddUserToDatabase(user);
-        var url = $"/api/v1/users?PageNumber=1&PageSize=10";
+        var url = $"/api/v1/users?pageNumber=1&PageSize=10";
 
         // Act...
         var httpResponse = await _client.GetAsync(url);
@@ -105,7 +105,7 @@ public class GET : APIsTestBase<StartUp>
         // Arrange...
         AddUsersToDatabase(15);
         NumberOfUsersInDatabase().Should().Be(15);
-        var url = $"/api/v1/users?PageNumber=1&PageSize=10";
+        var url = $"/api/v1/users?pageNumber=1&pageSize=10";
 
         // Act...
         var httpResponse = await _client.GetAsync(url);
@@ -169,18 +169,18 @@ public class GET : APIsTestBase<StartUp>
     {
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
-        var johnSmith = new Users.Domain.Models.User() { FirstName = "John", LastName = "Smith" };
-        AddUserToDatabase(johnSmith);
-        var johnMorsley = new Users.Domain.Models.User() { FirstName = "John", LastName = "Morsley" };
-        AddUserToDatabase(johnMorsley);
-        var joeBloggs = new Users.Domain.Models.User() { FirstName = "Joe", LastName = "Bloggs" };
-        AddUserToDatabase(joeBloggs);
+        var johnDoe = new Users.Domain.Models.User() { FirstName = "John", LastName = "Doe" };
+        AddUserToDatabase(johnDoe);
+        var janeDoe = new Users.Domain.Models.User() { FirstName = "Jane", LastName = "Doe" };
+        AddUserToDatabase(janeDoe);
         var fredBloggs = new Users.Domain.Models.User() { FirstName = "Fred", LastName = "Bloggs" };
         AddUserToDatabase(fredBloggs);
+        var fayeBloggs = new Users.Domain.Models.User() { FirstName = "Faye", LastName = "Bloggs" };
+        AddUserToDatabase(fayeBloggs);
         NumberOfUsersInDatabase().Should().Be(4);
 
         // Act...
-        var url = $"/api/v1/users?orderBy=FirstName|Asc,LastName|Asc";
+        var url = $"/api/v1/users?orderBy=FirstName:Asc,LastName:Asc";
         var httpResponse = await _client.GetAsync(url);
 
         // Assert...
@@ -196,14 +196,14 @@ public class GET : APIsTestBase<StartUp>
         var secondUser = pageOfUsers.Skip(1).Take(1).Single();
         var thirdUser = pageOfUsers.Skip(2).Take(1).Single();
         var fourthUser = pageOfUsers.Skip(3).Take(1).Single();
-        firstUser.FirstName.Should().Be("Fred");
+        firstUser.FirstName.Should().Be("Faye");
         firstUser.LastName.Should().Be("Bloggs");
-        secondUser.FirstName.Should().Be("Joe");
+        secondUser.FirstName.Should().Be("Fred");
         secondUser.LastName.Should().Be("Bloggs");
-        thirdUser.FirstName.Should().Be("John");
-        thirdUser.LastName.Should().Be("Morsley");
+        thirdUser.FirstName.Should().Be("Jane");
+        thirdUser.LastName.Should().Be("Doe");
         fourthUser.FirstName.Should().Be("John");
-        fourthUser.LastName.Should().Be("Smith");
+        fourthUser.LastName.Should().Be("Doe");
         IEnumerable<string> values;
         httpResponse.Headers.TryGetValues("X-Pagination", out values);
         values.Should().NotBeNull();
@@ -236,7 +236,7 @@ public class GET : APIsTestBase<StartUp>
         NumberOfUsersInDatabase().Should().Be(5);
 
         // Act...
-        var url = $"/api/v1/users?orderBy=DateOfBirth|Asc";
+        var url = $"/api/v1/users?orderBy=DateOfBirth:Asc";
         var httpResponse = await _client.GetAsync(url);
 
         // Assert...
@@ -273,7 +273,7 @@ public class GET : APIsTestBase<StartUp>
 
     [Test]
     [Category("Unhappy")]
-    public async Task Given_Users_Exist___When_A_Page_Of_Users_Is_Requested_With_Invalid_Sorting___Then_TBC()
+    public async Task When_A_Page_Of_Users_Is_Requested_With_Invalid_Sorting___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
     {
         // Arrange...
 
@@ -284,8 +284,156 @@ public class GET : APIsTestBase<StartUp>
         // Assert...
         NumberOfUsersInDatabase().Should().Be(0);
         httpResponse.IsSuccessStatusCode.Should().BeFalse();
-        //httpResponse.StatusCode.Should().Be(HttpStatusCode.OK); // What should this be? 422 maybe? Not a 500!
-        //var response = await httpResponse.Content.ReadAsStringAsync();
-        //response.Length.Should().BeGreaterThan(0);
+        httpResponse.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        var response = await httpResponse.Content.ReadAsStringAsync();
+        response.Length.Should().BeGreaterThan(0);
+
+        var problemDetails = JsonSerializer.Deserialize<ValidationProblemDetails>(response);
+        problemDetails.Should().NotBeNull();
+        problemDetails.Status.Should().Be((int)HttpStatusCode.UnprocessableEntity);
+        problemDetails.Title.Should().Be("Validation error(s) occurred!");
+        problemDetails.Detail.Should().Be("See the errors field for details.");
+        problemDetails.Instance.Should().Be("/api/v1/users");
+        problemDetails.Extensions.Should().NotBeNull();
+        var traceId = problemDetails.Extensions.Where(_ => _.Key == "traceId").FirstOrDefault();
+        traceId.Should().NotBeNull();
+        problemDetails.Errors.Count().Should().Be(1);
+        var error = problemDetails.Errors.First();
+        error.Key.Should().Be("OrderBy");
+        var value = error.Value.First();
+        value.Should().Be("The sort order is invalid.");
+    }
+
+    [Test]
+    [Category("Happy")]
+    public async Task Given_Users_Exist___When_A_Page_Of_Users_Is_Requested_With_Filtering_By_Sex___Then_200_OK_And_Users_Should_Be_Filtered()
+    {
+        // Arrange...
+        NumberOfUsersInDatabase().Should().Be(0);
+        var john = new Users.Domain.Models.User() { FirstName = "John", LastName = "Doe", Sex = Domain.Enumerations.Sex.Male };
+        AddUserToDatabase(john);
+        var jane = new Users.Domain.Models.User() { FirstName = "Jane", LastName = "Doe", Sex = Domain.Enumerations.Sex.Female };
+        AddUserToDatabase(jane);
+        var fred = new Users.Domain.Models.User() { FirstName = "Fred", LastName = "Bloggs", Sex = Domain.Enumerations.Sex.Male };
+        AddUserToDatabase(fred);
+        var faye = new Users.Domain.Models.User() { FirstName = "Faye", LastName = "Bloggs", Sex = Domain.Enumerations.Sex.Female };
+        AddUserToDatabase(faye);
+        NumberOfUsersInDatabase().Should().Be(4);
+
+        // Act...
+        var url = $"/api/v1/users?filter=sex:female";
+        var httpResponse = await _client.GetAsync(url);
+
+        // Assert...
+        NumberOfUsersInDatabase().Should().Be(4);
+        httpResponse.IsSuccessStatusCode.Should().BeTrue();
+        httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var response = await httpResponse.Content.ReadAsStringAsync();
+        response.Length.Should().BeGreaterThan(0);
+        var pageOfUsers = DeserializeListOfUserResponses(response);
+        pageOfUsers.Should().NotBeNull();
+        pageOfUsers.Count().Should().Be(2);
+        var firstUser = pageOfUsers.Skip(0).Take(1).Single();
+        var secondUser = pageOfUsers.Skip(1).Take(1).Single();
+        firstUser.FirstName.Should().Be(faye.FirstName);
+        firstUser.LastName.Should().Be(faye.LastName);
+        secondUser.FirstName.Should().Be(jane.FirstName);
+        secondUser.LastName.Should().Be(jane.LastName);
+        IEnumerable<string> values;
+        httpResponse.Headers.TryGetValues("X-Pagination", out values);
+        values.Should().NotBeNull();
+        values.Count().Should().Be(1);
+        var pagination = JsonSerializer.Deserialize<Pagination>(values.FirstOrDefault());
+        pagination.PreviousPageLink.Should().BeNull();
+        pagination.NextPageLink.Should().BeNull();
+        pagination.CurrentPage.Should().Be(1);
+        pagination.TotalPages.Should().Be(1);
+        pagination.TotalCount.Should().Be(2);
+        pagination.PageSize.Should().Be(10);
+    }
+
+    [Test]
+    [Category("Unhappy")]
+    public async Task When_A_Page_Of_Users_Is_Requested_With_Invalid_Filter___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
+    {
+        // Arrange...
+
+        // Act...
+        var url = $"/api/v1/users?filter=InvalidFieldName:Invalid";
+        var httpResponse = await _client.GetAsync(url);
+
+        // Assert...
+        NumberOfUsersInDatabase().Should().Be(0);
+        httpResponse.IsSuccessStatusCode.Should().BeFalse();
+        httpResponse.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        var response = await httpResponse.Content.ReadAsStringAsync();
+        response.Length.Should().BeGreaterThan(0);
+
+        var problemDetails = JsonSerializer.Deserialize<ValidationProblemDetails>(response);
+        problemDetails.Should().NotBeNull();
+        problemDetails.Status.Should().Be((int)HttpStatusCode.UnprocessableEntity);
+        problemDetails.Title.Should().Be("Validation error(s) occurred!");
+        problemDetails.Detail.Should().Be("See the errors field for details.");
+        problemDetails.Instance.Should().Be("/api/v1/users");
+        problemDetails.Extensions.Should().NotBeNull();
+        var traceId = problemDetails.Extensions.Where(_ => _.Key == "traceId").FirstOrDefault();
+        traceId.Should().NotBeNull();
+        problemDetails.Errors.Count().Should().Be(1);
+        var error = problemDetails.Errors.First();
+        error.Key.Should().Be("Filter");
+        var value = error.Value.First();
+        value.Should().Be("The filter is invalid.");
+    }
+
+    [Test]
+    [Category("Happy")]
+    public async Task Given_Users_Exist___When_A_Page_Of_Users_Is_Requested_With_Search_Criteria___Then_200_OK_And_Users_Should_Be_Limited()
+    {
+        // Arrange...
+        NumberOfUsersInDatabase().Should().Be(0);
+        var johnDoe = new Users.Domain.Models.User() { FirstName = "John", LastName = "Doe" };
+        AddUserToDatabase(johnDoe);
+        var janeDoe = new Users.Domain.Models.User() { FirstName = "Jane", LastName = "Doe" };
+        AddUserToDatabase(janeDoe);
+        var saadMaan = new Users.Domain.Models.User() { FirstName = "Saad", LastName = "Man" };
+        AddUserToDatabase(saadMaan);
+        var whetFaartz = new Users.Domain.Models.User() { FirstName = "Whet", LastName = "Faartz" };
+        AddUserToDatabase(whetFaartz);
+        var fredBloggs = new Users.Domain.Models.User() { FirstName = "Fred", LastName = "Bloggs" };
+        AddUserToDatabase(fredBloggs);
+        var fayeBloggs = new Users.Domain.Models.User() { FirstName = "Faye", LastName = "Bloggs" };
+        AddUserToDatabase(fayeBloggs);
+        NumberOfUsersInDatabase().Should().Be(6);
+
+        // Act...
+        var url = $"/api/v1/users?search=aa";
+        var httpResponse = await _client.GetAsync(url);
+
+        // Assert...
+        NumberOfUsersInDatabase().Should().Be(6);
+        httpResponse.IsSuccessStatusCode.Should().BeTrue();
+        httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var response = await httpResponse.Content.ReadAsStringAsync();
+        response.Length.Should().BeGreaterThan(0);
+        var pageOfUsers = DeserializeListOfUserResponses(response);
+        pageOfUsers.Should().NotBeNull();
+        pageOfUsers.Count().Should().Be(2);
+        var firstUser = pageOfUsers.Skip(0).Take(1).Single();
+        var secondUser = pageOfUsers.Skip(1).Take(1).Single();
+        firstUser.FirstName.Should().Be(whetFaartz.FirstName);
+        firstUser.LastName.Should().Be(whetFaartz.LastName);
+        secondUser.FirstName.Should().Be(saadMaan.FirstName);
+        secondUser.LastName.Should().Be(saadMaan.LastName);
+        IEnumerable<string> values;
+        httpResponse.Headers.TryGetValues("X-Pagination", out values);
+        values.Should().NotBeNull();
+        values.Count().Should().Be(1);
+        var pagination = JsonSerializer.Deserialize<Pagination>(values.FirstOrDefault());
+        pagination.PreviousPageLink.Should().BeNull();
+        pagination.NextPageLink.Should().BeNull();
+        pagination.CurrentPage.Should().Be(1);
+        pagination.TotalPages.Should().Be(1);
+        pagination.TotalCount.Should().Be(2);
+        pagination.PageSize.Should().Be(10);
     }
 }

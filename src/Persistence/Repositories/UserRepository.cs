@@ -31,10 +31,10 @@ public class UserRepository : Repository<Users.Domain.Models.User>, IUserReposit
     {
         var users = base.Search(entities, options);
 
-        if (string.IsNullOrWhiteSpace(options.SearchQuery)) return users;
+        if (string.IsNullOrWhiteSpace(options.Search)) return users;
 
-        return users.Where(u => u.FirstName.Contains(options.SearchQuery) ||
-                                u.LastName.Contains(options.SearchQuery));
+        return users.Where(u => u.FirstName.Contains(options.Search) ||
+                                u.LastName.Contains(options.Search));
     }
 
     private IEnumerable<IFilter> ExtractUserSpecificFilters(IEnumerable<IFilter> originalFilters)
@@ -55,7 +55,7 @@ public class UserRepository : Repository<Users.Domain.Models.User>, IUserReposit
     private string FilterPredicate(IFilter filter)
     {
         if (filter.Key.Equals("Sex", StringComparison.CurrentCultureIgnoreCase) ||
-            filter.Key.Equals("Title", StringComparison.CurrentCultureIgnoreCase))
+            filter.Key.Equals("Gender", StringComparison.CurrentCultureIgnoreCase))
         {
             return $"{filter.Key} = \"{filter.Value}\"";
         }
@@ -65,23 +65,6 @@ public class UserRepository : Repository<Users.Domain.Models.User>, IUserReposit
     private bool IsFilterUserSpecific(IFilter filter)
     {
         return filter.Key.Equals("Sex", StringComparison.CurrentCultureIgnoreCase) ||
-               filter.Key.Equals("Title", StringComparison.CurrentCultureIgnoreCase);
+               filter.Key.Equals("Gender", StringComparison.CurrentCultureIgnoreCase);
     }
-
-    //protected override IQueryable<User> Sort(IQueryable<User> entities, IGetOptions options)
-    //{
-    //    //var users = base.Sort(entities, options);
-
-    //    if (!options.Orderings.Any()) return entities;
-
-    //    foreach(var ordering in options.Orderings)
-    //    {
-    //        if (ordering.Key == "Age")
-    //        {
-
-    //        }
-    //    }
-
-    //    return entities;
-    //}
 }

@@ -4,7 +4,6 @@ public class User : Entity<Guid>
 {
     private string _firstName;
     private string _lastName;
-    //private DateOfBirth _dateOfBirth;
     private DateTime? _dateOfBirth;
 
     private IList<Address> _addresses;
