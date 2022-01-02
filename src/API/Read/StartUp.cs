@@ -20,6 +20,7 @@ public class StartUp
         {
             configure.ReturnHttpNotAcceptable = true;
         })
+        .ConfigureApiBehaviorOptions(options => options.SuppressInferBindingSourcesForParameters = true)
         .ConfigureApiBehaviorOptions(setupAction =>
         {
             setupAction.InvalidModelStateResponseFactory = context =>
@@ -57,7 +58,7 @@ public class StartUp
         //    options.JsonSerializerOptions.Converters.Add(new Users.API.Models.Shared.PagedListJsonConverter());
         //});
 
-        services.AddModelValidation();
+        services.AddModels();
         services.AddPersistence(Configuration);
         services.AddApplication();
     }

@@ -214,7 +214,7 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
 
     private async Task<Users.Domain.Models.User> GetUser(Guid userId)
     {
-        var getUserRequest = new Users.API.Models.Request.v1.GetUserRequest(userId);
+        var getUserRequest = new Users.API.Models.Request.v1.GetUserRequest() { Id = userId };
         var getUserQuery = _mapper.Map<Users.Application.Queries.GetUserQuery>(getUserRequest);
         var user = await _mediator.Send(getUserQuery);
         return user;

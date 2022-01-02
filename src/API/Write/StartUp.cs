@@ -62,7 +62,7 @@ public class StartUp
         //    configuration.RegisterValidatorsFromAssemblyContaining<StartUp>();
         //});
 
-        services.AddModelValidation();
+        services.AddModels();
         services.AddPersistence(Configuration);
         services.AddApplication();
     }

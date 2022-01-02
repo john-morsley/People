@@ -1,7 +1,4 @@
-﻿using MongoDB.Bson.Serialization;
-using Persistence.Contexts;
-
-namespace Users.Persistence.IoC;
+﻿namespace Users.Persistence.IoC;
 
 public static class PersistenceServiceCollectionExtensions
 {

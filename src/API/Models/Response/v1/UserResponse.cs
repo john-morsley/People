@@ -16,12 +16,25 @@ public class UserResponse
 
     public override string ToString()
     {
+        var firstName = "[Null]";
+        var lastName = "[Null]";
         var sex = "[Null]";
         var gender = "[Null]";
+        var dateOfBirth = "[Null]";
 
+        if (FirstName == string.Empty) firstName = "[Empty]";
+        if (LastName == string.Empty) lastName = "[Empty]";
         if (Sex != null) sex = Enum.GetName(typeof(Sex), Sex);
         if (Gender != null) gender = Enum.GetName(typeof(Gender), Gender);
+        if (DateOfBirth == string.Empty)
+        {
+            dateOfBirth = "[Empty]";
+        }
+        else if (DateOfBirth.Length > 0) 
+        { 
+            dateOfBirth = DateOfBirth; 
+        }
 
-        return $"Id:{Id}|FirstName:{FirstName}|LastName:{LastName}|Sex:{sex}|Gender:{gender}";
+        return $"Id:{Id}|FirstName:{firstName}|LastName:{lastName}|Sex:{sex}|Gender:{gender}|DateOfBirth:{dateOfBirth}";
     }
 }

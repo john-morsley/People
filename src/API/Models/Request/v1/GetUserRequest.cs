@@ -2,10 +2,7 @@
 
 public class GetUserRequest
 {
-    public GetUserRequest(Guid id)
-    {
-        Id = id;
-    }
+    public Guid Id { get; set; }
 
-    public Guid Id { get; private set; }
+    public string Fields { get; set; }
 }

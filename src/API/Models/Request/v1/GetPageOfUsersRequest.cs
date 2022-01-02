@@ -48,4 +48,6 @@ public class GetPageOfUsersRequest
     /// The order by is used for sorting results. i.e. orderBy=FirstName:asc,LastName:asc
     /// </summary>
     public string OrderBy { get; set; } = "LastName";
+
+    public string Fields { get; set; }
 }

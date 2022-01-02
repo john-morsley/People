@@ -4,16 +4,16 @@
         <name>Users.API.Read</name>
     </assembly>
     <members>
-        <member name="M:Users.API.Read.Controllers.v1.UsersController.Get(System.Guid,System.String)">
+        <member name="M:Users.API.Read.Controllers.v1.UsersController.Get(System.Guid,Users.API.Models.Request.v1.GetUserRequest)">
             <summary>
             Get a single user by their Id
             </summary>
-            <param name="userId">The unique identifier of the user</param>
-            <param name="fields">A comma seperated list of fields to be returned</param>
-            <returns>The requested user</returns>
+            <param name="getUserRequest">An object that contains the data to get and shape a user</param>
+            <returns>The requested user (shaped, if required)</returns>
             <response code="200">Success - OK - Returns the requested user</response>
             <response code="204">Success - No Content - No user matched the given identifier</response>
             <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
+            <response code="422">Error - Unprocessable Entity - The GetUserRequest object contained invalid data</response>
         </member>
         <member name="M:Users.API.Read.Controllers.v1.UsersController.Get(Users.API.Models.Request.v1.GetPageOfUsersRequest)">
             <summary>

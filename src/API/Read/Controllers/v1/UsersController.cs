@@ -22,37 +22,43 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Get a single user by their Id
     /// </summary>
-    /// <param name="userId">The unique identifier of the user</param>
-    /// <param name="fields">A comma seperated list of fields to be returned</param>
-    /// <returns>The requested user</returns>
+    /// <param name="getUserRequest">An object that contains the data to get and shape a user</param>
+    /// <returns>The requested user (shaped, if required)</returns>
     /// <response code="200">Success - OK - Returns the requested user</response>
     /// <response code="204">Success - No Content - No user matched the given identifier</response>
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
+    /// <response code="422">Error - Unprocessable Entity - The GetUserRequest object contained invalid data</response>
     [HttpGet("{userId:guid}")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Get([FromRoute] Guid userId, string fields = null)
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> Get([FromRoute] Guid userId, Users.API.Models.Request.v1.GetUserRequest getUserRequest)
     {
-        if (userId == default) return BadRequest();
+        if (getUserRequest == null) return BadRequest();
 
-        var getUserResponse = await GetUserResponse(userId);
+        getUserRequest.Id = userId;
+
+        var getUserResponse = await GetUserResponse(getUserRequest);
 
         if (getUserResponse == null) return NoContent();
 
-        return Ok(getUserResponse.ShapeData(fields));
+        return Ok(getUserResponse.ShapeData(getUserRequest.Fields));
     }
 
     [HttpHead("{userId:guid}")]
     [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> Head([FromRoute] Guid userId)
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> Head([FromRoute] Guid userId, Users.API.Models.Request.v1.GetUserRequest getUserRequest)
     {
-        if (userId == default) return BadRequest();
+        if (getUserRequest == null) return BadRequest();
 
-        var getUserResponse = await GetUserResponse(userId);
+        getUserRequest.Id = userId;
+
+        var getUserResponse = await GetUserResponse(getUserRequest);
 
         if (getUserResponse == null) return NoContent();
 
@@ -75,6 +81,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<IEnumerable<Users.API.Models.Response.v1.UserResponse>>> Get(
         [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     {
@@ -87,12 +94,7 @@ public class UsersController : ControllerBase
         var pagination = GetPagination(pageOfUserResponses, getPageOfUsersRequest);
         Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination));
 
-        return Ok(GetUserResponses(pageOfUserResponses));
-    }
-
-    private object GetUserResponses(Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse> pageOfUserResponses)
-    {
-        return _mapper.Map<IEnumerable<Users.API.Models.Response.v1.UserResponse>>(pageOfUserResponses);
+        return Ok(GetUserResponses(pageOfUserResponses).ShapeData(getPageOfUsersRequest.Fields));
     }
 
     /// <summary>
@@ -109,6 +111,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<IEnumerable<Users.API.Models.Response.v1.UserResponse>>> Head(
         [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     {
@@ -219,15 +222,6 @@ public class UsersController : ControllerBase
         return pagination;
     }
 
-    private async Task<Users.API.Models.Response.v1.UserResponse> GetUserResponse(Guid userId)
-    {
-        var getUserRequest = new Users.API.Models.Request.v1.GetUserRequest(userId);
-
-        var getUserResponse = await GetUserResponse(getUserRequest);
-
-        return getUserResponse;
-    }
-
     private async Task<Users.API.Models.Response.v1.UserResponse> GetUserResponse(Users.API.Models.Request.v1.GetUserRequest getUserRequest)
     {
         if (getUserRequest == null) throw new ArgumentNullException(nameof(getUserRequest));
@@ -240,5 +234,10 @@ public class UsersController : ControllerBase
         var userResponse = _mapper.Map<Users.API.Models.Response.v1.UserResponse>(user);
 
         return userResponse;
+    }
+
+    private IEnumerable<Users.API.Models.Response.v1.UserResponse> GetUserResponses(Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse> pageOfUserResponses)
+    {
+        return _mapper.Map<IEnumerable<Users.API.Models.Response.v1.UserResponse>>(pageOfUserResponses);
     }
 }
