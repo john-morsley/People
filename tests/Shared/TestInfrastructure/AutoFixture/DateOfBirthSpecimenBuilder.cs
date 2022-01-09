@@ -1,6 +1,6 @@
 ﻿namespace TestInfrastructure.AutoFixture;
 
-public class AddUserRequestSpecimenBuilder : ISpecimenBuilder
+public class DateOfBirthSpecimenBuilder : ISpecimenBuilder
 {
     public object Create(object request, ISpecimenContext context)
     {
@@ -12,22 +12,14 @@ public class AddUserRequestSpecimenBuilder : ISpecimenBuilder
 
         if (type == null) return new NoSpecimen();
 
-        if (type != typeof(Users.API.Models.Request.v1.AddUserRequest)) return new NoSpecimen();
+        if (type != typeof(DateOnly)) return new NoSpecimen();
 
-        var firstName = nameof(Users.API.Models.Request.v1.AddUserRequest.FirstName) + "___" + context.Create<string>();
-        var lastName = nameof(Users.API.Models.Request.v1.AddUserRequest.LastName) + "___" + context.Create<string>();
+        return GenerateRandomDateOfBirth();
+    }
 
-        var dob = RandomDateGeneratorHelper.GenerateRandomDateOfBirth();
-
-        var user = new Users.API.Models.Request.v1.AddUserRequest()
-        {
-            FirstName = firstName,
-            LastName = lastName,
-            Sex = context.Create<Sex?>(),
-            Gender = context.Create<Gender?>(),
-            DateOfBirth = $"{dob.Year:0000}-{dob.Month:00}-{dob.Day:00}"
-        };
-
-        return user;
+    private DateOnly GenerateRandomDateOfBirth()
+    {
+        var dob = RandomGeneratorHelper.GenerateRandomDateOfBirth();
+        return new DateOnly(dob.Year, dob.Month, dob.Day);
     }
 }

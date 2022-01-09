@@ -1,12 +1,24 @@
 ﻿namespace Shared.TestInfrastructure;
 
+[TestFixture]
 public class TestBase
 {
+    //private const string TestUserData = "FirstName:Charles,LastName:Babbage,Sex:Male|" +
+    //                                    "FirstName:George,LastName:Boole,Sex:Male|" +
+    //                                    "FirstName:John,LastName:Cleese,Sex:Male|" +
+    //                                    "FirstName:Jane,LastName:Doe,Sex:Female|" +
+    //                                    "FirstName:John,LastName:Doe,Sex:Male|" +
+    //                                    "FirstName:Tommy,LastName:Flowers,Sex:Male|" +
+    //                                    "FirstName:Jane,LastName:Goodall,Sex:Female|" +
+    //                                    "FirstName:Ada,LastName:Lovelace,Sex:Female|" +
+    //                                    "FirstName:Linus,LastName:Torvalds,Sex:Male|" +
+    //                                    "FirstName:Alan,LastName:Turing,Sex:Male";
+                                    
     protected TestFixture _testFixture;
     protected Fixture _autoFixture;
 
-    [SetUp]
-    public async Task TestSetUp()
+    [OneTimeSetUp]
+    public async Task OneTimeSetUp()
     {
         var configuration = GetConfiguration();
         var section = configuration.GetSection(nameof(MongoSettings));
@@ -16,14 +28,52 @@ public class TestBase
         _autoFixture = new Fixture();
         _autoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
         _autoFixture.Customizations.Add(new AddUserRequestSpecimenBuilder());
+        _autoFixture.Customizations.Add(new UserSpecimenBuilder());
 
         await _testFixture.RunBeforeTests();
     }
 
-    [TearDown]
-    public async Task TestTearDown()
+    [SetUp]
+    public async Task SetUp()
     {
-        await _testFixture.RunAfterTests();
+        //var configuration = GetConfiguration();
+        //var section = configuration.GetSection(nameof(MongoSettings));
+        //var settings = section.Get<MongoSettings>();
+
+        //_testFixture = new TestFixture(settings.Username, settings.Password);
+        //_autoFixture = new Fixture();
+        //_autoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
+        //_autoFixture.Customizations.Add(new AddUserRequestSpecimenBuilder());
+
+        //await _testFixture.RunBeforeTests();
+
+        DeleteAllUsersFromDatabase();
+    }
+
+    private void DeleteAllUsersFromDatabase()
+    {
+        var additional = GetInMemoryConfiguration();
+        var configuration = GetConfiguration(additional);
+        var section = configuration.GetSection(nameof(MongoSettings));
+        var settings = section.Get<MongoSettings>();
+        var connectionString = _testFixture.MongoDBConnectionString;
+        var mongoClient = new MongoClient(connectionString);
+        var database = mongoClient.GetDatabase(settings.DatabaseName);
+        var usersTable = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
+        usersTable.DeleteMany("{}");
+    }
+
+    [TearDown]
+    public async Task TearDown()
+    {
+        DeleteAllUsersFromDatabase();
+        //await _testFixture.RunAfterTests();
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+       await _testFixture.RunAfterTests();
     }
 
     internal int ContainerPort
@@ -58,6 +108,37 @@ public class TestBase
         return configuration;
     }
 
+    protected IList<Users.Domain.Models.User> AddTestUsersToDatabase(string userData)
+    {
+        var users = new List<Users.Domain.Models.User>();
+
+        foreach(var userDatam in userData.Split('|')) 
+        {
+            var builder = new Users.Domain.Builders.UserBuilder();
+            var fields = userDatam.Split(',');
+            var name = fields[0].Split(' ');
+            builder.SetFirstName(name[0]);
+            builder.SetLastName(name[1]);
+            foreach (var field in fields.Skip(1))
+            {
+                var kvp = field.Split(':');
+                var key = kvp[0];
+                var value = kvp[1];
+                switch (key)
+                {
+                    case "Sex": builder.SetSex(value); break;
+                    case "Gender": builder.SetGender(value); break;
+                    case "DateOfBirth": builder.SetDateOfBirth(value); break;
+                }
+            }
+            var user = builder.Build();
+            AddUserToDatabase(user);
+            users.Add(user);
+        }
+
+        return users;
+    }
+
     protected void AddUserToDatabase(Users.Domain.Models.User user)
     {
         var additional = GetInMemoryConfiguration();
@@ -71,8 +152,8 @@ public class TestBase
         usersTable.InsertOne(user);
     }
 
-    protected void AddUsersToDatabase(int numberOfUsersToAdd)
-    {
+    protected IList<Users.Domain.Models.User> AddUsersToDatabase(int numberOfUsersToAdd)
+    {        
         var additional = GetInMemoryConfiguration();
         var configuration = GetConfiguration(additional);
         var section = configuration.GetSection(nameof(MongoSettings));
@@ -88,6 +169,7 @@ public class TestBase
             users.Add(user);
         }
         usersTable.InsertMany(users);
+        return users;
     }
 
     protected string GetTestString(string prepend = "")

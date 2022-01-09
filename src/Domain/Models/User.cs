@@ -40,18 +40,6 @@ public class User : Entity<Guid>
 
     public Gender? Gender { get; set; }
 
-    //public DateOfBirth DateOfBirth
-    //{
-    //    get => _dateOfBirth;
-    //    set => _dateOfBirth = value;
-    //}
-
-    //public DateOnly? DateOfBirth
-    //{
-    //    get => _dateOfBirth;
-    //    set => _dateOfBirth = value;
-    //}
-
     public DateTime? DateOfBirth 
     {
         get => _dateOfBirth;
@@ -63,7 +51,7 @@ public class User : Entity<Guid>
             }
             else
             {
-                _dateOfBirth = value;
+                _dateOfBirth = new DateTime(value.Value.Year, value.Value.Month, value.Value.Day, 0, 0, 0, 0, DateTimeKind.Utc);
             }
         }
     }
@@ -108,5 +96,38 @@ public class User : Entity<Guid>
     {
         if (string.IsNullOrWhiteSpace(lastName)) throw new ArgumentException("Cannot be empty!", nameof(lastName));
         _lastName = lastName;
+    }
+
+    public override string ToString()
+    {
+        var firstName = FormatStringValue(FirstName);
+        var lastName = FormatStringValue(LastName);
+        var sex = FormatEnumValue(Sex);
+        var gender = FormatEnumValue(Gender);
+        var dateOfBirth = FormatDateTimeValue(DateOfBirth);
+
+        return $"Id: {Id} | FirstName: {firstName} | LastName: {lastName} | Sex: {sex} | Gender: {gender} | DateOfBirth: {dateOfBirth}";
+    }
+
+    private string FormatStringValue(string value)
+    {
+        if (value == null) return "[Null]";
+        if (!string.IsNullOrEmpty(FirstName) && FirstName.Length == 0) return "[Empty]";
+        return value;
+    }
+
+    private string FormatEnumValue<T>(T value)
+    {
+        if (value == null) return "[Null]";
+        var type = typeof(T);
+        var underlying = Nullable.GetUnderlyingType(type);
+        if (underlying != null) type = underlying;
+        return Enum.GetName(type, value);
+    }
+
+    private string FormatDateTimeValue(DateTime? dt)
+    {
+        if (dt == null) return "[Null]";
+        return $"{dt.Value.Year:0000}-{dt.Value.Month:00}-{dt.Value.Day:00}";
     }
 }

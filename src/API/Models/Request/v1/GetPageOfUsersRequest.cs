@@ -35,19 +35,22 @@ public class GetPageOfUsersRequest
     }
 
     /// <summary>
-    /// The filter is used for filtering results. i.e. filter=sex:male
+    /// The fields value is used to shape the returning data. i.e. fields=id,lastname
+    /// </summary>
+    public string Fields { get; set; }
+
+    /// <summary>
+    /// The filter value is used for filtering results. i.e. filter=sex:male
     /// </summary>
     public string Filter { get; set; }
 
     /// <summary>
-    /// The search is used for searching within text searchable fields. i.e. search=abc
+    /// The search value is used for searching within text searchable fields. i.e. search=aa
     /// </summary>
     public string Search { get; set; }
 
     /// <summary>
-    /// The order by is used for sorting results. i.e. orderBy=FirstName:asc,LastName:asc
+    /// The sort value is used for sorting results. i.e. sort=LastName:asc,FirstName:asc
     /// </summary>
-    public string OrderBy { get; set; } = "LastName";
-
-    public string Fields { get; set; }
+    public string Sort { get; set; } = "LastName:asc,FirstName:asc";
 }

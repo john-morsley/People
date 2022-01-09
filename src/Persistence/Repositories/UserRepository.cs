@@ -20,7 +20,8 @@ public class UserRepository : Repository<Users.Domain.Models.User>, IUserReposit
         {
             foreach (var filter in userFilters)
             {
-                users = users.Where(FilterPredicate(filter));
+                var filterPredicate = FilterPredicate(filter);
+                users = users.Where(filterPredicate);
             }
         }
 
@@ -55,8 +56,11 @@ public class UserRepository : Repository<Users.Domain.Models.User>, IUserReposit
     private string FilterPredicate(IFilter filter)
     {
         if (filter.Key.Equals("Sex", StringComparison.CurrentCultureIgnoreCase) ||
-            filter.Key.Equals("Gender", StringComparison.CurrentCultureIgnoreCase))
+            filter.Key.Equals("Gender", StringComparison.CurrentCultureIgnoreCase) ||
+            filter.Key.Equals("FirstName", StringComparison.CurrentCultureIgnoreCase) ||
+            filter.Key.Equals("LastName", StringComparison.CurrentCultureIgnoreCase))
         {
+            if (string.IsNullOrEmpty(filter.Value)) return $"{filter.Key} = null";
             return $"{filter.Key} = \"{filter.Value}\"";
         }
         return $"{filter.Key} = {filter.Value}";
@@ -64,7 +68,10 @@ public class UserRepository : Repository<Users.Domain.Models.User>, IUserReposit
 
     private bool IsFilterUserSpecific(IFilter filter)
     {
-        return filter.Key.Equals("Sex", StringComparison.CurrentCultureIgnoreCase) ||
-               filter.Key.Equals("Gender", StringComparison.CurrentCultureIgnoreCase);
+        return filter.Key.Equals("FirstName", StringComparison.CurrentCultureIgnoreCase) ||
+               filter.Key.Equals("LastName", StringComparison.CurrentCultureIgnoreCase) ||
+               filter.Key.Equals("Sex", StringComparison.CurrentCultureIgnoreCase) ||
+               filter.Key.Equals("Gender", StringComparison.CurrentCultureIgnoreCase) ||
+               filter.Key.Equals("DateOfBirth", StringComparison.CurrentCultureIgnoreCase);
     }
 }

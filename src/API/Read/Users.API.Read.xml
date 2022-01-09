@@ -8,6 +8,7 @@
             <summary>
             Get a single user by their Id
             </summary>
+            <param name="userId">The unique identifier for the user</param>
             <param name="getUserRequest">An object that contains the data to get and shape a user</param>
             <returns>The requested user (shaped, if required)</returns>
             <response code="200">Success - OK - Returns the requested user</response>

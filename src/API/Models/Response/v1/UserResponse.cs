@@ -16,25 +16,28 @@ public class UserResponse
 
     public override string ToString()
     {
-        var firstName = "[Null]";
-        var lastName = "[Null]";
-        var sex = "[Null]";
-        var gender = "[Null]";
-        var dateOfBirth = "[Null]";
+        var firstName = FormatStringValue(FirstName);
+        var lastName = FormatStringValue(LastName);
+        var sex = FormatEnumValue(Sex);
+        var gender = FormatEnumValue(Gender);
+        var dateOfBirth = FormatStringValue(DateOfBirth);
 
-        if (FirstName == string.Empty) firstName = "[Empty]";
-        if (LastName == string.Empty) lastName = "[Empty]";
-        if (Sex != null) sex = Enum.GetName(typeof(Sex), Sex);
-        if (Gender != null) gender = Enum.GetName(typeof(Gender), Gender);
-        if (DateOfBirth == string.Empty)
-        {
-            dateOfBirth = "[Empty]";
-        }
-        else if (DateOfBirth.Length > 0) 
-        { 
-            dateOfBirth = DateOfBirth; 
-        }
+        return $"Id: {Id} | FirstName: {firstName} | LastName: {lastName} | Sex: {sex} | Gender: {gender} | DateOfBirth: {dateOfBirth}";
+    }
 
-        return $"Id:{Id}|FirstName:{firstName}|LastName:{lastName}|Sex:{sex}|Gender:{gender}|DateOfBirth:{dateOfBirth}";
+    private string FormatStringValue(string value)
+    {
+        if (value == null) return "[Null]";
+        if (!string.IsNullOrEmpty(FirstName) && FirstName.Length == 0) return "[Empty]";
+        return value;
+    }
+
+    private string FormatEnumValue<T>(T value)
+    {
+        if (value == null) return "[Null]";
+        var type = typeof(T);
+        var underlying = Nullable.GetUnderlyingType(type);
+        if (underlying != null) type = underlying;
+        return Enum.GetName(type, value);
     }
 }

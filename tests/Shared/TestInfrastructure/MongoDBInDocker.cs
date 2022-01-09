@@ -8,9 +8,7 @@ public class MongoDBInDocker
     public const string MONGODB_AUTHENTICATION_MECHANISM = "SCRAM-SHA-1";
     public const int MONGODB_PORT = 27017;
 
-    public static async Task<(string containerId, int port)> EnsureDockerStartedAndGetContainerIdAndPortAsync(
-        string username,
-        string password)
+    public static async Task<(string containerId, int port)> EnsureDockerStartedAndGetContainerIdAndPortAsync(string username, string password)
     {
         await CleanupRunningContainers();
 

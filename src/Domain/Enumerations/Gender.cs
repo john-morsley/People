@@ -9,6 +9,5 @@
         NonBinary = 4, // A person who identifies as nonbinary does not experience gender within the gender binary. People who are nonbinary may also experience overlap with different gender expressions, such as being gender non-conforming.
         Agender = 5, // Not having a gender or identifying with a gender. They may describe themselves as being gender neutral or genderless. 
         Bigender = 6, // A person who identifies as bigender has two genders. People who are bigender often display cultural masculine and feminine roles.
-
     }
 }

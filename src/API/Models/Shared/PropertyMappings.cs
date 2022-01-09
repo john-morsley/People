@@ -35,5 +35,21 @@ namespace Users.API.Models.Shared
 
             return matchingMappings.First()._mappings;
         }
+
+        public bool DoesValidMappingExistFor<TSource, TDestination>(string fields)
+        {
+            var propertyMappings = GetPropertyMapping<TSource, TDestination>();
+
+            if (fields == null) return true;
+
+            var splitFields = fields.Split(',');
+            foreach (var field in splitFields)
+            {
+                var fieldName = field.Trim();
+                if (!propertyMappings.ContainsKey(fieldName)) return false;
+            }
+
+            return true;
+        }
     }
 }

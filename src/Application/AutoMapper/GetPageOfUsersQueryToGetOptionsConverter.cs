@@ -25,34 +25,34 @@ public class GetPageOfUsersQueryToGetOptionsConverter : ITypeConverter<Users.App
                 var field = parts[0];
                 var value = parts[1];
                 if (string.IsNullOrEmpty(field)) throw new ArgumentException(nameof(source), "Filter (field:value) invalid. Found an empty field section.");
-                if (string.IsNullOrEmpty(value)) throw new ArgumentException(nameof(source), "Filter (field:value) invalid. Found an empty value section.");
+                //if (string.IsNullOrEmpty(value)) throw new ArgumentException(nameof(source), "Filter (field:value) invalid. Found an empty value section.");
                 getOptions.AddFilter(new Filter(field, value));
             }
         }
 
-        if (!string.IsNullOrEmpty(source.OrderBy))
+        if (!string.IsNullOrEmpty(source.Sort))
         {
-            var orderBys = source.OrderBy.Split(',');
-            foreach (var orderBy in orderBys)
+            var sorts = source.Sort.Split(',');
+            foreach (var sort in sorts)
             {
-                if (string.IsNullOrEmpty(orderBy)) throw new ArgumentException(nameof(source), "OrderBy (field:order,field:order) invalid. Found an empty field|order section.");
+                if (string.IsNullOrEmpty(sort)) throw new ArgumentException(nameof(source), "Sort (field:order,field:order) invalid. Found an empty field|order section.");
 
-                var parts = orderBy.Split(':');
-                if (parts.Length > 2) throw new ArgumentException(nameof(source), "OrderBy (field:order,field:order) invalid. Found more than 2 parts to a field:order section.");
+                var parts = sort.Split(':');
+                if (parts.Length > 2) throw new ArgumentException(nameof(source), "Sort (field:order,field:order) invalid. Found more than 2 parts to a field:order section.");
 
                 if (parts.Length == 1)
                 {
                     var field = parts[0];
-                    if (string.IsNullOrEmpty(field)) throw new ArgumentException(nameof(source), "OrderBy (field:order) invalid. field missing.");
+                    if (string.IsNullOrEmpty(field)) throw new ArgumentException(nameof(source), "Sort (field:order) invalid. field missing.");
                     var sortOrder = SortOrder.Ascending;
                     getOptions.AddOrdering(new Ordering(field, sortOrder));
                 }
                 else if (parts.Length == 2)
                 {
                     var field = parts[0];
-                    if (string.IsNullOrEmpty(field)) throw new ArgumentException(nameof(source), "OrderBy (field:order) invalid. field missing.");
+                    if (string.IsNullOrEmpty(field)) throw new ArgumentException(nameof(source), "Sort (field:order) invalid. field missing.");
                     var order = parts[1];
-                    if (string.IsNullOrEmpty(order)) throw new ArgumentException(nameof(source), "OrderBy (field:order) invalid. Order missing.)");
+                    if (string.IsNullOrEmpty(order)) throw new ArgumentException(nameof(source), "Sort (field:order) invalid. Order missing.)");
                     var sortOrder = SortOrder.Ascending;
                     if (order.ToLower() == "desc" || order.ToLower() == "descending") sortOrder = SortOrder.Descending;
                     getOptions.AddOrdering(new Ordering(field, sortOrder));

@@ -22,6 +22,7 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Get a single user by their Id
     /// </summary>
+    /// <param name="userId">The unique identifier for the user</param>
     /// <param name="getUserRequest">An object that contains the data to get and shape a user</param>
     /// <returns>The requested user (shaped, if required)</returns>
     /// <response code="200">Success - OK - Returns the requested user</response>
@@ -159,10 +160,11 @@ public class UsersController : ControllerBase
                     new 
                     { 
                         pageNumber = getPageOfUsersRequest.PageNumber - 1, 
-                        pageSize = getPageOfUsersRequest.PageSize, 
+                        pageSize = getPageOfUsersRequest.PageSize,
+                        fields = getPageOfUsersRequest.Fields,
                         filter = getPageOfUsersRequest.Filter,
                         search = getPageOfUsersRequest.Search,
-                        orderBy = getPageOfUsersRequest.OrderBy
+                        sort = getPageOfUsersRequest.Sort
                     });
             case Users.API.Models.Shared.ResourceUriType.NextPage:
                 return Url.Link(
@@ -171,9 +173,10 @@ public class UsersController : ControllerBase
                     {
                         pageNumber = getPageOfUsersRequest.PageNumber + 1,
                         pageSize = getPageOfUsersRequest.PageSize,
+                        fields = getPageOfUsersRequest.Fields,
                         filter = getPageOfUsersRequest.Filter,
                         search = getPageOfUsersRequest.Search,
-                        orderBy = getPageOfUsersRequest.OrderBy
+                        sort = getPageOfUsersRequest.Sort
                     });
             default:
                 return Url.Link(
@@ -182,9 +185,10 @@ public class UsersController : ControllerBase
                     {
                         pageNumber = getPageOfUsersRequest.PageNumber,
                         pageSize = getPageOfUsersRequest.PageSize,
+                        fields = getPageOfUsersRequest.Fields,
                         filter = getPageOfUsersRequest.Filter,
                         search = getPageOfUsersRequest.Search,
-                        orderBy = getPageOfUsersRequest.OrderBy
+                        sort = getPageOfUsersRequest.Sort
                     });
         }
     }
@@ -207,7 +211,7 @@ public class UsersController : ControllerBase
         Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     {
         var previousPageLink = pageOfUserResponses.HasPrevious ? CreateUsersResourceUri(getPageOfUsersRequest, Users.API.Models.Shared.ResourceUriType.PreviousPage) : null;
-        var nextPageLink = pageOfUserResponses.HasNext ? CreateUsersResourceUri(getPageOfUsersRequest, Users.API.Models.Shared.ResourceUriType.NextPage) : null;
+        var nextPageLink = pageOfUserResponses.HasNext ? CreateUsersResourceUri(getPageOfUsersRequest, Users.API.Models.Shared.ResourceUriType.NextPage) : null;        
 
         var pagination = new Users.API.Models.Shared.Pagination()
         {

@@ -8,7 +8,7 @@
 
             PropertyMappings = propertyMappings;
 
-            RuleFor(_ => _.Fields).Must(BeValidFields).WithMessage("The field(s) are invalid.");            
+            RuleFor(_ => _.Fields).Must(BeValidFields).WithMessage("The fields value is invalid. e.g. fields=id,lastname");
         }
 
         public IPropertyMappings PropertyMappings { get; }
@@ -17,26 +17,20 @@
         {
             if (fields == null) return true;
 
-            var splitFields = fields.Split(',');
-            foreach (var field in splitFields)
-            {
-                var fieldName = field.Trim();
-
-                if (!IsFieldValid(fieldName)) return false;
-            }
-
-            return true;
+            return PropertyMappings.DoesValidMappingExistFor<Users.API.Models.Request.v1.GetUserRequest, Users.Domain.Models.User>(fields);
         }
 
-        private bool IsFieldValid(string field)
-        {
-            if (string.IsNullOrEmpty(field)) return false;
-            field = field.ToLower();
+        //private bool IsFieldValid(string field)
+        //{
+        //    if (string.IsNullOrEmpty(field)) return false;
+        //    field = field.ToLower();
 
-            var userMappings = PropertyMappings.GetPropertyMapping<Users.API.Models.Request.v1.GetUserRequest, Users.Domain.Models.User>();
-            if (userMappings.ContainsKey(field)) return true;
+        //    //var userMappings = PropertyMappings.GetPropertyMapping<Users.API.Models.Request.v1.GetUserRequest, Users.Domain.Models.User>();
+        //    //if (userMappings.ContainsKey(field)) return true;
 
-            return false;
-        }
+        //    //if (PropertyMappings.DoesValidMappingExistFor<Users.API.Models.Request.v1.GetUserRequest, Users.Domain.Models.User>()
+
+        //    return false;
+        //}
     }
 }

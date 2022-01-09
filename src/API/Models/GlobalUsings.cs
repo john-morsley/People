@@ -5,6 +5,7 @@ global using System;
 global using System.Collections.Generic;
 global using System.Dynamic;
 global using System.Reflection;
+global using System.Text;
 global using Users.API.Models.Interfaces;
 global using Users.API.Models.Shared;
 global using Users.Domain.Enumerations;
