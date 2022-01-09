@@ -2,6 +2,7 @@
 global using AutoFixture.Kernel;
 global using Docker.DotNet;
 global using Docker.DotNet.Models;
+global using FluentAssertions.Equivalency;
 global using Microsoft.Extensions.Configuration;
 global using MongoDB.Driver;
 global using NUnit.Framework;

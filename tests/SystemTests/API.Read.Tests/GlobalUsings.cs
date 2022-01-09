@@ -16,4 +16,5 @@ global using System.Reflection;
 global using System.Text.Json;
 global using System.Threading.Tasks;
 global using System.Web;
+global using TestInfrastructure.AutoFixture;
 global using Users.Domain.Models;

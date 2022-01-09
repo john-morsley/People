@@ -38,8 +38,10 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         actual.Should().NotBeNull();
         actual.Id.Should().Be(expected.Id);
 
+        //actual.Should().BeEquivalentTo(expected, options => options.Using(new UserEquivalencyStep()));
+
         var expectedFields = new List<string>();
-        var unexpectedFields = AllUserFields();
+        var unexpectedFields = AllUserFields<Users.API.Models.Response.v1.UserResponse>();
 
         foreach (var expectedField in validFields.Split(','))
         {
@@ -110,11 +112,11 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         return string.Join(",", listOfFields);
     }
 
-    private IList<string> AllUserFields()
+    private IList<string> AllUserFields<T>() where T : class
     {
         var userFields = new List<string>();
 
-        var propertyInfos = typeof(Users.API.Models.Response.v1.UserResponse).GetProperties(BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+        var propertyInfos = typeof(T).GetProperties(BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
         foreach(var propertyInfo in propertyInfos)
         {
             userFields.Add(propertyInfo.Name);
