@@ -20,7 +20,7 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Get a single user by their Id
+    /// Get a single user by their unique identifier
     /// </summary>
     /// <param name="userId">The unique identifier for the user</param>
     /// <param name="getUserRequest">An object that contains the data to get and shape a user</param>
@@ -29,7 +29,7 @@ public class UsersController : ControllerBase
     /// <response code="204">Success - No Content - No user matched the given identifier</response>
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
     /// <response code="422">Error - Unprocessable Entity - The GetUserRequest object contained invalid data</response>
-    [HttpGet("{userId:guid}")]
+    [HttpGet("{userId:guid}", Name = "GetUser")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -37,6 +37,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> Get([FromRoute] Guid userId, Users.API.Models.Request.v1.GetUserRequest getUserRequest)
     {
+        if (userId == Guid.Empty) return BadRequest();
         if (getUserRequest == null) return BadRequest();
 
         getUserRequest.Id = userId;
@@ -45,7 +46,9 @@ public class UsersController : ControllerBase
 
         if (getUserResponse == null) return NoContent();
 
-        return Ok(getUserResponse.ShapeData(getUserRequest.Fields));
+        var shapedUser = getUserResponse.ShapeData(getUserRequest.Fields);
+
+        return Ok(AddLinks(shapedUser, userId, getUserRequest));
     }
 
     [HttpHead("{userId:guid}")]
@@ -63,7 +66,10 @@ public class UsersController : ControllerBase
 
         if (getUserResponse == null) return NoContent();
 
-        Response.ContentLength = CalculateContentLength(getUserResponse);
+        var shapedUser = getUserResponse.ShapeData(getUserRequest.Fields);
+        var linkedShapedUser = AddLinks(shapedUser, userId, getUserRequest);
+
+        Response.ContentLength = CalculateContentLength(linkedShapedUser);
 
         return Ok();
     }
@@ -134,11 +140,24 @@ public class UsersController : ControllerBase
         return Ok();
     }
 
-    private long CalculateContentLength(Models.Response.v1.UserResponse getUserResponse)
+    private ExpandoObject AddLinks(ExpandoObject shapedUser, Guid userId, Users.API.Models.Request.v1.GetUserRequest getUserRequest)
     {
-        var json = System.Text.Json.JsonSerializer.Serialize(getUserResponse);
+        var links = CreateLinksForUser(userId, getUserRequest);
+        shapedUser.TryAdd("links", links);
+        return shapedUser;
+    }
+
+    private long CalculateContentLength<T>(T obj) where T : class
+    {
+        var json = System.Text.Json.JsonSerializer.Serialize(obj);
         return json.Length;
     }
+
+    //private long CalculateContentLength(Models.Response.v1.UserResponse getUserResponse)
+    //{
+    //    var json = System.Text.Json.JsonSerializer.Serialize(getUserResponse);
+    //    return json.Length;
+    //}
 
     private long CalculateContentLength(IEnumerable<Models.Response.v1.UserResponse> pageOfUserResponses)
     {
@@ -148,6 +167,37 @@ public class UsersController : ControllerBase
         };
         var json = System.Text.Json.JsonSerializer.Serialize(pageOfUserResponses, options);
         return json.Length;
+    }
+
+    private IEnumerable<Link> CreateLinksForUser(Guid userId, Users.API.Models.Request.v1.GetUserRequest getUserRequest)
+    {
+        var links = new List<Link>();
+
+        string url;
+        Link link;
+
+        if (string.IsNullOrWhiteSpace(getUserRequest.Fields))
+        {
+            url = Url.Link("GetUser", new { userId });
+            link = new Link(url, "self", "GET");
+            links.Add(link);
+        }
+        else
+        {
+            url = Url.Link("GetUser", new { userId, getUserRequest });
+            link = new Link(url, "self", "GET");
+            links.Add(link);
+        }
+
+        url = Url.Link("DeleteUser", new { userId });
+        link = new Link(url, "delete_user", "DELETE");
+        links.Add(link);
+
+        //url = Url.Link("CreateUser", new { userId });
+        //link = new Link(url, "create_user", "POST");
+        //links.Add(link);
+
+        return links;
     }
 
     private string CreateUsersResourceUri(Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest, Users.API.Models.Shared.ResourceUriType type)

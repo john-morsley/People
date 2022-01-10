@@ -6,7 +6,7 @@
     <members>
         <member name="M:Users.API.Read.Controllers.v1.UsersController.Get(System.Guid,Users.API.Models.Request.v1.GetUserRequest)">
             <summary>
-            Get a single user by their Id
+            Get a single user by their unique identifier
             </summary>
             <param name="userId">The unique identifier for the user</param>
             <param name="getUserRequest">An object that contains the data to get and shape a user</param>

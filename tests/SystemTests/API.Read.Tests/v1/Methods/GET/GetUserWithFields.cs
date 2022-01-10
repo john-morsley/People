@@ -19,22 +19,22 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         AddUserToDatabase(expected);
         NumberOfUsersInDatabase().Should().Be(1);
 
-        validFields = AddIdToFieldsIfMissing(validFields);
+        validFields = AddToFieldsIfMissing("Id", validFields);        
 
         // Act...
         var url = $"/api/v1/users/{userId}?fields={validFields}";
-        var httpResponse = await _client.GetAsync(url);
+        var result = await _client.GetAsync(url);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);
 
-        httpResponse.IsSuccessStatusCode.Should().BeTrue();
-        httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var response = await httpResponse.Content.ReadAsStringAsync();
-        response.Length.Should().BeGreaterThan(0);
+        var content = await result.Content.ReadAsStringAsync();
+        content.Length.Should().BeGreaterThan(0);
 
-        var actual = DeserializeUserResponse(response);
+        var actual = DeserializeUserResponse(content);
         actual.Should().NotBeNull();
         actual.Id.Should().Be(expected.Id);
 
@@ -48,8 +48,91 @@ public class GetUserWithFields : APIsTestBase<StartUp>
             expectedFields.Add(expectedField);
             unexpectedFields.Remove(expectedField);
         }
+        unexpectedFields.Remove("Links");
         ShouldBeEqual(expectedFields, actual, expected);
         ShouldBeNull(unexpectedFields, actual);
+        actual.Links.Count().Should().Be(2);
+    }
+
+    [Test]
+    [Category("UnHappy")]
+    public async Task When_A_User_Is_Requested_With_Invalid_Fields___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
+    {
+        // Arrange...
+        NumberOfUsersInDatabase().Should().Be(0);
+
+        // Act...
+        var userId = Guid.NewGuid();
+        var url = $"/api/v1/users/{userId}?fields=fielddoesnotexist";
+        var result = await _client.GetAsync(url);
+
+        // Assert...
+        NumberOfUsersInDatabase().Should().Be(0);
+
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+
+        var content = await result.Content.ReadAsStringAsync();
+        content.Length.Should().BeGreaterThan(0);
+
+        var problemDetails = JsonSerializer.Deserialize<ValidationProblemDetails>(content);
+        problemDetails.Should().NotBeNull();
+        problemDetails.Status.Should().Be((int)HttpStatusCode.UnprocessableEntity);
+        problemDetails.Title.Should().Be("Validation error(s) occurred!");
+        problemDetails.Detail.Should().Be("See the errors field for details.");
+        problemDetails.Instance.Should().Be($"/api/v1/users/{userId}");
+        problemDetails.Extensions.Should().NotBeNull();
+        var traceId = problemDetails.Extensions.Where(_ => _.Key == "traceId").FirstOrDefault();
+        traceId.Should().NotBeNull();
+        problemDetails.Errors.Count().Should().Be(1);
+        var error = problemDetails.Errors.First();
+        error.Key.Should().Be("Fields");
+        var value = error.Value.First();
+        value.Should().Be("The fields value is invalid. e.g. fields=id,lastname");
+    }
+
+    private static string AddToFieldsIfMissing(string toAdd, string fields)
+    {
+        var listOfFields = new List<string>();
+        var hasId = false;
+        foreach (var field in fields.Split(','))
+        {
+            if (field.ToLower() == toAdd.ToLower()) hasId = true;
+            listOfFields.Add(field);
+        }
+        if (!hasId) listOfFields.Add(toAdd);
+        return string.Join(",", listOfFields);
+    }
+
+    private IList<string> AllUserFields<T>() where T : class
+    {
+        var userFields = new List<string>();
+
+        var propertyInfos = typeof(T).GetProperties(BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+        foreach (var propertyInfo in propertyInfos)
+        {
+            userFields.Add(propertyInfo.Name);
+        }
+
+        return userFields;
+    }
+
+    private object GetValue<T>(T t, string fieldName) where T : class
+    {
+        var propertyInfo = typeof(T).GetProperty(fieldName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+        var type = propertyInfo.PropertyType;
+        var value = propertyInfo.GetValue(t);
+        var underlying = Nullable.GetUnderlyingType(type);
+        if (underlying != null)
+        {
+            switch (underlying.FullName)
+            {
+                case "System.DateTime": return ((DateTime)value).ToString("yyyy-MM-dd");
+            }
+        }
+
+        return value;
     }
 
     private void ShouldBeEqual(IList<string> fieldNames, Models.Response.v1.UserResponse actual, Domain.Models.User expected)
@@ -79,86 +162,5 @@ public class GetUserWithFields : APIsTestBase<StartUp>
     {
         var actualValue = GetValue(actual, fieldName);
         actualValue.Should().BeNull();
-    }
-
-    private object GetValue<T>(T t, string fieldName) where T : class
-    {
-        var propertyInfo = typeof(T).GetProperty(fieldName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-
-        var type = propertyInfo.PropertyType;
-        var value = propertyInfo.GetValue(t);
-        var underlying = Nullable.GetUnderlyingType(type);
-        if (underlying != null)
-        {
-            switch (underlying.FullName)
-            {
-                case "System.DateTime": return ((DateTime)value).ToString("yyyy-MM-dd");
-            }
-        }
-        
-        return value;
-    }
-
-    private static string AddIdToFieldsIfMissing(string fields)
-    {
-        var listOfFields = new List<string>();
-        var hasId = false;
-        foreach (var field in fields.Split(','))
-        {
-            if (field.ToLower() == "id") hasId = true;
-            listOfFields.Add(field);
-        }
-        if (!hasId) listOfFields.Add("Id");
-        return string.Join(",", listOfFields);
-    }
-
-    private IList<string> AllUserFields<T>() where T : class
-    {
-        var userFields = new List<string>();
-
-        var propertyInfos = typeof(T).GetProperties(BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-        foreach(var propertyInfo in propertyInfos)
-        {
-            userFields.Add(propertyInfo.Name);
-        }
-
-        return userFields;
-    }
-
-    [Test]
-    [Category("UnHappy")]
-    public async Task When_A_User_Is_Requested_With_Invalid_Fields___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
-    {
-        // Arrange...
-        NumberOfUsersInDatabase().Should().Be(0);
-
-        // Act...
-        var userId = Guid.NewGuid();
-        var url = $"/api/v1/users/{userId}?fields=fielddoesnotexist";
-        var httpResponse = await _client.GetAsync(url);
-
-        // Assert...
-        NumberOfUsersInDatabase().Should().Be(0);
-
-        httpResponse.IsSuccessStatusCode.Should().BeFalse();
-        httpResponse.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
-
-        var response = await httpResponse.Content.ReadAsStringAsync();
-        response.Length.Should().BeGreaterThan(0);
-
-        var problemDetails = JsonSerializer.Deserialize<ValidationProblemDetails>(response);
-        problemDetails.Should().NotBeNull();
-        problemDetails.Status.Should().Be((int)HttpStatusCode.UnprocessableEntity);
-        problemDetails.Title.Should().Be("Validation error(s) occurred!");
-        problemDetails.Detail.Should().Be("See the errors field for details.");
-        problemDetails.Instance.Should().Be($"/api/v1/users/{userId}");
-        problemDetails.Extensions.Should().NotBeNull();
-        var traceId = problemDetails.Extensions.Where(_ => _.Key == "traceId").FirstOrDefault();
-        traceId.Should().NotBeNull();
-        problemDetails.Errors.Count().Should().Be(1);
-        var error = problemDetails.Errors.First();
-        error.Key.Should().Be("Fields");
-        var value = error.Value.First();
-        value.Should().Be("The fields value is invalid. e.g. fields=id,lastname");
     }
 }

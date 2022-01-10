@@ -2,6 +2,7 @@
 global using FluentAssertions;
 global using HtmlAgilityPack;
 global using Microsoft.AspNetCore.Hosting;
+global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.TestHost;
 global using Microsoft.Extensions.Configuration;
 global using Newtonsoft.Json.Linq;
@@ -9,8 +10,7 @@ global using NUnit.Framework;
 global using System;
 global using System.Net;
 global using System.Net.Http;
-global using System.Net.Http.Headers;
 global using System.Text.Json;
 global using System.Threading.Tasks;
 global using Users.API.Write;
-//global using Domain.Enumerations.Sex;
+global using System.Linq;

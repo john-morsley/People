@@ -138,7 +138,6 @@ public class PagedListTests
         pagedList.TotalCount = 1;
 
         // Act...
-
         var serializeOptions = new JsonSerializerOptions
         {
             Converters =

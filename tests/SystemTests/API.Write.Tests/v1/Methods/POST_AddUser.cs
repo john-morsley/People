@@ -1,6 +1,6 @@
 ﻿namespace Users.API.Write.Tests.v1.Methods;
 
-public class POST : APIsTestBase<StartUp>
+public class POST_AddUser : APIsTestBase<StartUp>
 {
     [Test]
     [Category("Happy")]
@@ -14,18 +14,18 @@ public class POST : APIsTestBase<StartUp>
         var addUserRequest = GenerateTestAddUserRequest();
         var addUserRequestJson = JsonSerializer.Serialize(addUserRequest);
         var payload = new StringContent(addUserRequestJson, System.Text.Encoding.UTF8, API_MEDIA_TYPE);
-        var httpResponse = await _client.PostAsync(url, payload);
+        var result = await _client.PostAsync(url, payload);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);
-        httpResponse.IsSuccessStatusCode.Should().BeTrue();
-        httpResponse.StatusCode.Should().Be(HttpStatusCode.Created);        
-        var content = await httpResponse.Content.ReadAsStringAsync();
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.Created);        
+        var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
         var userResponse = DeserializeUserResponse(content);
         userResponse.Should().NotBeNull();        
         var actualUser = GetUserFromDatabase(userResponse.Id);
-        httpResponse.Headers.Location.Should().Be($"http://localhost/api/v1/users/{userResponse.Id}");
+        result.Headers.Location.Should().Be($"http://localhost/api/v1/users/{userResponse.Id}");
     }
 
     [Test]
@@ -39,14 +39,14 @@ public class POST : APIsTestBase<StartUp>
         var url = $"/api/v1/users/";
         var addUserRequestJson = JsonSerializer.Serialize("");
         var payload = new StringContent(addUserRequestJson, System.Text.Encoding.UTF8, API_MEDIA_TYPE);
-        var httpResponse = await _client.PostAsync(url, payload);
+        var result = await _client.PostAsync(url, payload);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(0);
-        httpResponse.IsSuccessStatusCode.Should().BeFalse();
-        httpResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        var content = await httpResponse.Content.ReadAsStringAsync();
+        var content = await result.Content.ReadAsStringAsync();
         // ToDo --> Validate error object
 
         //userResponseJson.Length.Should().BeGreaterThan(0);
@@ -72,21 +72,33 @@ public class POST : APIsTestBase<StartUp>
         };
         var addUserRequestJson = JsonSerializer.Serialize(addUserRequest);
         var payload = new StringContent(addUserRequestJson, System.Text.Encoding.UTF8, API_MEDIA_TYPE);
-        var httpResponse = await _client.PostAsync(url, payload);
+        var result = await _client.PostAsync(url, payload);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(0);
-        httpResponse.IsSuccessStatusCode.Should().BeFalse();
-        httpResponse.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         
-        var content = await httpResponse.Content.ReadAsStringAsync();
-        // ToDo --> Validate error object
-        
-        //userResponseJson.Length.Should().BeGreaterThan(0);
-        //var userResponse = DeserializeUserResponse(userResponseJson);
-        //userResponse.Should().NotBeNull();
-        //var actualUser = GetUserFromDatabase(userResponse.Id);
-        //httpResponse.Headers.Location.Should().Be($"http://localhost/api/v1/users/{userResponse.Id}");
+        var content = await result.Content.ReadAsStringAsync();
+
+        var problemDetails = JsonSerializer.Deserialize<ValidationProblemDetails>(content);
+        problemDetails.Should().NotBeNull();
+        problemDetails.Status.Should().Be((int)HttpStatusCode.UnprocessableEntity);
+        problemDetails.Title.Should().Be("Validation error(s) occurred!");
+        problemDetails.Detail.Should().Be("See the errors field for details.");
+        problemDetails.Instance.Should().Be("/api/v1/users/");
+        problemDetails.Extensions.Should().NotBeNull();
+        var traceId = problemDetails.Extensions.Where(_ => _.Key == "traceId").FirstOrDefault();
+        traceId.Should().NotBeNull();
+        problemDetails.Errors.Count().Should().Be(2);
+        var firstNameError = problemDetails.Errors.Where(_ => _.Key == "FirstName").Single();
+        firstNameError.Should().NotBeNull();
+        var firstNameErrorValue = firstNameError.Value.First();
+        firstNameErrorValue.Should().Be("First name cannot be empty.");
+        var lastNameError = problemDetails.Errors.Where(_ => _.Key == "LastName").Single();
+        lastNameError.Should().NotBeNull();
+        var lastNameErrorValue = lastNameError.Value.First();
+        lastNameErrorValue.Should().Be("Last name cannot be empty.");
     }
 
     [Test]
@@ -99,12 +111,12 @@ public class POST : APIsTestBase<StartUp>
         // Act...
         var url = $"/api/v1/users/{Guid.NewGuid}"; // POST with a user ID not allowed!
         var payload = new StringContent(string.Empty, System.Text.Encoding.UTF8, API_MEDIA_TYPE);
-        var httpResponse = await _client.PostAsync(url, payload);
+        var result = await _client.PostAsync(url, payload);
 
         // Assert...
-        httpResponse.IsSuccessStatusCode.Should().BeFalse();
-        httpResponse.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
-        var content = await httpResponse.Content.ReadAsStringAsync();
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
+        var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().Be(0);
     }
 }

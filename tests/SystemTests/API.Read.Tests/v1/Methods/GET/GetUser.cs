@@ -53,5 +53,6 @@ public class GetUser : APIsTestBase<StartUp>
         actual.Id.Should().Be(expected.Id);
         actual.FirstName.Should().Be(expected.FirstName);
         actual.LastName.Should().Be(expected.LastName);
+        actual.Links.Count().Should().Be(2);
     }
 }

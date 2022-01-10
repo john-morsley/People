@@ -6,7 +6,7 @@
     <members>
         <member name="M:Users.API.Write.Controllers.v1.UsersController.Post(Users.API.Models.Request.v1.AddUserRequest)">
             <summary>
-            Add a user
+            Create a user
             </summary>
             <param name="addUserRequest">An AddUserRequest object which contains all the necessary data to create a user</param>
             <returns>A URI to the newly added user in the header (location)</returns>

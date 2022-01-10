@@ -48,8 +48,8 @@ internal class Get : UserRepositoryTests
         var lastUserOnPage = pageOfUsers.Last();
         var firstUserInDatabase = usersInDatabase.First();
         var lastUserInDatabase = usersInDatabase.Last();
-        firstUserOnPage.Should().Equals(firstUserInDatabase);
-        lastUserOnPage.Should().Equals(lastUserInDatabase);
+        firstUserOnPage.Should().BeEquivalentTo(firstUserInDatabase);
+        lastUserOnPage.Should().BeEquivalentTo(lastUserInDatabase);
     }
 
     [Test]
@@ -73,8 +73,8 @@ internal class Get : UserRepositoryTests
         var firstUserOnPage = pageOfUsers.First();
         var lastUserOnPage = pageOfUsers.Last();
         var firstUserInDatabase = usersInDatabase.First();
-        firstUserOnPage.Should().Equals(firstUserInDatabase);
-        lastUserOnPage.Should().Equals(firstUserInDatabase);
+        firstUserOnPage.Should().BeEquivalentTo(firstUserInDatabase);
+        lastUserOnPage.Should().BeEquivalentTo(firstUserInDatabase);
     }
 
     [Test]
@@ -124,7 +124,7 @@ internal class Get : UserRepositoryTests
         NumberOfUsersInDatabase().Should().Be(11);
         pageOfUsers.Count.Should().Be(1);
         var firstUserOnPage = pageOfUsers.First();
-        firstUserOnPage.Should().Equals(expected);
+        firstUserOnPage.Should().BeEquivalentTo(expected);
     }
 
     [Test]
@@ -151,8 +151,13 @@ internal class Get : UserRepositoryTests
         NumberOfUsersInDatabase().Should().Be(12);
         pageOfUsers.Count.Should().Be(2);
         var firstUserOnPage = pageOfUsers.First();
-        firstUserOnPage.Should().Equals(john);
+        firstUserOnPage.Should().BeEquivalentTo(john);
         var secondUserOnPage = pageOfUsers.Skip(1).First();
-        secondUserOnPage.Should().Equals(jane);
+        secondUserOnPage.Should().BeEquivalentTo(jane);
     }
+
+    //private bool ActualUserShouldBeEquivalentToExpectedUser()
+    //{
+
+    //}
 }

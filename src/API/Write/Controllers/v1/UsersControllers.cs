@@ -21,13 +21,13 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     }
 
     /// <summary>
-    /// Add a user
+    /// Create a user
     /// </summary>
     /// <param name="addUserRequest">An AddUserRequest object which contains all the necessary data to create a user</param>
     /// <returns>A URI to the newly added user in the header (location)</returns>
     /// <response code="201">Success - Added - The user was successfully Added</response>
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response> 
-    [HttpPost]
+    [HttpPost(Name = "CreateUser")]
     [MapToApiVersion("1.0")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status201Created)]
@@ -37,8 +37,6 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
         if (addUserRequest == null) return BadRequest();
 
         var userResponse = await AddUser(addUserRequest);
-
-        var pd = new ProblemDetails();
 
         return Created($"http://localhost/api/v1/users/{userResponse.Id}", userResponse);
     }
@@ -51,7 +49,7 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     /// <response code="204">Success - No Content - User was successfully deleted</response>
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
     /// <response code="404">Error - Not Found - No user matched the given identifier</response>
-    [HttpDelete("{userId:guid}")]
+    [HttpDelete("{userId:guid}", Name = "DeleteUser")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
