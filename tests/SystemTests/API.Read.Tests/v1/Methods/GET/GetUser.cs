@@ -12,16 +12,16 @@ public class GetUser : APIsTestBase<StartUp>
         // Act...
         var userId = Guid.NewGuid();
         var url = $"/api/v1/users/{userId}";
-        var httpResponse = await _client.GetAsync(url);
+        var result = await _client.GetAsync(url);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(0);
 
-        httpResponse.IsSuccessStatusCode.Should().BeTrue();
-        httpResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        var response = await httpResponse.Content.ReadAsStringAsync();
-        response.Length.Should().Be(0);
+        var content = await result.Content.ReadAsStringAsync();
+        content.Length.Should().Be(0);
     }
 
     [Test]
@@ -37,22 +37,48 @@ public class GetUser : APIsTestBase<StartUp>
 
         // Act...
         var url = $"/api/v1/users/{userId}";
-        var httpResponse = await _client.GetAsync(url);
+        var result = await _client.GetAsync(url);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);
 
-        httpResponse.IsSuccessStatusCode.Should().BeTrue();
-        httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var response = await httpResponse.Content.ReadAsStringAsync();
-        response.Length.Should().BeGreaterThan(0);
+        var content = await result.Content.ReadAsStringAsync();
+        content.Length.Should().BeGreaterThan(0);
 
-        var actual = DeserializeUserResponse(response);
+        var actual = DeserializeUserResponse(content);
         actual.Should().NotBeNull();
         actual.Id.Should().Be(expected.Id);
         actual.FirstName.Should().Be(expected.FirstName);
-        actual.LastName.Should().Be(expected.LastName);
-        actual.Links.Count().Should().Be(2);
+        actual.LastName.Should().Be(expected.LastName);        
+
+        var hateoas = DeserializeHATEOAS(content);
+        hateoas.Links.Count().Should().Be(2);
+        var getUserLink = hateoas.Links.Single(_ => _.Method == "GET");
+        var deleteUserLink = hateoas.Links.Single(_ => _.Method == "DELETE");
+    }
+
+    [Test]
+    [Category("Unappy")]
+    public async Task When_User_Is_Requested_With_Invalid_Id___Then_404_NotFound()
+    {
+        // Arrange...
+        var userId = Guid.Empty;
+        NumberOfUsersInDatabase().Should().Be(0);
+
+        // Act...
+        var url = $"/api/v1/users/invalid-user-id";
+        var result = await _client.GetAsync(url);
+
+        // Assert...
+        NumberOfUsersInDatabase().Should().Be(0);
+
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        var content = await result.Content.ReadAsStringAsync();
+        content.Length.Should().Be(0);
     }
 }

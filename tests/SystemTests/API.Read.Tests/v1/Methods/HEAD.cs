@@ -4,7 +4,7 @@ public class HEAD : APIsTestBase<StartUp>
 {
     [Test]
     [Category("Happy")]
-    public async Task Given_The_User_Does_Not_Exist_In_The_Database___When_That_User_Is_Requested___Then_That_User_Should_Not_Found()
+    public async Task Given_The_User_Does_Not_Exist_In_The_Database___When_That_User_Is_Requested___Then_204_NoContent()
     {
         // Arrange...
         var userId = Guid.NewGuid();

@@ -3,7 +3,8 @@
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/users")]
-public class UsersController : ControllerBase
+[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+public class UsersController : Users.API.Shared.Controllers.v1.BaseController
 {
     private readonly ILogger<UsersController> _logger;
     private readonly IMediator _mediator;
@@ -12,18 +13,23 @@ public class UsersController : ControllerBase
     public UsersController(
         ILogger<UsersController> logger,
         IMediator mediator,
-        IMapper mapper)
+        IMapper mapper,
+        IConfiguration configuration,
+        IHttpContextAccessor context,
+        IApiVersionDescriptionProvider apiVersionDescriptionProvider) : base(context, apiVersionDescriptionProvider)
     {
         _logger = logger;
         _mediator = mediator;
         _mapper = mapper;
+
+        Configuration = configuration;
     }
 
     /// <summary>
     /// Get a single user by their unique identifier
     /// </summary>
     /// <param name="userId">The unique identifier for the user</param>
-    /// <param name="getUserRequest">An object that contains the data to get and shape a user</param>
+    /// <param name="fields">The fields required to shape the user</param>
     /// <returns>The requested user (shaped, if required)</returns>
     /// <response code="200">Success - OK - Returns the requested user</response>
     /// <response code="204">Success - No Content - No user matched the given identifier</response>
@@ -35,12 +41,10 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> Get([FromRoute] Guid userId, Users.API.Models.Request.v1.GetUserRequest getUserRequest)
+    public async Task<IActionResult> Get(Users.API.Models.Request.v1.GetUserRequest getUserRequest)
     {
-        if (userId == Guid.Empty) return BadRequest();
         if (getUserRequest == null) return BadRequest();
-
-        getUserRequest.Id = userId;
+        if (getUserRequest.Id == Guid.Empty) return BadRequest();
 
         var getUserResponse = await GetUserResponse(getUserRequest);
 
@@ -48,7 +52,9 @@ public class UsersController : ControllerBase
 
         var shapedUser = getUserResponse.ShapeData(getUserRequest.Fields);
 
-        return Ok(AddLinks(shapedUser, userId, getUserRequest));
+        var shapedUserWithLinks = AddLinks(shapedUser, getUserRequest);
+
+        return Ok(shapedUserWithLinks);
     }
 
     [HttpHead("{userId:guid}")]
@@ -56,18 +62,16 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> Head([FromRoute] Guid userId, Users.API.Models.Request.v1.GetUserRequest getUserRequest)
+    public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> Head(Users.API.Models.Request.v1.GetUserRequest getUserRequest)
     {
         if (getUserRequest == null) return BadRequest();
-
-        getUserRequest.Id = userId;
 
         var getUserResponse = await GetUserResponse(getUserRequest);
 
         if (getUserResponse == null) return NoContent();
 
         var shapedUser = getUserResponse.ShapeData(getUserRequest.Fields);
-        var linkedShapedUser = AddLinks(shapedUser, userId, getUserRequest);
+        var linkedShapedUser = AddLinks(shapedUser, getUserRequest);
 
         Response.ContentLength = CalculateContentLength(linkedShapedUser);
 
@@ -140,11 +144,12 @@ public class UsersController : ControllerBase
         return Ok();
     }
 
-    private ExpandoObject AddLinks(ExpandoObject shapedUser, Guid userId, Users.API.Models.Request.v1.GetUserRequest getUserRequest)
+    private ExpandoObject AddLinks(IDictionary<string, object> shapedUser, Users.API.Models.Request.v1.GetUserRequest getUserRequest)
     {
-        var links = CreateLinksForUser(userId, getUserRequest);
-        shapedUser.TryAdd("links", links);
-        return shapedUser;
+        var links = CreateLinksForUser(getUserRequest);
+        //shapedUser.TryAdd("Links", links);
+        shapedUser.Add("Links", links);
+        return shapedUser as ExpandoObject;
     }
 
     private long CalculateContentLength<T>(T obj) where T : class
@@ -153,45 +158,43 @@ public class UsersController : ControllerBase
         return json.Length;
     }
 
-    //private long CalculateContentLength(Models.Response.v1.UserResponse getUserResponse)
+    //private long CalculateContentLength(IEnumerable<Models.Response.v1.UserResponse> pageOfUserResponses)
     //{
-    //    var json = System.Text.Json.JsonSerializer.Serialize(getUserResponse);
+    //    var options = new System.Text.Json.JsonSerializerOptions
+    //    {
+    //        Converters = { new Users.API.Models.Shared.PagedListJsonConverter() }
+    //    };
+    //    var json = System.Text.Json.JsonSerializer.Serialize(pageOfUserResponses, options);
     //    return json.Length;
     //}
 
-    private long CalculateContentLength(IEnumerable<Models.Response.v1.UserResponse> pageOfUserResponses)
-    {
-        var options = new System.Text.Json.JsonSerializerOptions
-        {
-            //Converters = { new Users.API.Models.Shared.PagedListJsonConverter() }
-        };
-        var json = System.Text.Json.JsonSerializer.Serialize(pageOfUserResponses, options);
-        return json.Length;
-    }
-
-    private IEnumerable<Link> CreateLinksForUser(Guid userId, Users.API.Models.Request.v1.GetUserRequest getUserRequest)
+    private IEnumerable<Link> CreateLinksForUser(Users.API.Models.Request.v1.GetUserRequest getUserRequest)
     {
         var links = new List<Link>();
 
-        string url;
+        //string url;
         Link link;
 
-        if (string.IsNullOrWhiteSpace(getUserRequest.Fields))
-        {
-            url = Url.Link("GetUser", new { userId });
-            link = new Link(url, "self", "GET");
-            links.Add(link);
-        }
-        else
-        {
-            url = Url.Link("GetUser", new { userId, getUserRequest });
-            link = new Link(url, "self", "GET");
-            links.Add(link);
-        }
+        //if (string.IsNullOrWhiteSpace(getUserRequest.Fields))
+        //{
+            //var getUserLink = GetUserLink(userId);
+            //url = Url.Action("GetUser", "Users.API.Read.Controllers.v1.UsersController", new { userId });
+            //var url = Url.Link("GetUser", new { userId });
+            //link = new Link(url, "self", "GET");
+            //links.Add(getUserLink);
+        //}
+        //else
+        //{
+            var getUserLink = GetUserLink(getUserRequest);
+            //url = Url.Action(nameof(Users.API.Read.Controllers.v1.UsersController.Get), nameof(Users.API.Read.Controllers.v1.UsersController), new { userId });
+            //url = Url.Link("GetUser", new { userId, getUserRequest });
+            //link = new Link(url, "self", "GET");
+            links.Add(getUserLink);
+        //}
 
-        url = Url.Link("DeleteUser", new { userId });
-        link = new Link(url, "delete_user", "DELETE");
-        links.Add(link);
+        //url = Url.Link("DeleteUser", new { userId });
+        var deleteUserLink = DeleteUserLink(getUserRequest.Id);        
+        links.Add(deleteUserLink);
 
         //url = Url.Link("CreateUser", new { userId });
         //link = new Link(url, "create_user", "POST");

@@ -14,7 +14,7 @@ public class UserResponse
 
     public string DateOfBirth { get; set; }
 
-    public IEnumerable<Users.API.Models.Shared.Link> Links { get; set; }
+    //public IEnumerable<Users.API.Models.Shared.Link> Links { get; set; }
 
     public override string ToString()
     {

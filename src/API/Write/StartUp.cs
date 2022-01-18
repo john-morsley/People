@@ -8,7 +8,7 @@ public class StartUp
     {
         Configuration = configuration;
     }
-        
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddVersioningAndSwagger(Configuration, Assembly.GetExecutingAssembly().GetName().Name);
@@ -100,11 +100,11 @@ public class StartUp
 
         applicationBuilder.ConfigureVersioningAndSwagger(apiVersionDescriptionProvider);
 
-        applicationBuilder.UseHttpsRedirection();
+        //applicationBuilder.UseHttpsRedirection();
 
         applicationBuilder.UseRouting();
 
-        applicationBuilder.UseAuthorization();
+        //applicationBuilder.UseAuthorization();
 
         applicationBuilder.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }

@@ -51,7 +51,11 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         unexpectedFields.Remove("Links");
         ShouldBeEqual(expectedFields, actual, expected);
         ShouldBeNull(unexpectedFields, actual);
-        actual.Links.Count().Should().Be(2);
+
+        var hateoas = DeserializeHATEOAS(content);
+        hateoas.Links.Count().Should().Be(2);
+        var getUserLink = hateoas.Links.Single(_ => _.Method == "GET");
+        var deleteUserLink = hateoas.Links.Single(_ => _.Method == "DELETE");
     }
 
     [Test]

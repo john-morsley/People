@@ -13,11 +13,16 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     public UsersController(
         ILogger<UsersController> logger,
         IMediator mediator,
-        IMapper mapper)
+        IMapper mapper,
+        IConfiguration configuration,
+        IHttpContextAccessor context,
+        IApiVersionDescriptionProvider apiVersionDescriptionProvider) : base(context, apiVersionDescriptionProvider)
     {
         _logger = logger;
         _mediator = mediator;
         _mapper = mapper;
+
+        Configuration = configuration;
     }
 
     /// <summary>
@@ -234,4 +239,9 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
         var updatedUserResponse = _mapper.Map<Users.API.Models.Response.v1.UserResponse>(updatedUser);
         return updatedUserResponse;
     }
+
+    //protected override string GetLink()
+    //{
+    //    return "write";
+    //}
 }

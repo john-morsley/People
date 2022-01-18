@@ -4,12 +4,12 @@
         <name>Users.API.Read</name>
     </assembly>
     <members>
-        <member name="M:Users.API.Read.Controllers.v1.UsersController.Get(System.Guid,Users.API.Models.Request.v1.GetUserRequest)">
+        <member name="M:Users.API.Read.Controllers.v1.UsersController.Get(Users.API.Models.Request.v1.GetUserRequest)">
             <summary>
             Get a single user by their unique identifier
             </summary>
             <param name="userId">The unique identifier for the user</param>
-            <param name="getUserRequest">An object that contains the data to get and shape a user</param>
+            <param name="fields">The fields required to shape the user</param>
             <returns>The requested user (shaped, if required)</returns>
             <response code="200">Success - OK - Returns the requested user</response>
             <response code="204">Success - No Content - No user matched the given identifier</response>

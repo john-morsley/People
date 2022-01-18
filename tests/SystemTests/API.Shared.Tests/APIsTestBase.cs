@@ -47,6 +47,15 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         return JsonSerializer.Deserialize<Users.API.Models.Response.v1.UserResponse>(json, options);
     }
 
+    public static Users.API.Models.Shared.HATEOAS DeserializeHATEOAS(string json)
+    {
+        var options = new JsonSerializerOptions()
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        return JsonSerializer.Deserialize<Users.API.Models.Shared.HATEOAS>(json, options);
+    }
+
     //public static Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse> DeserializePagedListOfUserResponses(string json)
     //{
     //    var options = new JsonSerializerOptions()

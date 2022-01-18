@@ -4,10 +4,16 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        CreateHostBuilder(args).Build().Run();
-    }
+        var host = new WebHostBuilder()
+            .UseKestrel()
+            .UseContentRoot(Directory.GetCurrentDirectory())
+            .ConfigureAppConfiguration((context, builder) =>
+            {
+                builder.AddJsonFile("appsettings.json");
+            })
+            .UseStartup<StartUp>()
+            .Build();
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<StartUp>(); });
+        host.Run();
+    }
 }
