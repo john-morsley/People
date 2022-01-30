@@ -1,4 +1,6 @@
-﻿namespace API.Shared.Tests;
+﻿using System.Text.Json.Serialization;
+
+namespace API.Shared.Tests;
 
 public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
 {
@@ -38,22 +40,24 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         _server.Dispose();
     }
 
-    public static Users.API.Models.Response.v1.UserResponse DeserializeUserResponse(string json)
+    public static Users.API.Models.Response.v1.UserResponse DeserializeUser(string json)
     {
-        var options = new JsonSerializerOptions()
+        var options = new JsonSerializerOptions
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
         };
+        
         return JsonSerializer.Deserialize<Users.API.Models.Response.v1.UserResponse>(json, options);
     }
 
-    public static Users.API.Models.Shared.HATEOAS DeserializeHATEOAS(string json)
+    public static Users.API.Models.Shared.Metadata DeserializeMetadata(string json)
     {
-        var options = new JsonSerializerOptions()
+        var options = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         };
-        return JsonSerializer.Deserialize<Users.API.Models.Shared.HATEOAS>(json, options);
+        return JsonSerializer.Deserialize<Users.API.Models.Shared.Metadata>(json, options);
     }
 
     //public static Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse> DeserializePagedListOfUserResponses(string json)
@@ -66,13 +70,33 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
     //    return JsonSerializer.Deserialize<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>(json, options);
     //}
 
-    public static IEnumerable<Users.API.Models.Response.v1.UserResponse> DeserializeListOfUserResponses(string json)
+    public static IEnumerable<Users.API.Models.Response.v1.UserResponse> DeserializeEmbeddedUsers(string json)
     {
         var options = new JsonSerializerOptions()
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            Converters =
+            {
+                new Users.API.Models.Shared.EmbeddedUsersConverter(),
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            }
         };
-        //options.Converters.Add(new Users.API.Models.Shared.PagedListJsonConverter());
+        
+        return JsonSerializer.Deserialize<IEnumerable<Users.API.Models.Response.v1.UserResponse>>(json, options);
+    }
+
+    public static IEnumerable<Users.API.Models.Response.v1.UserResponse> DeserializePageOfUsers(string json)
+    {
+        var options = new JsonSerializerOptions()
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters =
+            {
+                new Users.API.Models.Shared.PagedListJsonConverter(),
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            }
+        };
+        
         return JsonSerializer.Deserialize<IEnumerable<Users.API.Models.Response.v1.UserResponse>>(json, options);
     }
 

@@ -1,4 +1,4 @@
-namespace Users.API.Read.Tests.v1.Methods;
+namespace Users.API.Read.Tests.v1.Methods.GET.Multiple;
 
 public class GetPageOfUsersWithFilter : APIsTestBase<StartUp>
 {
@@ -53,7 +53,7 @@ public class GetPageOfUsersWithFilter : APIsTestBase<StartUp>
         var response = await httpResponse.Content.ReadAsStringAsync();
         response.Length.Should().BeGreaterThan(0);
 
-        var pageOfUsers = DeserializeListOfUserResponses(response);
+        var pageOfUsers = DeserializeEmbeddedUsers(response);
         pageOfUsers.Should().NotBeNull();
 
         var index = 0;

@@ -8,13 +8,25 @@
             <summary>
             Get a single user by their unique identifier
             </summary>
-            <param name="userId">The unique identifier for the user</param>
-            <param name="fields">The fields required to shape the user</param>
+            <param name="getUserRequest">
+            The unique identifier for the user
+            </param>
             <returns>The requested user (shaped, if required)</returns>
             <response code="200">Success - OK - Returns the requested user</response>
             <response code="204">Success - No Content - No user matched the given identifier</response>
             <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
             <response code="422">Error - Unprocessable Entity - The GetUserRequest object contained invalid data</response>
+        </member>
+        <member name="M:Users.API.Read.Controllers.v1.UsersController.Head(Users.API.Models.Request.v1.GetUserRequest)">
+            <summary>
+            Gets the content length of a user
+            </summary>
+            <param name="getUserRequest">
+            A GetUserRequest object which contains fields for paging, searching, filtering, sorting and shaping user data</param>
+            <returns>The content length of a page of users</returns>
+            <response code="200">Success - OK - Returns the requested page of users</response>
+            <response code="204">Success - No Content - No users matched given criteria</response>
+            <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
         </member>
         <member name="M:Users.API.Read.Controllers.v1.UsersController.Get(Users.API.Models.Request.v1.GetPageOfUsersRequest)">
             <summary>
@@ -29,11 +41,11 @@
         </member>
         <member name="M:Users.API.Read.Controllers.v1.UsersController.Head(Users.API.Models.Request.v1.GetPageOfUsersRequest)">
             <summary>
-            Gets a page of users
+            Gets the content length of a page of users
             </summary>
             <param name="getUsersRequest">
             A GetUsersRequest object which contains fields for paging, searching, filtering, sorting and shaping user data</param>
-            <returns>A page of users</returns>
+            <returns>The content length of a page of users</returns>
             <response code="200">Success - OK - Returns the requested page of users</response>
             <response code="204">Success - No Content - No users matched given criteria</response>
             <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>

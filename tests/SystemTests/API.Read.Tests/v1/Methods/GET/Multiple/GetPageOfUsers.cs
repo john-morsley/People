@@ -1,4 +1,4 @@
-namespace Users.API.Read.Tests.v1.Methods;
+namespace Users.API.Read.Tests.v1.Methods.GET.Multiple;
 
 public class GetPageOfUsers : APIsTestBase<StartUp>
 {
@@ -45,7 +45,7 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var pageOfUsers = DeserializeListOfUserResponses(content);
+        var pageOfUsers = DeserializeEmbeddedUsers(content);
         pageOfUsers.Should().NotBeNull();
         pageOfUsers.Count().Should().Be(1);
 
@@ -83,16 +83,20 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
         result.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await result.Content.ReadAsStringAsync();
+
+        // Users...
         content.Length.Should().BeGreaterThan(0);
-        var pageOfUsers = DeserializeListOfUserResponses(content);
+        var pageOfUsers = DeserializeEmbeddedUsers(content);
         pageOfUsers.Should().NotBeNull();
         pageOfUsers.Count().Should().Be(10);
+
 
         IEnumerable<string> values;
         result.Headers.TryGetValues("X-Pagination", out values);
         values.Should().NotBeNull();
         values.Count().Should().Be(1);
 
+        // Pagination...
         var pagination = JsonSerializer.Deserialize<Users.API.Models.Shared.Pagination>(values.FirstOrDefault());
         pagination.PreviousPageLink.Should().BeNull();
         HttpUtility.UrlDecode(pagination.NextPageLink).Should().Be("http://localhost/api/v1/users?pageNumber=2&pageSize=10&sort=LastName:asc,FirstName:asc");
@@ -100,6 +104,12 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
         pagination.TotalPages.Should().Be(2);
         pagination.TotalCount.Should().Be(15);
         pagination.PageSize.Should().Be(10);
+
+        // ToDo -->
+        //Add Links for pagination and links for each user!
+
+        // Metadata Links...
+        var hateoas = DeserializeMetadata(content);
     }
 
     [Test]
@@ -123,7 +133,7 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
 
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
-        var pageOfUsers = DeserializeListOfUserResponses(content);
+        var pageOfUsers = DeserializeEmbeddedUsers(content);
         pageOfUsers.Should().NotBeNull();
         pageOfUsers.Count().Should().Be(5);
 

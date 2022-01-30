@@ -19,6 +19,7 @@ global using System.IO;
 global using System.Net;
 global using System.Reflection;
 global using System.Threading.Tasks;
+global using Users.API.Models.Extensions;
 global using Users.API.Models.IoC;
 global using Users.API.Shared.IoC;
 global using Users.Application.IoC;

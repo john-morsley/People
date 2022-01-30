@@ -1,4 +1,4 @@
-namespace Users.API.Read.Tests.v1.Methods;
+namespace Users.API.Read.Tests.v1.Methods.GET.Single;
 
 public class GetUserWithFields : APIsTestBase<StartUp>
 {
@@ -34,7 +34,7 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var actual = DeserializeUserResponse(content);
+        var actual = DeserializeUser(content);
         actual.Should().NotBeNull();
         actual.Id.Should().Be(expected.Id);
 
@@ -52,7 +52,7 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         ShouldBeEqual(expectedFields, actual, expected);
         ShouldBeNull(unexpectedFields, actual);
 
-        var hateoas = DeserializeHATEOAS(content);
+        var hateoas = DeserializeMetadata(content);
         hateoas.Links.Count().Should().Be(2);
         var getUserLink = hateoas.Links.Single(_ => _.Method == "GET");
         var deleteUserLink = hateoas.Links.Single(_ => _.Method == "DELETE");

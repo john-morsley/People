@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using System.Dynamic;
+using Users.API.Models.Shared;
 
 namespace Users.API.Shared.Controllers.v1;
 
@@ -16,12 +19,56 @@ public abstract class BaseController : ControllerBase
     protected IConfiguration Configuration { get; set; }
 
     public IHttpContextAccessor Context { get; }
+
     public IApiVersionDescriptionProvider ApiVersionDescriptionProvider { get; }
 
-    protected virtual Users.API.Models.Shared.Link GetUserLink(Users.API.Models.Request.v1.GetUserRequest getUserRequest)
+    protected ExpandoObject AddLinks(IDictionary<string, object> shapedUser, Guid userId)
+    {
+        var links = CreateLinksForUser(userId);
+        shapedUser.Add("_links", links);
+        return shapedUser as ExpandoObject;
+    }
+
+    protected IEnumerable<Link> CreateLinksForUser(Guid userId)
+    {
+        var links = new List<Link>();
+
+        //string url;
+        Link link;
+
+        //if (string.IsNullOrWhiteSpace(getUserRequest.Fields))
+        //{
+        //var getUserLink = GetUserLink(userId);
+        //url = Url.Action("GetUser", "Users.API.Read.Controllers.v1.UsersController", new { userId });
+        //var url = Url.Link("GetUser", new { userId });
+        //link = new Link(url, "self", "GET");
+        //links.Add(getUserLink);
+        //}
+        //else
+        //{
+        var getUserLink = GetUserLink(userId);
+        //url = Url.Action(nameof(Users.API.Read.Controllers.v1.UsersController.Get), nameof(Users.API.Read.Controllers.v1.UsersController), new { userId });
+        //url = Url.Link("GetUser", new { userId, getUserRequest });
+        //link = new Link(url, "self", "GET");
+        links.Add(getUserLink);
+        //}
+
+        //url = Url.Link("DeleteUser", new { userId });
+        var deleteUserLink = DeleteUserLink(userId);
+        links.Add(deleteUserLink);
+
+        //url = Url.Link("CreateUser", new { userId });
+        //link = new Link(url, "create_user", "POST");
+        //links.Add(link);
+
+        return links;
+    }
+
+
+    protected virtual Users.API.Models.Shared.Link GetUserLink(Guid userId)
     {
         var url = FullUrl();
-        var getUserUrl = $"{url}/{getUserRequest.Id}";
+        var getUserUrl = $"{url}/{userId}";
         //var test = UrlHelperExtensions.("demo", values);
         //Uri test = new Uri(url);
         

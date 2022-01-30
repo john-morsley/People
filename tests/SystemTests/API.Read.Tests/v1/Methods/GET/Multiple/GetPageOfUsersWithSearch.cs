@@ -1,4 +1,4 @@
-namespace Users.API.Read.Tests.v1.Methods;
+namespace Users.API.Read.Tests.v1.Methods.GET.Multiple;
 
 public class GetPageOfUsersWithSearch : APIsTestBase<StartUp>
 {
@@ -35,7 +35,7 @@ public class GetPageOfUsersWithSearch : APIsTestBase<StartUp>
         var response = await httpResponse.Content.ReadAsStringAsync();
         response.Length.Should().BeGreaterThan(0);
 
-        var pageOfUsers = DeserializeListOfUserResponses(response);
+        var pageOfUsers = DeserializeEmbeddedUsers(response);
         pageOfUsers.Should().NotBeNull();
         pageOfUsers.Count().Should().Be(2);
 

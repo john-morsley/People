@@ -43,7 +43,11 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
 
         var userResponse = await AddUser(addUserRequest);
 
-        return Created($"http://localhost/api/v1/users/{userResponse.Id}", userResponse);
+        var shapedUser = userResponse.ShapeData();
+
+        var shapedUserWithLinks = AddLinks(shapedUser, userResponse.Id);
+
+        return Created($"http://localhost/api/v1/users/{userResponse.Id}", shapedUserWithLinks);
     }
 
     /// <summary>

@@ -58,7 +58,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestInfrastructure", "tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API.Models.Shared.Tests", "tests\UnitTests\API.Models.Shared.Tests\API.Models.Shared.Tests.csproj", "{541BE450-27AE-4F40-99A3-F67C953A072B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Models.Tests", "tests\UnitTests\Domain.Models.Tests\Domain.Models.Tests.csproj", "{F1AD3B58-204D-4418-A1CE-99DA89933C2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Models.Tests", "tests\UnitTests\Domain.Models.Tests\Domain.Models.Tests.csproj", "{F1AD3B58-204D-4418-A1CE-99DA89933C2D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F02AC20A-1C79-482F-8788-8AF566C62254}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

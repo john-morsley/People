@@ -83,12 +83,15 @@ public class HEAD : APIsTestBase<StartUp>
         content.Length.Should().Be(0);
     }
 
+    private string _content;
+
     private async Task<long> GetExpectedContentLength(string url)
     {
         var result = await _client.GetAsync(url);
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await result.Content.ReadAsStringAsync();
+        _content = content;
         return content.Length;
     }
 }

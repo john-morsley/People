@@ -28,13 +28,15 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     /// <summary>
     /// Get a single user by their unique identifier
     /// </summary>
-    /// <param name="userId">The unique identifier for the user</param>
-    /// <param name="fields">The fields required to shape the user</param>
+    /// <param name="getUserRequest">
+    /// The unique identifier for the user
+    /// </param>
     /// <returns>The requested user (shaped, if required)</returns>
     /// <response code="200">Success - OK - Returns the requested user</response>
     /// <response code="204">Success - No Content - No user matched the given identifier</response>
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
     /// <response code="422">Error - Unprocessable Entity - The GetUserRequest object contained invalid data</response>
+    // -------------------------------------------------- GET --> USER
     [HttpGet("{userId:guid}", Name = "GetUser")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
@@ -46,18 +48,28 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
         if (getUserRequest == null) return BadRequest();
         if (getUserRequest.Id == Guid.Empty) return BadRequest();
 
-        var getUserResponse = await GetUserResponse(getUserRequest);
+        var userResponse = await GetUserResponse(getUserRequest);
 
-        if (getUserResponse == null) return NoContent();
+        if (userResponse == null) return NoContent();
 
-        var shapedUser = getUserResponse.ShapeData(getUserRequest.Fields);
+        var shapedUser = userResponse.ShapeData(getUserRequest.Fields);
 
-        var shapedUserWithLinks = AddLinks(shapedUser, getUserRequest);
+        var shapedUserWithLinks = AddLinks(shapedUser, userResponse.Id);
 
         return Ok(shapedUserWithLinks);
     }
 
-    [HttpHead("{userId:guid}")]
+    /// <summary>
+    /// Gets the content length of a user
+    /// </summary>
+    /// <param name="getUserRequest">
+    /// A GetUserRequest object which contains fields for paging, searching, filtering, sorting and shaping user data</param>
+    /// <returns>The content length of a page of users</returns>
+    /// <response code="200">Success - OK - Returns the requested page of users</response>
+    /// <response code="204">Success - No Content - No users matched given criteria</response>
+    /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
+    // -------------------------------------------------- HEAD --> USER
+    [HttpHead("{userId:guid}", Name = "GetHead")]
     [ProducesResponseType(typeof(Users.API.Models.Response.v1.UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -66,12 +78,12 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     {
         if (getUserRequest == null) return BadRequest();
 
-        var getUserResponse = await GetUserResponse(getUserRequest);
+        var userResponse = await GetUserResponse(getUserRequest);
 
-        if (getUserResponse == null) return NoContent();
+        if (userResponse == null) return NoContent();
 
-        var shapedUser = getUserResponse.ShapeData(getUserRequest.Fields);
-        var linkedShapedUser = AddLinks(shapedUser, getUserRequest);
+        var shapedUser = userResponse.ShapeData(getUserRequest.Fields);
+        var linkedShapedUser = AddLinks(shapedUser, userResponse.Id);
 
         Response.ContentLength = CalculateContentLength(linkedShapedUser);
 
@@ -87,6 +99,7 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     /// <response code="200">Success - OK - Returns the requested page of users</response>
     /// <response code="204">Success - No Content - No users matched given criteria</response>
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
+    // -------------------------------------------------- GET --> PAGE OF USERS
     [HttpGet(Name = "GetUsers")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(IEnumerable<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
@@ -101,29 +114,57 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
         var pageOfUserResponses = await GetPageOfUserResponses(getPageOfUsersRequest);
 
         if (!pageOfUserResponses.Any()) return NoContent();
-
+        
         var pagination = GetPagination(pageOfUserResponses, getPageOfUsersRequest);
         Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination));
 
-        return Ok(GetUserResponses(pageOfUserResponses).ShapeData(getPageOfUsersRequest.Fields));
+        // Shape Users...
+        var shapedPageOfUsers = GetUserResponses(pageOfUserResponses).ShapeData(getPageOfUsersRequest.Fields);
+
+        // Add Metadata links...         
+        var shapedPageOfUsersWithLinks = AddLinks(shapedPageOfUsers);
+        var pageOfUsersLinks = CreateLinksForPageOfUsers(getPageOfUsersRequest);
+
+        var shapedPageOfUsersWithLinksWithSelfLink = new ExpandoObject() as IDictionary<string, object>;
+        shapedPageOfUsersWithLinksWithSelfLink.Add("_embedded", shapedPageOfUsersWithLinks);
+        shapedPageOfUsersWithLinksWithSelfLink.Add("_links", pageOfUsersLinks);
+
+        return Ok(shapedPageOfUsersWithLinksWithSelfLink);
+    }
+
+    private IEnumerable<ExpandoObject> AddLinks(IEnumerable<ExpandoObject> shapedPageOfUsers)
+    {        
+        foreach (var shapedUser in shapedPageOfUsers)
+        {
+            var user = shapedUser as IDictionary<string, object>;
+            if (user != null)
+            {
+                var userId = (Guid)user["Id"];
+                var userlinks = CreateLinksForUser(userId);
+                user.Add("_links", userlinks);
+            }
+        }        
+
+        return shapedPageOfUsers;
     }
 
     /// <summary>
-    /// Gets a page of users
+    /// Gets the content length of a page of users
     /// </summary>
     /// <param name="getUsersRequest">
     /// A GetUsersRequest object which contains fields for paging, searching, filtering, sorting and shaping user data</param>
-    /// <returns>A page of users</returns>
+    /// <returns>The content length of a page of users</returns>
     /// <response code="200">Success - OK - Returns the requested page of users</response>
     /// <response code="204">Success - No Content - No users matched given criteria</response>
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
+    // -------------------------------------------------- HEAD --> PAGE OF USERS
     [HttpHead]
     [Produces("application/json")]
     [ProducesResponseType(typeof(IEnumerable<Users.API.Models.Response.v1.UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult<IEnumerable<Users.API.Models.Response.v1.UserResponse>>> Head(
+    public async Task<IActionResult> Head(
         [FromQuery] Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     {
         if (getPageOfUsersRequest == null) return BadRequest();
@@ -132,11 +173,23 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
 
         if (!pageOfUserResponses.Any()) return NoContent();
 
-        Response.ContentLength = CalculateContentLength(pageOfUserResponses);
+        // Shape Users...
+        var shapedPageOfUsers = GetUserResponses(pageOfUserResponses).ShapeData(getPageOfUsersRequest.Fields);
+
+        // Add Metadata links...         
+        var shapedPageOfUsersWithLinks = AddLinks(shapedPageOfUsers);
+        var pageOfUsersLinks = CreateLinksForPageOfUsers(getPageOfUsersRequest);
+
+        var shapedPageOfUsersWithLinksWithSelfLink = new ExpandoObject() as IDictionary<string, object>;
+        shapedPageOfUsersWithLinksWithSelfLink.Add("_embedded", shapedPageOfUsersWithLinks);
+        shapedPageOfUsersWithLinksWithSelfLink.Add("_links", pageOfUsersLinks);
+
+        Response.ContentLength = CalculateContentLength(shapedPageOfUsersWithLinksWithSelfLink);
 
         return Ok();
     }
 
+    // -------------------------------------------------- OPTIONS --> ALLOWED HTTP METHODS
     [HttpOptions]
     public IActionResult GetOptions()
     {
@@ -144,17 +197,23 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
         return Ok();
     }
 
-    private ExpandoObject AddLinks(IDictionary<string, object> shapedUser, Users.API.Models.Request.v1.GetUserRequest getUserRequest)
-    {
-        var links = CreateLinksForUser(getUserRequest);
-        //shapedUser.TryAdd("Links", links);
-        shapedUser.Add("Links", links);
-        return shapedUser as ExpandoObject;
-    }
-
     private long CalculateContentLength<T>(T obj) where T : class
     {
-        var json = System.Text.Json.JsonSerializer.Serialize(obj);
+        var encoderSettings = new TextEncoderSettings();
+        //encoderSettings.AllowCharacters('\u0026'); // &
+        encoderSettings.AllowRange(UnicodeRanges.All);
+        var options = new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.Create(encoderSettings),
+            WriteIndented = false,
+            Converters = { new JsonStringEnumConverter() }
+        };
+
+        // ToDo --> This feels like a hack. Needs further investigation.
+        var json = System.Text.Json.JsonSerializer.Serialize(obj, options);
+
+        json = System.Text.RegularExpressions.Regex.Unescape(json);
+
         return json.Length;
     }
 
@@ -168,47 +227,25 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     //    return json.Length;
     //}
 
-    private IEnumerable<Link> CreateLinksForUser(Users.API.Models.Request.v1.GetUserRequest getUserRequest)
+    private IEnumerable<Link> CreateLinksForPageOfUsers(Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
     {
         var links = new List<Link>();
 
-        //string url;
-        Link link;
-
-        //if (string.IsNullOrWhiteSpace(getUserRequest.Fields))
-        //{
-            //var getUserLink = GetUserLink(userId);
-            //url = Url.Action("GetUser", "Users.API.Read.Controllers.v1.UsersController", new { userId });
-            //var url = Url.Link("GetUser", new { userId });
-            //link = new Link(url, "self", "GET");
-            //links.Add(getUserLink);
-        //}
-        //else
-        //{
-            var getUserLink = GetUserLink(getUserRequest);
-            //url = Url.Action(nameof(Users.API.Read.Controllers.v1.UsersController.Get), nameof(Users.API.Read.Controllers.v1.UsersController), new { userId });
-            //url = Url.Link("GetUser", new { userId, getUserRequest });
-            //link = new Link(url, "self", "GET");
-            links.Add(getUserLink);
-        //}
-
-        //url = Url.Link("DeleteUser", new { userId });
-        var deleteUserLink = DeleteUserLink(getUserRequest.Id);        
-        links.Add(deleteUserLink);
-
-        //url = Url.Link("CreateUser", new { userId });
-        //link = new Link(url, "create_user", "POST");
-        //links.Add(link);
+        // Self...
+        var currentUrl = CreateUsersResourceUri(getPageOfUsersRequest, ResourceUriType.Current);
+        var currentLink = new Link(currentUrl, "self", "GET");
+        links.Add(currentLink);
 
         return links;
     }
 
     private string CreateUsersResourceUri(Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest, Users.API.Models.Shared.ResourceUriType type)
     {
+        string link;
         switch (type)
         {
-            case Users.API.Models.Shared.ResourceUriType.PreviousPage:
-                return Url.Link(
+            case Users.API.Models.Shared.ResourceUriType.PreviousPage:                
+                link = Url.Link(
                     "GetUsers", 
                     new 
                     { 
@@ -218,9 +255,10 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
                         filter = getPageOfUsersRequest.Filter,
                         search = getPageOfUsersRequest.Search,
                         sort = getPageOfUsersRequest.Sort
-                    });
+                    });  
+                return link;
             case Users.API.Models.Shared.ResourceUriType.NextPage:
-                return Url.Link(
+               link = Url.Link(
                     "GetUsers",
                     new
                     {
@@ -231,8 +269,9 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
                         search = getPageOfUsersRequest.Search,
                         sort = getPageOfUsersRequest.Sort
                     });
-            default:
-                return Url.Link(
+                return link;
+            case Users.API.Models.Shared.ResourceUriType.Current:            
+                link = Url.Link(
                     "GetUsers",
                     new
                     {
@@ -243,6 +282,8 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
                         search = getPageOfUsersRequest.Search,
                         sort = getPageOfUsersRequest.Sort
                     });
+                return link;
+            default: throw new NotImplementedException();
         }
     }
 

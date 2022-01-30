@@ -18,4 +18,6 @@ public sealed class AddUserCommand : IRequest<Users.Domain.Models.User>
     public Sex? Sex { get; set; }
 
     public Gender? Gender { get; set; }
+
+    public string DateOfBirth { get; set; }
 }

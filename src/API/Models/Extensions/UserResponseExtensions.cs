@@ -2,7 +2,7 @@
 
 public static class UserResponseExtensions
 {
-    public static ExpandoObject ShapeData(this Users.API.Models.Response.v1.UserResponse source, string fields)
+    public static ExpandoObject ShapeData(this Users.API.Models.Response.v1.UserResponse source, string fields = null)
     {
         if (source == null) throw new ArgumentNullException(nameof(source));
 
@@ -41,6 +41,7 @@ public static class UserResponseExtensions
 
         return shaped;
     }
+
     public static IEnumerable<ExpandoObject> ShapeData(this IEnumerable<Users.API.Models.Response.v1.UserResponse> source, string fields)
     {
         if (source == null) throw new ArgumentNullException(nameof(source));

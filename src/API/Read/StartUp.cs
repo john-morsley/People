@@ -1,3 +1,6 @@
+using System.Text.Encodings.Web;
+using System.Text.Json.Serialization;
+
 namespace Users.API.Read;
 
 public class StartUp
@@ -51,12 +54,15 @@ public class StartUp
                     ContentTypes = { "application/problem+json" }
                 };
             };
+        })
+        .AddJsonOptions(options =>
+        {
+            //options.JsonSerializerOptions.Converters.Add(new Users.API.Models.Shared.PagedListJsonConverter());
+            options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+            options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            options.JsonSerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
-
-        //.AddJsonOptions(options =>
-        //{
-        //    options.JsonSerializerOptions.Converters.Add(new Users.API.Models.Shared.PagedListJsonConverter());
-        //});
 
         services.AddModels();
         services.AddPersistence(Configuration);

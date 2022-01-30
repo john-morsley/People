@@ -28,7 +28,7 @@ public class PUT : APIsTestBase<StartUp>
         
         var content = await httpResponse.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
-        var returnedUserRsponse = DeserializeUserResponse(content);
+        var returnedUserRsponse = DeserializeUser(content);
         var actualUser = GetUserFromDatabase(userId);
         // As an update has taken place, every property of the actual user, should differ from the original user (except Id).
         actualUser.Should().NotBeEquivalentTo(originalUser);
@@ -60,7 +60,7 @@ public class PUT : APIsTestBase<StartUp>
         httpResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         var content = await httpResponse.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
-        var userResponse = DeserializeUserResponse(content);
+        var userResponse = DeserializeUser(content);
         userResponse.Should().NotBeNull();
         var actualUser = GetUserFromDatabase(userResponse.Id);
         actualUser.Id.Should().Be(userId);
@@ -91,7 +91,7 @@ public class PUT : APIsTestBase<StartUp>
         // ToDo --> Validate error object
 
         //userResponseJson.Length.Should().BeGreaterThan(0);
-        //var userResponse = DeserializeUserResponse(userResponseJson);
+        //var userResponse = DeserializeUser(userResponseJson);
         //userResponse.Should().NotBeNull();
         //var actualUser = GetUserFromDatabase(userResponse.Id);
         //httpResponse.Headers.Location.Should().Be($"http://localhost/api/v1/users/{userResponse.Id}");
@@ -122,7 +122,7 @@ public class PUT : APIsTestBase<StartUp>
         // ToDo --> Validate error object
 
         //userResponseJson.Length.Should().BeGreaterThan(0);
-        //var userResponse = DeserializeUserResponse(userResponseJson);
+        //var userResponse = DeserializeUser(userResponseJson);
         //userResponse.Should().NotBeNull();
         //var actualUser = GetUserFromDatabase(userResponse.Id);
         //httpResponse.Headers.Location.Should().Be($"http://localhost/api/v1/users/{userResponse.Id}");
