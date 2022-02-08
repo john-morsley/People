@@ -25,29 +25,20 @@ public class GetUser : APIsTestBase<StartUp>
 
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
+        var userData = DeserializeUserData(content);
+        userData.Should().NotBeNull();
 
         // User...
-        var actual = DeserializeUser(content);
-        actual.Should().NotBeNull();
-        actual.Id.Should().Be(expected.Id);
-        actual.FirstName.Should().Be(expected.FirstName);
-        actual.LastName.Should().Be(expected.LastName);
+        userData.User.Should().NotBeNull();
+        ShouldBeEquivalentTo(userData, expected);
 
-        // Metadata Links...
-        var metadata = DeserializeMetadata(content);
-        metadata.Links.Count().Should().Be(2);
+        // Links...
+        userData.Links.Should().NotBeNull();
+        userData.Links.Count.Should().Be(2);
+        LinksForUserShouldBeCorrect(userData.Links, userId);
 
-        var getUserLink = metadata.Links.Single(_ => _.Method == "GET");
-        getUserLink.Should().NotBeNull();
-        getUserLink.Method.Should().Be("GET");
-        getUserLink.Relationship.Should().Be("self");
-        getUserLink.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
-
-        var deleteUserLink = metadata.Links.Single(_ => _.Method == "DELETE");
-        deleteUserLink.Should().NotBeNull();
-        deleteUserLink.Method.Should().Be("DELETE");
-        deleteUserLink.Relationship.Should().Be("self");
-        deleteUserLink.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
+        // Embedded...
+        userData.Embedded.Should().BeNull();
     }
 
     [Test]
@@ -71,7 +62,6 @@ public class GetUser : APIsTestBase<StartUp>
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().Be(0);
     }
-
 
     [Test]
     [Category("Unhappy")]

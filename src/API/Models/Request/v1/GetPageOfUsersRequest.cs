@@ -2,10 +2,8 @@
 
 public class GetPageOfUsersRequest
 {
-    const int MaxPageSize = 100;
-
-    private int _pageNumber = 1;
-    private int _pageSize = 10;
+    private int _pageNumber = Defaults.DefaultPageNumber;
+    private int _pageSize = Defaults.DefaultPageSize;
 
     /// <summary>
     /// The page number of the page numbers available.
@@ -30,7 +28,7 @@ public class GetPageOfUsersRequest
         { 
             _pageSize = value;
             if (_pageSize < 0) _pageSize = 1;
-            if (_pageSize > MaxPageSize) _pageSize = MaxPageSize;
+            if (_pageSize > Defaults.MaximumPageSize) _pageSize = Defaults.MaximumPageSize;
         }
     }
 
@@ -52,5 +50,5 @@ public class GetPageOfUsersRequest
     /// <summary>
     /// The sort value is used for sorting results. i.e. sort=LastName:asc,FirstName:asc
     /// </summary>
-    public string Sort { get; set; } = "LastName:asc,FirstName:asc";
+    public string Sort { get; set; } = Users.API.Models.Constants.Defaults.DefaultPageSort;
 }

@@ -28,7 +28,8 @@ public class PUT : APIsTestBase<StartUp>
         
         var content = await httpResponse.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
-        var returnedUserRsponse = DeserializeUser(content);
+
+        var userData = DeserializeUserData(content);
         var actualUser = GetUserFromDatabase(userId);
         // As an update has taken place, every property of the actual user, should differ from the original user (except Id).
         actualUser.Should().NotBeEquivalentTo(originalUser);
@@ -52,20 +53,34 @@ public class PUT : APIsTestBase<StartUp>
         var upsertUserRequest = GenerateTestUpdateUserRequest();
         var upsertUserRequestJson = JsonSerializer.Serialize(upsertUserRequest);
         var payload = new StringContent(upsertUserRequestJson, System.Text.Encoding.UTF8, API_MEDIA_TYPE);
-        var httpResponse = await _client.PutAsync(url, payload);
+        var response = await _client.PutAsync(url, payload);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);
-        httpResponse.IsSuccessStatusCode.Should().BeTrue();
-        httpResponse.StatusCode.Should().Be(HttpStatusCode.Created);
-        var content = await httpResponse.Content.ReadAsStringAsync();
+
+        response.IsSuccessStatusCode.Should().BeTrue();
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var content = await response.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
-        var userResponse = DeserializeUser(content);
-        userResponse.Should().NotBeNull();
-        var actualUser = GetUserFromDatabase(userResponse.Id);
-        actualUser.Id.Should().Be(userId);
-        actualUser.Should().BeEquivalentTo(upsertUserRequest);
-        httpResponse.Headers.Location.Should().Be($"http://localhost/api/v1/users/{userId}");
+
+        var userData = DeserializeUserData(content);
+        userData.Should().NotBeNull();
+
+        // - User
+        userData.User.Should().BeNull();
+
+        // - Links
+        userData.Links.Should().BeNull();
+
+        // - Embedded
+        userData.Embedded.Should().BeNull();
+
+        //var actualUser = GetUserFromDatabase(userResponse.Id);
+        //actualUser.Id.Should().Be(userId);
+        //actualUser.Should().BeEquivalentTo(upsertUserRequest);
+        //httpResponse.Headers.Location.Should().Be($"http://localhost/api/v1/users/{userId}");
+        //throw new NotImplementedException();
     }
 
     // 

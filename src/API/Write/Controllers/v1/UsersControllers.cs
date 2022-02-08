@@ -31,7 +31,8 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     /// <param name="addUserRequest">An AddUserRequest object which contains all the necessary data to create a user</param>
     /// <returns>A URI to the newly added user in the header (location)</returns>
     /// <response code="201">Success - Added - The user was successfully Added</response>
-    /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response> 
+    /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
+    // -------------------------------------------------- POST --> USER
     [HttpPost(Name = "CreateUser")]
     [MapToApiVersion("1.0")]
     [Produces("application/json")]

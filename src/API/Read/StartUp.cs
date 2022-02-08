@@ -12,8 +12,7 @@ public class StartUp
         Configuration = configuration;
     }
 
-    public void ConfigureServices(
-        IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
     {
         services.AddVersioningAndSwagger(Configuration, Assembly.GetExecutingAssembly().GetName().Name);
 

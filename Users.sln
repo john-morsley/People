@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{5F996085-8F9E-4DA6-9976-D1BAF9036CE8}"
 	ProjectSection(SolutionItems) = preProject
 		tests\UnitTests\README.md = tests\UnitTests\README.md
+		tests\UnitTests\Domain.Models.Tests\UserDataConvertorTests.cs = tests\UnitTests\Domain.Models.Tests\UserDataConvertorTests.cs
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "IntegrationTests", "{FC3088F5-62F4-441B-9ED3-103E6F03E156}"

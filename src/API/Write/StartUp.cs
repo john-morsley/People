@@ -1,3 +1,8 @@
+using Newtonsoft.Json.Converters;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 namespace Users.API.Write;
 
 public class StartUp
@@ -19,7 +24,10 @@ public class StartUp
         {
             configure.ReturnHttpNotAcceptable = true;
         })
-        .AddNewtonsoftJson()
+        .AddNewtonsoftJson(setupAction =>
+        {
+            setupAction.SerializerSettings.Converters.Add(new StringEnumConverter());
+        })
         .ConfigureApiBehaviorOptions(setupAction =>
         {
             setupAction.InvalidModelStateResponseFactory = context =>
@@ -51,6 +59,14 @@ public class StartUp
                 };
             };
         });
+        //.AddJsonOptions(options =>
+        //{
+        //    //options.JsonSerializerOptions.Converters.Add(new Users.API.Models.Shared.PagedListJsonConverter());
+        //    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        //    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        //    options.JsonSerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+        //    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        //});
 
         //services.AddJsonOptions(options =>
         //{

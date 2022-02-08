@@ -2,12 +2,12 @@ namespace Users.API.Read.Tests.v1.Methods.GET.Multiple;
 
 public class GetPageOfUsersWithFilter : APIsTestBase<StartUp>
 {
-    private const string UserDataForFilter = "Mark Pink,Sex:Male|" +
-                                             "John Green,Sex:Male|" +
-                                             "Jane Doe,Sex:Female|" +
-                                             "John Doe,Sex:Male|" +
-                                             "Tom Yellow,Sex:Male|" +
-                                             "Jane Brown,Sex:Female";
+    private const string UserDataForFilter = "Mark Pink|" +
+                                             "John Green|" +
+                                             "Jane Doe|" +
+                                             "John Doe|" +
+                                             "Tom Yellow|" +
+                                             "Jane Brown";
 
     private const string UserDataForFilterWithAllSexes = "Dave Pink|" +
                                                          "Peter Brown,Sex:Intersex|" +
@@ -33,60 +33,70 @@ public class GetPageOfUsersWithFilter : APIsTestBase<StartUp>
     [TestCase("Sex:", UserDataForFilterWithAllSexes, "Mary Green|Dave Pink")]
     [TestCase("Gender:Cisgender", UserDataForFilterWithAllGenders, "Lisa Yellow")]
     [TestCase("Gender:", UserDataForFilterWithAllGenders, "Jane Doe|John Doe")]
-    public async Task Given_Users_Exist___When_A_Page_Of_Users_Is_Requested_With_Valid_Filter___Then_200_OK_And_Users_Should_Be_Filtered(string validFilter, string userData, string expectedUsers)
+    public async Task Given_Users_Exist___When_A_Page_Of_Users_Is_Requested_With_Valid_Filter___Then_200_OK_And_Users_Should_Be_Filtered(
+        string validFilter, 
+        string testUsersData, 
+        string expectedUsers)
     {
         // Arrange...
+        const int pageNumber = 1;
+        const int pageSize = 10;
+
         NumberOfUsersInDatabase().Should().Be(0);
-        var users = AddTestUsersToDatabase(userData);
+        var users = AddTestUsersToDatabase(testUsersData);
         NumberOfUsersInDatabase().Should().Be(users.Count);
 
         // Act...
         var url = $"/api/v1/users?filter={validFilter}";
-        var httpResponse = await _client.GetAsync(url);
+        var response = await _client.GetAsync(url);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(users.Count);
 
-        httpResponse.IsSuccessStatusCode.Should().BeTrue();
-        httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.IsSuccessStatusCode.Should().BeTrue();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var response = await httpResponse.Content.ReadAsStringAsync();
-        response.Length.Should().BeGreaterThan(0);
+        var content = await response.Content.ReadAsStringAsync();
+        content.Length.Should().BeGreaterThan(0);
 
-        var pageOfUsers = DeserializeEmbeddedUsers(response);
-        pageOfUsers.Should().NotBeNull();
+        var userData = DeserializeUserData(content);
+        userData.Should().NotBeNull();
 
-        var index = 0;
+        // - User
+        userData.User.Should().BeNull();
+
+        // - Links
+        userData.Links.Should().NotBeNull();
+        userData.Links.Count.Should().Be(1);
+        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, filter: validFilter);
+
+        // - Embedded
+        userData.Embedded.Should().NotBeNull();
+        userData.Embedded.Count.Should().Be(expectedUsers.Split('|').Length);
         foreach(var name in expectedUsers.Split('|'))
         {
             var kvp = name.Split(' ');
             var firstName = kvp[0];
             var lastName = kvp[1];
             var expectedUser = users.Single(_ => _.FirstName == firstName && _.LastName == lastName);
-            var actualUser = pageOfUsers.Skip(index).Take(1).Single();
-            //actualUser.Id.Should().Be(expectedUser.Id);
-            actualUser.FirstName.Should().Be(expectedUser.FirstName);
-            actualUser.LastName.Should().Be(expectedUser.LastName);
-            actualUser.Sex.Should().Be(expectedUser.Sex);
-            actualUser.Gender.Should().Be(expectedUser.Gender);
-            actualUser.DateOfBirth.Should().Be(expectedUser.DateOfBirth.InternationalFormat());
-            index++;
+            var actualUserData = userData.Embedded.Single(_ => _.User.FirstName == firstName && _.User.LastName == lastName);
+            actualUserData.Should().NotBeNull();
+
+            // User...
+            actualUserData.User.Id.Should().Be(expectedUser.Id);
+            actualUserData.User.Sex.Should().Be(expectedUser.Sex);
+            actualUserData.User.Gender.Should().Be(expectedUser.Gender);
+
+            // Links...
+            actualUserData.Links.Should().NotBeNull();
+            actualUserData.Links.Count.Should().Be(2);
+            LinksForUserShouldBeCorrect(actualUserData.Links, actualUserData.User.Id);
+
+            // Embedded...
+            actualUserData.Embedded.Should().BeNull();
+            
+            //actualUser.DateOfBirth.Should().Be(expectedUser.DateOfBirth.InternationalFormat());
         }
-
-        pageOfUsers.Count().Should().Be(index);
-
-        IEnumerable<string> values;
-        httpResponse.Headers.TryGetValues("X-Pagination", out values);
-        values.Should().NotBeNull();
-        values.Count().Should().Be(1);
-
-        var pagination = JsonSerializer.Deserialize<Users.API.Models.Shared.Pagination>(values.FirstOrDefault());
-        pagination.PreviousPageLink.Should().BeNull();
-        pagination.NextPageLink.Should().BeNull();
-        pagination.CurrentPage.Should().Be(1);
-        pagination.TotalPages.Should().Be(1);
-        pagination.TotalCount.Should().Be((uint)index);
-        pagination.PageSize.Should().Be(10);
     }
     
     [Test]

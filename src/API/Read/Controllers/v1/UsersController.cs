@@ -115,15 +115,15 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
 
         if (!pageOfUserResponses.Any()) return NoContent();
         
-        var pagination = GetPagination(pageOfUserResponses, getPageOfUsersRequest);
-        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination));
+        //var pagination = GetPagination(pageOfUserResponses, getPageOfUsersRequest);
+        //Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination));
 
         // Shape Users...
         var shapedPageOfUsers = GetUserResponses(pageOfUserResponses).ShapeData(getPageOfUsersRequest.Fields);
 
         // Add Metadata links...         
         var shapedPageOfUsersWithLinks = AddLinks(shapedPageOfUsers);
-        var pageOfUsersLinks = CreateLinksForPageOfUsers(getPageOfUsersRequest);
+        var pageOfUsersLinks = CreateLinksForPageOfUsers(getPageOfUsersRequest, pageOfUserResponses);
 
         var shapedPageOfUsersWithLinksWithSelfLink = new ExpandoObject() as IDictionary<string, object>;
         shapedPageOfUsersWithLinksWithSelfLink.Add("_embedded", shapedPageOfUsersWithLinks);
@@ -178,7 +178,7 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
 
         // Add Metadata links...         
         var shapedPageOfUsersWithLinks = AddLinks(shapedPageOfUsers);
-        var pageOfUsersLinks = CreateLinksForPageOfUsers(getPageOfUsersRequest);
+        var pageOfUsersLinks = CreateLinksForPageOfUsers(getPageOfUsersRequest, pageOfUserResponses);
 
         var shapedPageOfUsersWithLinksWithSelfLink = new ExpandoObject() as IDictionary<string, object>;
         shapedPageOfUsersWithLinksWithSelfLink.Add("_embedded", shapedPageOfUsersWithLinks);
@@ -227,14 +227,32 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     //    return json.Length;
     //}
 
-    private IEnumerable<Link> CreateLinksForPageOfUsers(Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest)
+    private IEnumerable<Link> CreateLinksForPageOfUsers(
+        Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest,
+        Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse> pageOfUsers)
     {
         var links = new List<Link>();
 
-        // Self...
+        // Previous page...
+        if (pageOfUsers.HasPrevious)
+        {
+            var previousUrl = CreateUsersResourceUri(getPageOfUsersRequest, ResourceUriType.PreviousPage);
+            var previousLink = new Link(previousUrl, "previous", "GET");
+            links.Add(previousLink);
+        }
+
+        // Current page...
         var currentUrl = CreateUsersResourceUri(getPageOfUsersRequest, ResourceUriType.Current);
         var currentLink = new Link(currentUrl, "self", "GET");
         links.Add(currentLink);
+
+        // Next page...
+        if (pageOfUsers.HasNext)
+        {
+            var nextUrl = CreateUsersResourceUri(getPageOfUsersRequest, ResourceUriType.NextPage);
+            var nextLink = new Link(currentUrl, "next", "GET");
+            links.Add(nextLink);
+        }
 
         return links;
     }

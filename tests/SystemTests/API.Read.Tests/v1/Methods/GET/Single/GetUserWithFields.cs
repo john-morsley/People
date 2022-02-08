@@ -1,3 +1,5 @@
+using System.Net.NetworkInformation;
+
 namespace Users.API.Read.Tests.v1.Methods.GET.Single;
 
 public class GetUserWithFields : APIsTestBase<StartUp>
@@ -15,8 +17,8 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
         var userId = Guid.NewGuid();
-        var expected = GenerateTestUser(userId);
-        AddUserToDatabase(expected);
+        var expectedUser = GenerateTestUser(userId);
+        AddUserToDatabase(expectedUser);
         NumberOfUsersInDatabase().Should().Be(1);
 
         validFields = AddToFieldsIfMissing("Id", validFields);        
@@ -34,12 +36,23 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var actual = DeserializeUser(content);
-        actual.Should().NotBeNull();
-        actual.Id.Should().Be(expected.Id);
+        var userData = DeserializeUserData(content);
+        userData.Should().NotBeNull();
+        
+        var fields = DetermineExpectedAndUnexpectedFields(validFields);
 
-        //actual.Should().BeEquivalentTo(expected, options => options.Using(new UserEquivalencyStep()));
+        ShouldBeEqual(fields.Expected, userData.User, expectedUser);
+        ShouldBeNull(fields.Unexpected, userData.User);
 
+        //userData.Links.Count().Should().Be(2);
+        //var getUserLink = userData.Links.Single(_ => _.Method == "GET");
+        //getUserLink.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
+        //var deleteUserLink = userData.Links.Single(_ => _.Method == "DELETE");
+        //deleteUserLink.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
+    }
+
+    private (IList<string> Expected, IList<string> Unexpected) DetermineExpectedAndUnexpectedFields(string validFields)
+    {
         var expectedFields = new List<string>();
         var unexpectedFields = AllUserFields<Users.API.Models.Response.v1.UserResponse>();
 
@@ -48,14 +61,10 @@ public class GetUserWithFields : APIsTestBase<StartUp>
             expectedFields.Add(expectedField);
             unexpectedFields.Remove(expectedField);
         }
-        unexpectedFields.Remove("Links");
-        ShouldBeEqual(expectedFields, actual, expected);
-        ShouldBeNull(unexpectedFields, actual);
 
-        var hateoas = DeserializeMetadata(content);
-        hateoas.Links.Count().Should().Be(2);
-        var getUserLink = hateoas.Links.Single(_ => _.Method == "GET");
-        var deleteUserLink = hateoas.Links.Single(_ => _.Method == "DELETE");
+        unexpectedFields.Remove("Links");
+
+        return (expectedFields, unexpectedFields);
     }
 
     [Test]

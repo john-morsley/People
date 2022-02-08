@@ -15,7 +15,8 @@ public class DateOfBirthTests
     [TestCase(2024, 2, 29, 2028, 2, 29, 4)] // Leap year
     [TestCase(1, 01, 01, 9999, 12, 31, 9998)]
     [TestCase(9999, 12, 31, 9999, 12, 31, 0)]
-    public void Given_Valid_Parameters___When_Instantiated___Then_Should_Be_Correct(int year, int month, int day, int todayYear, int todayMonth, int todayDay, int age)
+    public void Given_Valid_Parameters___When_Instantiated___Then_Should_Be_Correct(
+        int year, int month, int day, int todayYear, int todayMonth, int todayDay, int age)
     {
         // Act...
         var sut = new DateOnly(year, month, day);
@@ -39,7 +40,8 @@ public class DateOfBirthTests
     [TestCase(2021, 2, 29)] // Not a Leap year
     [TestCase(2021, 2, 30)] // Not 30 days in February
     [TestCase(2021, 4, 31)] // Not 31 days in April
-    public void Given_Invalid_Parameters___When_Trying_To_Instantiate___Then_An_Error_Should_Be_Thrown(int year, int month, int day)
+    public void Given_Invalid_Parameters___When_Trying_To_Instantiate___Then_An_Error_Should_Be_Thrown(
+        int year, int month, int day)
     {
         // Act...
         var exception = Assert.Throws<ArgumentOutOfRangeException>(() => new DateOnly(year, month, day));

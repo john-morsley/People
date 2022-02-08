@@ -2,62 +2,79 @@ namespace Users.API.Read.Tests.v1.Methods.GET.Multiple;
 
 public class GetPageOfUsersWithSearch : APIsTestBase<StartUp>
 {
+    private const string UserDataForSearch = "Saad Man|" +
+                                             "Whet Faartz|" +
+                                             "Jane Doe|" +
+                                             "John Doe|" +
+                                             "Tom Kuntz|" +
+                                             "Tom Adamski";
+
     [Test]
     [Category("Happy")]
-    public async Task Given_Users_Exist___When_A_Page_Of_Users_Is_Requested_With_Search_Criteria___Then_200_OK_And_Users_Should_Be_Limited()
+    [TestCase("Doe", UserDataForSearch, "Jane Doe|John Doe")]
+    [TestCase("Tom", UserDataForSearch, "Tom Kuntz|Tom Adamski")]
+    [TestCase("aa", UserDataForSearch, "Saad Man|Whet Faartz")]
+    [TestCase("tz", UserDataForSearch, "Whet Faartz|Tom Kuntz")]
+    public async Task Given_Users_Exist___When_A_Page_Of_Users_Is_Requested_With_Search_Criteria___Then_200_OK_And_Users_Should_Be_Limited(string search, string usersData, string expectedUsers)
     {
         // Arrange...
+        const int pageNumber = 1;
+        const int pageSize = 10;
+
         NumberOfUsersInDatabase().Should().Be(0);
-        var johnDoe = new Users.Domain.Models.User() { FirstName = "John", LastName = "Doe" };
-        AddUserToDatabase(johnDoe);
-        var janeDoe = new Users.Domain.Models.User() { FirstName = "Jane", LastName = "Doe" };
-        AddUserToDatabase(janeDoe);
-        var saadMaan = new Users.Domain.Models.User() { FirstName = "Saad", LastName = "Man" };
-        AddUserToDatabase(saadMaan);
-        var whetFaartz = new Users.Domain.Models.User() { FirstName = "Whet", LastName = "Faartz" };
-        AddUserToDatabase(whetFaartz);
-        var fredBloggs = new Users.Domain.Models.User() { FirstName = "Fred", LastName = "Bloggs" };
-        AddUserToDatabase(fredBloggs);
-        var fayeBloggs = new Users.Domain.Models.User() { FirstName = "Faye", LastName = "Bloggs" };
-        AddUserToDatabase(fayeBloggs);
+        var users = AddTestUsersToDatabase(usersData);
         NumberOfUsersInDatabase().Should().Be(6);
 
         // Act...
-        var url = $"/api/v1/users?search=aa";
-        var httpResponse = await _client.GetAsync(url);
+        var url = $"/api/v1/users?search={search}";
+        var response = await _client.GetAsync(url);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(6);
 
-        httpResponse.IsSuccessStatusCode.Should().BeTrue();
-        httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.IsSuccessStatusCode.Should().BeTrue();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var response = await httpResponse.Content.ReadAsStringAsync();
-        response.Length.Should().BeGreaterThan(0);
+        var content = await response.Content.ReadAsStringAsync();
+        content.Length.Should().BeGreaterThan(0);
 
-        var pageOfUsers = DeserializeEmbeddedUsers(response);
-        pageOfUsers.Should().NotBeNull();
-        pageOfUsers.Count().Should().Be(2);
+        var userData = DeserializeUserData(content);
+        userData.Should().NotBeNull();
 
-        var firstUser = pageOfUsers.Skip(0).Take(1).Single();
-        var secondUser = pageOfUsers.Skip(1).Take(1).Single();
+        // User...
+        userData.User.Should().BeNull();
 
-        firstUser.FirstName.Should().Be(whetFaartz.FirstName);
-        firstUser.LastName.Should().Be(whetFaartz.LastName);
-        secondUser.FirstName.Should().Be(saadMaan.FirstName);
-        secondUser.LastName.Should().Be(saadMaan.LastName);
+        // Links...
+        userData.Links.Should().NotBeNull();
+        userData.Links.Count.Should().Be(1);
+        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, search: search);
 
-        IEnumerable<string> values;
-        httpResponse.Headers.TryGetValues("X-Pagination", out values);
-        values.Should().NotBeNull();
-        values.Count().Should().Be(1);
+        // Embedded...
+        userData.Embedded.Should().NotBeNull();
+        userData.Embedded.Count.Should().Be(expectedUsers.Split('|').Length);
+        foreach (var name in expectedUsers.Split('|'))
+        {
+            var kvp = name.Split(' ');
+            var firstName = kvp[0];
+            var lastName = kvp[1];
+            var expectedUser = users.Single(_ => _.FirstName == firstName && _.LastName == lastName);
+            var actualUserData = userData.Embedded.Single(_ => _.User.FirstName == firstName && _.User.LastName == lastName);
+            actualUserData.Should().NotBeNull();
 
-        var pagination = JsonSerializer.Deserialize<Users.API.Models.Shared.Pagination>(values.FirstOrDefault());
-        pagination.PreviousPageLink.Should().BeNull();
-        pagination.NextPageLink.Should().BeNull();
-        pagination.CurrentPage.Should().Be(1);
-        pagination.TotalPages.Should().Be(1);
-        pagination.TotalCount.Should().Be(2);
-        pagination.PageSize.Should().Be(10);
+            // User...
+            actualUserData.User.Id.Should().Be(expectedUser.Id);
+            actualUserData.User.Sex.Should().Be(expectedUser.Sex);
+            actualUserData.User.Gender.Should().Be(expectedUser.Gender);
+
+            // Links...
+            actualUserData.Links.Should().NotBeNull();
+            actualUserData.Links.Count.Should().Be(2);
+            LinksForUserShouldBeCorrect(actualUserData.Links, actualUserData.User.Id);
+
+            // Embedded...
+            actualUserData.Embedded.Should().BeNull();
+
+            //actualUser.DateOfBirth.Should().Be(expectedUser.DateOfBirth.InternationalFormat());
+        }
     }
 }

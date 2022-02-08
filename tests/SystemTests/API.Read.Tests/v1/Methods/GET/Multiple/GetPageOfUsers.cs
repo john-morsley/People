@@ -28,13 +28,16 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
     public async Task Given_One_User_Exists___When_A_Page_Of_Users_Is_Requested___Then_200_OK_And_Page_Of_One_User_Returned()
     {
         // Arrange...
+        const int pageNumber = 1;
+        const int pageSize = 10;
+
         NumberOfUsersInDatabase().Should().Be(0);
-        var user = GenerateTestUser();
-        AddUserToDatabase(user);
+        var expectedUseer = GenerateTestUser();
+        AddUserToDatabase(expectedUseer);
         NumberOfUsersInDatabase().Should().Be(1);
 
         // Act...
-        var url = $"/api/v1/users?pageNumber=1&PageSize=10";
+        var url = $"/api/v1/users?pageNumber={pageNumber}&PageSize={pageSize}";
         var result = await _client.GetAsync(url);
 
         // Assert...
@@ -44,23 +47,21 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
         result.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
+        var userData = DeserializeUserData(content);
+        userData.Should().NotBeNull();
 
-        var pageOfUsers = DeserializeEmbeddedUsers(content);
-        pageOfUsers.Should().NotBeNull();
-        pageOfUsers.Count().Should().Be(1);
+        // User...
+        userData.User.Should().BeNull();
 
-        IEnumerable<string> values;
-        result.Headers.TryGetValues("X-Pagination", out values);
-        values.Should().NotBeNull();
-        values.Count().Should().Be(1);
+        // Embedded...
+        userData.Embedded.Should().NotBeNull();
+        userData.Embedded.Count.Should().Be(1);
+        ShouldBeEquivalentTo(userData.Embedded, expectedUseer);
 
-        var pagination = JsonSerializer.Deserialize<Users.API.Models.Shared.Pagination>(values.FirstOrDefault());
-        pagination.PreviousPageLink.Should().BeNull();
-        pagination.NextPageLink.Should().BeNull();
-        pagination.CurrentPage.Should().Be(1);
-        pagination.TotalPages.Should().Be(1);
-        pagination.TotalCount.Should().Be(1);
-        pagination.PageSize.Should().Be(10);
+        // Links...
+        userData.Links.Should().NotBeNull();
+        userData.Links.Count.Should().Be(1);
+        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize);
     }
 
     [Test]
@@ -69,7 +70,7 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
     {
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
-        AddUsersToDatabase(15);
+        var expectedUsers = AddUsersToDatabase(15);
         NumberOfUsersInDatabase().Should().Be(15);
 
         // Act...
@@ -83,33 +84,68 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
         result.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await result.Content.ReadAsStringAsync();
-
-        // Users...
         content.Length.Should().BeGreaterThan(0);
-        var pageOfUsers = DeserializeEmbeddedUsers(content);
-        pageOfUsers.Should().NotBeNull();
-        pageOfUsers.Count().Should().Be(10);
+        var userData = DeserializeUserData(content);
+        userData.Should().NotBeNull();
 
+        // User
+        userData.User.Should().BeNull();
 
-        IEnumerable<string> values;
-        result.Headers.TryGetValues("X-Pagination", out values);
-        values.Should().NotBeNull();
-        values.Count().Should().Be(1);
+        // Embedded Users...
+        userData.Embedded.Should().NotBeNull();
+        userData.Embedded.Count.Should().Be(10);
+        ShouldBeEquivalentTo(userData.Embedded, expectedUsers);
 
-        // Pagination...
-        var pagination = JsonSerializer.Deserialize<Users.API.Models.Shared.Pagination>(values.FirstOrDefault());
-        pagination.PreviousPageLink.Should().BeNull();
-        HttpUtility.UrlDecode(pagination.NextPageLink).Should().Be("http://localhost/api/v1/users?pageNumber=2&pageSize=10&sort=LastName:asc,FirstName:asc");
-        pagination.CurrentPage.Should().Be(1);
-        pagination.TotalPages.Should().Be(2);
-        pagination.TotalCount.Should().Be(15);
-        pagination.PageSize.Should().Be(10);
+        // Links...
+        userData.Links.Count.Should().Be(2);
 
-        // ToDo -->
-        //Add Links for pagination and links for each user!
+        var currentPageOfUsersLink = userData.Links.Single(_ => _.Method == "GET" && _.Relationship == "self");
+        currentPageOfUsersLink.Should().NotBeNull();
+        var currentPageOfUsersUrl = HttpUtility.UrlDecode(currentPageOfUsersLink.HypertextReference);
+        currentPageOfUsersUrl.Should().Be($"http://localhost/api/v1/users?pageNumber=1&pageSize=10&sort={Users.API.Models.Constants.Defaults.DefaultPageSort}");
 
-        // Metadata Links...
-        var hateoas = DeserializeMetadata(content);
+        var nextPageOfUsersLink = userData.Links.Single(_ => _.Method == "GET" && _.Relationship == "next");
+        nextPageOfUsersLink.Should().NotBeNull();
+        var nextPageOfUsersUrl = HttpUtility.UrlDecode(nextPageOfUsersLink.HypertextReference);
+        nextPageOfUsersUrl.Should().Be($"http://localhost/api/v1/users?pageNumber=1&pageSize=10&sort={Users.API.Models.Constants.Defaults.DefaultPageSort}");
+    }
+
+    [Test]
+    [Category("Happy")]
+    public async Task Given_One_User_Exists___When_A_Page_Of_Users_Is_Requested_Without_Parameters___Then_200_OK_And_Page_Of_One_User_Returned_Using_Default_Values()
+    {
+        // Arrange...
+        NumberOfUsersInDatabase().Should().Be(0);
+        var expectedUser = GenerateTestUser();
+        AddUserToDatabase(expectedUser);
+        NumberOfUsersInDatabase().Should().Be(1);
+
+        // Act...
+        var url = $"/api/v1/users";
+        var result = await _client.GetAsync(url);
+
+        // Assert...
+        NumberOfUsersInDatabase().Should().Be(1);
+
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        var content = await result.Content.ReadAsStringAsync();
+        content.Length.Should().BeGreaterThan(0);
+        var userData = DeserializeUserData(content);
+        userData.Should().NotBeNull();
+
+        // User...
+        userData.User.Should().BeNull();
+
+        // Embedded...
+        userData.Embedded.Should().NotBeNull();
+        userData.Embedded.Count.Should().Be(1);
+        ShouldBeEquivalentTo(userData.Embedded, expectedUser);
+
+        // Links...
+        userData.Links.Should().NotBeNull();
+        userData.Links.Count.Should().Be(1);
+        LinksForPageOfUsersShouldBeCorrect(userData.Links,  Users.API.Models.Constants.Defaults.DefaultPageNumber, Users.API.Models.Constants.Defaults.DefaultPageSize);
     }
 
     [Test]
@@ -118,7 +154,7 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
     {
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
-        AddUsersToDatabase(5);
+        var expectedUsers = AddUsersToDatabase(5);
         NumberOfUsersInDatabase().Should().Be(5);
 
         // Act...
@@ -130,24 +166,23 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
-
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
-        var pageOfUsers = DeserializeEmbeddedUsers(content);
-        pageOfUsers.Should().NotBeNull();
-        pageOfUsers.Count().Should().Be(5);
+        var userData = DeserializeUserData(content);
+        userData.Should().NotBeNull();
 
-        IEnumerable<string> values;
-        result.Headers.TryGetValues("X-Pagination", out values);
-        values.Should().NotBeNull();
-        values.Count().Should().Be(1);
+        // - User
+        userData.User.Should().BeNull();
 
-        var pagination = JsonSerializer.Deserialize<Users.API.Models.Shared.Pagination>(values.FirstOrDefault());
-        pagination.PreviousPageLink.Should().BeNull();
-        pagination.NextPageLink.Should().BeNull();
-        pagination.CurrentPage.Should().Be(1);
-        pagination.TotalPages.Should().Be(1);
-        pagination.TotalCount.Should().Be(5);
-        pagination.PageSize.Should().Be(10);
+        // - Links
+        userData.Links.Should().NotBeNull();
+        userData.Links.Count.Should().Be(1);
+        LinksForPageOfUsersShouldBeCorrect(userData.Links, Users.API.Models.Constants.Defaults.DefaultPageNumber, Users.API.Models.Constants.Defaults.DefaultPageSize);
+
+        // - Embedded
+        userData.Embedded.Should().NotBeNull();
+        userData.Embedded.Count.Should().Be(5);
+        ShouldBeEquivalentTo(userData.Embedded, expectedUsers);
     }
+
 }

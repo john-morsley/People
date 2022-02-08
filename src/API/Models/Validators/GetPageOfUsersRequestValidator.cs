@@ -13,7 +13,7 @@
 
             RuleFor(_ => _.Fields).Must(BeValidFields).WithMessage("The fields value is invalid. e.g. fields=id,lastname");
             RuleFor(_ => _.Filter).Must(BeValidFilter).WithMessage("The filter value is invalid. e.g. filter=sex:male");
-            RuleFor(_ => _.Sort).Must(BeValidSort).WithMessage("The sort value is invalid. e.g. sort=lastname:asc,firstname:asc");
+            RuleFor(_ => _.Sort).Must(BeValidSort).WithMessage($"The sort value is invalid. e.g. sort={Users.API.Models.Constants.Defaults.DefaultPageSort}");
         }
 
         public IPropertyMappings PropertyMappings { get; }
