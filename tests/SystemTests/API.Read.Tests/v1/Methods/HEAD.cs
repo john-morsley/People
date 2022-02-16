@@ -11,13 +11,13 @@ public class HEAD : APIsTestBase<StartUp>
         var url = $"/api/v1/users/{userId}";
 
         // Act...
-        //var httpResponse = await _client.GetAsync(url);
         var result = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url));
 
         // Assert...
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);
         result.Content.Headers.ContentLength.Should().BeNull();
+
         var content = await result.Content.ReadAsStringAsync();        
         content.Length.Should().Be(0);
     }
@@ -27,9 +27,11 @@ public class HEAD : APIsTestBase<StartUp>
     public async Task Given_The_User_Exists___When_That_User_Is_Requested___Then_200_OK_And_Content_Length_Returned()
     {
         // Arrange...
+        NumberOfUsersInDatabase().Should().Be(0);
         var userId = Guid.NewGuid();
         var expected = GenerateTestUser(userId);
-        AddUserToDatabase(expected);              
+        AddUserToDatabase(expected);
+        NumberOfUsersInDatabase().Should().Be(1);
         var url = $"/api/v1/users/{userId}";
         var expectedContentLength = await GetExpectedContentLength(url);
 
@@ -37,9 +39,12 @@ public class HEAD : APIsTestBase<StartUp>
         var result = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url));
 
         // Assert...
+        NumberOfUsersInDatabase().Should().Be(1);
+
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
         result.Content.Headers.ContentLength.Should().Be(expectedContentLength);
+
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().Be(0);
     }
@@ -49,15 +54,19 @@ public class HEAD : APIsTestBase<StartUp>
     public async Task Given_No_Users_Exist___When_A_Page_Of_Users_Is_Requested___Then_204_NoContent()
     {
         // Arrange...
+        NumberOfUsersInDatabase().Should().Be(0);
         var url = $"/api/v1/users?PageNumber=1&PageSize=10";
 
         // Act...
         var result = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url));
 
         // Assert...
+        NumberOfUsersInDatabase().Should().Be(0);
+
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);
         result.Content.Headers.ContentLength.Should().BeNull();
+
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().Be(0);
     }
@@ -67,8 +76,10 @@ public class HEAD : APIsTestBase<StartUp>
     public async Task Given_One_User_Exists___When_A_Page_Of_Users_Is_Requested___Then_200_OK_And_Content_Length_Returned()
     {
         // Arrange...
+        NumberOfUsersInDatabase().Should().Be(0);
         var user = GenerateTestUser();
         AddUserToDatabase(user);
+        NumberOfUsersInDatabase().Should().Be(1);
         var url = $"/api/v1/users?PageNumber=1&PageSize=10";
         var expectedContentLength = await GetExpectedContentLength(url);
 
@@ -76,14 +87,15 @@ public class HEAD : APIsTestBase<StartUp>
         var result = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url));
 
         // Assert...
+        NumberOfUsersInDatabase().Should().Be(1);
+
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
         result.Content.Headers.ContentLength.Should().Be(expectedContentLength);
+
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().Be(0);
     }
-
-    private string _content;
 
     private async Task<long> GetExpectedContentLength(string url)
     {
@@ -91,7 +103,6 @@ public class HEAD : APIsTestBase<StartUp>
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await result.Content.ReadAsStringAsync();
-        _content = content;
         return content.Length;
     }
 }

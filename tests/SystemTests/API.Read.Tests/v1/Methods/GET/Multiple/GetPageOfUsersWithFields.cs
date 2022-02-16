@@ -4,50 +4,59 @@ public class GetPageOfUsersWithFields : APIsTestBase<StartUp>
 {    
     [Test]
     [Category("Happy")]
-    public async Task Given_One_User_Exists___When_A_Page_Of_Users_Is_Requested_With_Fields___Then_200_OK_And_Users_Should_Be_Shaped()
+    [TestCase("FirstName")]
+    [TestCase("LastName")]
+    [TestCase("Sex")]
+    [TestCase("Gender")]
+    [TestCase("DateOfBirth")]
+    [TestCase("FirstName,LastName,Sex,Gender,DateOfBirth")]
+    public async Task Given_One_User_Exists___When_A_Page_Of_Users_Is_Requested_With_Fields___Then_200_OK_And_Users_Should_Be_Shaped(string validFields)
     {
         // Arrange...
+        const int pageNumber = 1;
+        const int pageSize = 10;
+
         NumberOfUsersInDatabase().Should().Be(0);
+
         var user = GenerateTestUser();
         AddUserToDatabase(user);
+        var users = new List<User> { user };
         NumberOfUsersInDatabase().Should().Be(1);
 
+        var url = $"/api/v1/users?fields={validFields}";
+
         // Act...
-        var url = $"/api/v1/users?fields=id,lastname";
-        var httpResponse = await _client.GetAsync(url);
+        var result = await _client.GetAsync(url);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);
 
-        httpResponse.IsSuccessStatusCode.Should().BeTrue();
-        httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var response = await httpResponse.Content.ReadAsStringAsync();
-        response.Length.Should().BeGreaterThan(0);
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var userData = DeserializeUserData(response);
+        var content = await result.Content.ReadAsStringAsync();
+        content.Length.Should().BeGreaterThan(0);
+
+        var userData = DeserializeUserData(content);
         userData.Should().NotBeNull();
-        //pageOfUsers.Count().Should().Be(1);
 
-        //var actual = pageOfUsers.First();
-        //actual.Should().NotBeNull();
-        //actual.Id.Should().Be(user.Id);
-        //actual.FirstName.Should().BeNull();
-        //actual.LastName.Should().Be(user.LastName);
-        //actual.Sex.Should().BeNull();
-        //actual.Gender.Should().BeNull();
+        var validFieldsIncludingId = AddToFieldsIfMissing("Id", validFields);
+        var (expected, unexpected) = DetermineExpectedAndUnexpectedFields(validFieldsIncludingId);
 
-        //IEnumerable<string> values;
-        //httpResponse.Headers.TryGetValues("X-Pagination", out values);
-        //values.Should().NotBeNull();
-        //values.Count().Should().Be(1);
+        // - User
+        userData.User.Should().BeNull();
 
-        //var pagination = JsonSerializer.Deserialize<Users.API.Models.Shared.Pagination>(values.FirstOrDefault());
-        //pagination.PreviousPageLink.Should().BeNull();
-        //pagination.NextPageLink.Should().BeNull();
-        //pagination.CurrentPage.Should().Be(1);
-        //pagination.TotalPages.Should().Be(1);
-        //pagination.TotalCount.Should().Be(1);
-        //pagination.PageSize.Should().Be(10);
+        // - Embedded
+        userData.Embedded.Should().NotBeNull();
+        userData.Embedded.Count.Should().Be(1);
+        ShouldBeEquivalent(expected, userData.Embedded, users);
+        ShouldBeNull(unexpected, userData.Embedded);
+        LinksForUsersShouldBeCorrect(userData.Embedded);
+
+        // - Links
+        userData.Links.Should().NotBeNull();
+        userData.Links.Count.Should().Be(1);
+        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, fields: validFields);
     }
 
     [Test]
@@ -57,16 +66,18 @@ public class GetPageOfUsersWithFields : APIsTestBase<StartUp>
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
 
+        const string url = "/api/v1/users?fields=fielddoesnotexist";
+
         // Act...
-        var url = $"/api/v1/users?fields=fielddoesnotexist";
-        var httpResponse = await _client.GetAsync(url);
+        var result = await _client.GetAsync(url);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(0);
 
-        httpResponse.IsSuccessStatusCode.Should().BeFalse();
-        httpResponse.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
-        var response = await httpResponse.Content.ReadAsStringAsync();
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+
+        var response = await result.Content.ReadAsStringAsync();
         response.Length.Should().BeGreaterThan(0);
 
         var problemDetails = JsonSerializer.Deserialize<ValidationProblemDetails>(response);
@@ -76,7 +87,7 @@ public class GetPageOfUsersWithFields : APIsTestBase<StartUp>
         problemDetails.Detail.Should().Be("See the errors field for details.");
         problemDetails.Instance.Should().Be($"/api/v1/users");
         problemDetails.Extensions.Should().NotBeNull();
-        var traceId = problemDetails.Extensions.Where(_ => _.Key == "traceId").FirstOrDefault();
+        var traceId = problemDetails.Extensions.FirstOrDefault(_ => _.Key == "traceId");
         traceId.Should().NotBeNull();
         problemDetails.Errors.Count().Should().Be(1);
         var error = problemDetails.Errors.First();
@@ -84,4 +95,63 @@ public class GetPageOfUsersWithFields : APIsTestBase<StartUp>
         var value = error.Value.First();
         value.Should().Be("The fields value is invalid. e.g. fields=id,lastname");
     }
+
+    private static void ShouldBeEquivalent(
+        IEnumerable<string> fieldNames, 
+        IEnumerable<Users.API.Models.Shared.UserData> embedded,
+        IEnumerable<Users.Domain.Models.User> expectedUsers)
+    {
+        foreach (var userData in embedded)
+        {
+            userData.Should().NotBeNull();
+            userData.User.Should().NotBeNull();
+            userData.Links.Should().NotBeNull();
+            userData.Embedded.Should().BeNull();
+            var expectedUser = expectedUsers.SingleOrDefault(_ => _.Id == userData.User.Id);
+            expectedUser.Should().NotBeNull();
+            ShouldBeEquivalent(fieldNames, userData.User, expectedUser);
+        }
+    }
+
+    private static void ShouldBeEquivalent(
+        IEnumerable<string> fieldNames,
+        Models.Response.v1.UserResponse actual,
+        Users.Domain.Models.User expected)
+    {
+        foreach (var fieldName in fieldNames)
+        {
+            ShouldBeEquivalent(fieldName, actual, expected);
+        }
+    }
+
+    private static void ShouldBeEquivalent(string fieldName, Models.Response.v1.UserResponse actual, Domain.Models.User expected)
+    {
+        var actualValue = GetValue(actual, fieldName);
+        var expectedValue = GetValue(expected, fieldName);
+        actualValue.Should().Be(expectedValue);
+    }
+
+    private static void ShouldBeNull(
+        IEnumerable<string> fieldNames,
+        IEnumerable<Users.API.Models.Shared.UserData> embedded)
+    {
+        foreach (var userData in embedded)
+        {
+            userData.Should().NotBeNull();
+            userData.User.Should().NotBeNull();
+            userData.Links.Should().NotBeNull();
+            userData.Embedded.Should().BeNull();
+        }
+
+        //foreach (var fieldName in fieldNames)
+        //{
+        //ShouldBeNull(fieldName, actual);
+        //}
+    }
+
+    //private void ShouldBeNull(string fieldName, Models.Response.v1.UserResponse actual)
+    //{
+    //    var actualValue = GetValue(actual, fieldName);
+    //    actualValue.Should().BeNull();
+    //}
 }

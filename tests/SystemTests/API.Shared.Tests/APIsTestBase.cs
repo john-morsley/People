@@ -1,5 +1,6 @@
-﻿using NUnit.Framework.Internal;
+﻿using System.Reflection;
 using System.Web;
+using Users.API.Models.Shared;
 
 namespace API.Shared.Tests;
 
@@ -13,7 +14,7 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
     protected HttpClient _client;
 
     [SetUp]
-    public void Setup()
+    public override void SetUp()
     {
         var configuration = GetCurrentConfiguration();
         _mongoContext = new MongoContext(configuration);
@@ -32,63 +33,57 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
 
         _server = new TestServer(webHostBuilder);
         _client = _server.CreateClient();
+
+        base.SetUp();
     }
 
     [TearDown]
-    public void TearDown()
+    public override void TearDown()
     {
+        base.TearDown();
+
         _client.Dispose();
         _server.Dispose();
     }
 
-    //public static Users.API.Models.Response.v1.UserResponse DeserializeUser(string json)
-    //{
-    //    var options = new JsonSerializerOptions
-    //    {
-    //        PropertyNameCaseInsensitive = true,
-    //        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
-    //    };
+    protected static string AddToFieldsIfMissing(string toAdd, string fields)
+    {
+        var listOfFields = new List<string>();
+        var hasId = false;
+        foreach (var field in fields.Split(','))
+        {
+            if (field.ToLower() == toAdd.ToLower()) hasId = true;
+            listOfFields.Add(field);
+        }
+        if (!hasId) listOfFields.Add(toAdd);
+        return string.Join(",", listOfFields);
+    }
 
-    //    return JsonSerializer.Deserialize<Users.API.Models.Response.v1.UserResponse>(json, options);
-    //}
+    private static IList<string> AllUserFields<T>() where T : class
+    {
+        var userFields = new List<string>();
 
-    //public static Users.API.Models.Shared.Metadata DeserializeMetadata(string json)
-    //{
-    //    var options = new JsonSerializerOptions
-    //    {
-    //        PropertyNameCaseInsensitive = true
-    //    };
-    //    return JsonSerializer.Deserialize<Users.API.Models.Shared.Metadata>(json, options);
-    //}
+        var propertyInfos = typeof(T).GetProperties(BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+        foreach (var propertyInfo in propertyInfos)
+        {
+            userFields.Add(propertyInfo.Name);
+        }
 
-    //public static Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse> DeserializePagedListOfUserResponses(string json)
-    //{
-    //    var options = new JsonSerializerOptions()
-    //    {
-    //        PropertyNameCaseInsensitive = true
-    //    };
-    //    options.Converters.Add(new Users.API.Models.Shared.PagedListJsonConverter());
-    //    return JsonSerializer.Deserialize<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>(json, options);
-    //}
+        return userFields;
+    }
 
-    //public static IEnumerable<Users.API.Models.Response.v1.UserResponse> DeserializeEmbeddedUsers(string json)
-    //{
-    //    var options = new JsonSerializerOptions()
-    //    {
-    //        PropertyNameCaseInsensitive = true,
-    //        Converters =
-    //        {
-    //            new Users.API.Models.Shared.EmbeddedUsersConverter(),
-    //            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
-    //        }
-    //    };
-
-    //    return JsonSerializer.Deserialize<IEnumerable<Users.API.Models.Response.v1.UserResponse>>(json, options);
-    //}
-
-    protected static string BuildExpectedUrl(int pageNumber, int pageSize, string? filter, string? search, string? sort)
+    protected static string BuildExpectedUrl(
+        int pageNumber,
+        int pageSize, 
+        string? fields = null, 
+        string? filter = null, 
+        string? search = null, 
+        string? sort = null)
     {
         const string baseUrl = "http://localhost/api/v1/users";
+
+        var fieldsParameter = "";
+        if (fields != null) fieldsParameter = $"&fields={fields}";
 
         var filterParameter = "";
         if (filter != null) filterParameter = $"&filter={filter}";
@@ -96,18 +91,15 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         var searchParameter = "";
         if (search != null) searchParameter = $"&search={search}";
 
-        var sortParameter = "";
+        var sortParameter = $"&sort={sort}";
         if (sort == null)
         {
             sortParameter = $"&sort={Users.API.Models.Constants.Defaults.DefaultPageSort}";
         }
-        else
-        {
-            sortParameter = $"&sort={sort}";
-        }
 
         var expectedUrl = $"{baseUrl}" +
                           $"?pageNumber={pageNumber}&pageSize={pageSize}" +
+                          $"{fieldsParameter}" +
                           $"{filterParameter}" +
                           $"{searchParameter}" +
                           $"{sortParameter}";
@@ -130,20 +122,21 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         return JsonSerializer.Deserialize<Users.API.Models.Shared.UserData>(json, options);
     }
 
-    //public static IEnumerable<Users.API.Models.Response.v1.UserResponse> DeserializePageOfUsers(string json)
-    //{
-    //    var options = new JsonSerializerOptions()
-    //    {
-    //        PropertyNameCaseInsensitive = true,
-    //        Converters =
-    //        {
-    //            new Users.API.Models.Shared.PagedListJsonConverter(),
-    //            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
-    //        }
-    //    };
-        
-    //    return JsonSerializer.Deserialize<IEnumerable<Users.API.Models.Response.v1.UserResponse>>(json, options);
-    //}
+    protected static (IList<string> Expected, IList<string> Unexpected) DetermineExpectedAndUnexpectedFields(string validFields)
+    {
+        var expectedFields = new List<string>();
+        var unexpectedFields = AllUserFields<Users.API.Models.Response.v1.UserResponse>();
+
+        foreach (var expectedField in validFields.Split(','))
+        {
+            expectedFields.Add(expectedField);
+            unexpectedFields.Remove(expectedField);
+        }
+
+        unexpectedFields.Remove("Links");
+
+        return (expectedFields, unexpectedFields);
+    }
 
     protected Users.API.Models.Request.v1.AddUserRequest GenerateTestAddUserRequest()
     {
@@ -158,11 +151,30 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         return testUpdateUser;
     }
 
+    protected static object GetValue<T>(T t, string fieldName) where T : class
+    {
+        var propertyInfo = typeof(T).GetProperty(fieldName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+        var type = propertyInfo.PropertyType;
+        var value = propertyInfo.GetValue(t);
+        var underlying = Nullable.GetUnderlyingType(type);
+        if (underlying != null)
+        {
+            switch (underlying.FullName)
+            {
+                case "System.DateTime": return ((DateTime)value).ToString("yyyy-MM-dd");
+            }
+        }
+
+        return value;
+    }
+
     protected void LinksForPageOfUsersShouldBeCorrect(
         IList<Users.API.Models.Shared.Link> links, 
         int pageNumber, 
         int pageSize, 
-        string? filter = null, 
+        string? fields = null,
+        string? filter = null,
         string? search = null,
         string? sort = null)
     {
@@ -175,7 +187,7 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         // Current page...
         var currentPageOfUsersLink = links.Single(_ => _.Relationship == "self" && _.Method == "GET");
         currentPageOfUsersLink.Should().NotBeNull();
-        var expectedUrl = BuildExpectedUrl(pageNumber, pageSize, filter, search, sort);
+        var expectedUrl = BuildExpectedUrl(pageNumber, pageSize, fields, filter, search, sort);
 
         var currentPageOfUsersUrl = HttpUtility.UrlDecode(currentPageOfUsersLink.HypertextReference);
         currentPageOfUsersUrl.Should().Be(expectedUrl);
@@ -184,7 +196,7 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
 
     }
 
-    protected void LinksForUserShouldBeCorrect(IList<Users.API.Models.Shared.Link> links, Guid userId)
+    protected static void LinksForUserShouldBeCorrect(IList<Users.API.Models.Shared.Link> links, Guid userId)
     {
         links.Should().NotBeNull();
         links.Count.Should().Be(2);
@@ -196,6 +208,19 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         var deleteUserLink = links.Single(_ => _.Method == "DELETE" && _.Relationship == "self");
         deleteUserLink.Should().NotBeNull();
         deleteUserLink.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
+    }
+
+    protected static void LinksForUsersShouldBeCorrect(IList<UserData> embedded)
+    {
+        foreach (var userData in embedded)
+        {
+            userData.Should().NotBeNull();
+            userData.User.Should().NotBeNull();
+            userData.Links.Should().NotBeNull();
+            userData.Embedded.Should().BeNull();
+            var userId = userData.User.Id;
+            LinksForUserShouldBeCorrect(userData.Links, userId);
+        }
     }
 
     protected void ShouldBeEquivalentTo(Users.API.Models.Shared.UserData userData, Users.Domain.Models.User user)

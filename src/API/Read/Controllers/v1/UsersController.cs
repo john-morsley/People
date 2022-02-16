@@ -115,9 +115,6 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
 
         if (!pageOfUserResponses.Any()) return NoContent();
         
-        //var pagination = GetPagination(pageOfUserResponses, getPageOfUsersRequest);
-        //Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination));
-
         // Shape Users...
         var shapedPageOfUsers = GetUserResponses(pageOfUserResponses).ShapeData(getPageOfUsersRequest.Fields);
 

@@ -71,7 +71,7 @@
             foreach (var value in values)
             {
                 var kvp = value.Split(':');
-                if (kvp.Length != 2) return false;
+                if (kvp.Length > 2) return false;
                 var field = kvp[0].ToLower();
                 if (field == "id") return false;
                 fields.Add(field);

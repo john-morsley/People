@@ -26,13 +26,25 @@ public class GetPageOfUsersWithFilter : APIsTestBase<StartUp>
                                                            "Jane White,Gender:PreferNotToSay|" +
                                                            "Mark Orange,Gender:NonBinary";
 
+    private const string UserDataForFilterWithDateOfBirth = "James Red,DateOfBirth:2000-01-31|" +
+                                                            "Mary Orange|" +
+                                                            "Robert Yellow,DateOfBirth:1998-10-01|" +
+                                                            "Susan Green|" +
+                                                            "David Blue,DateOfBirth:1998-12-05|" +
+                                                            "Lisa Indigo,DateOfBirth:1998-12-05|" +
+                                                            "Andy Violet,DateOfBirth:1990-03-21";
+
     [Test]
     [Category("Happy")]
     [TestCase("LastName:Doe", UserDataForFilter, "Jane Doe|John Doe")]
+    [TestCase("FirstName:John", UserDataForFilter, "John Green|John Doe")]
+    [TestCase("Sex", UserDataForFilterWithAllSexes, "Dave Pink|Mary Green")]
     [TestCase("Sex:Male", UserDataForFilterWithAllSexes, "John Doe")]
-    [TestCase("Sex:", UserDataForFilterWithAllSexes, "Mary Green|Dave Pink")]
+    [TestCase("Sex:Female", UserDataForFilterWithAllSexes, "Jane Doe")]
+    [TestCase("Gender", UserDataForFilterWithAllGenders, "Jane Doe|John Doe")]
     [TestCase("Gender:Cisgender", UserDataForFilterWithAllGenders, "Lisa Yellow")]
-    [TestCase("Gender:", UserDataForFilterWithAllGenders, "Jane Doe|John Doe")]
+    [TestCase("DateOfBirth", UserDataForFilterWithDateOfBirth, "Mary Orange|Susan Green")]
+    [TestCase("DateOfBirth:1998-12-05", UserDataForFilterWithDateOfBirth, "David Blue|Lisa Indigo")]
     public async Task Given_Users_Exist___When_A_Page_Of_Users_Is_Requested_With_Valid_Filter___Then_200_OK_And_Users_Should_Be_Filtered(
         string validFilter, 
         string testUsersData, 
@@ -46,8 +58,9 @@ public class GetPageOfUsersWithFilter : APIsTestBase<StartUp>
         var users = AddTestUsersToDatabase(testUsersData);
         NumberOfUsersInDatabase().Should().Be(users.Count);
 
-        // Act...
         var url = $"/api/v1/users?filter={validFilter}";
+
+        // Act...
         var response = await _client.GetAsync(url);
 
         // Assert...
@@ -64,11 +77,6 @@ public class GetPageOfUsersWithFilter : APIsTestBase<StartUp>
 
         // - User
         userData.User.Should().BeNull();
-
-        // - Links
-        userData.Links.Should().NotBeNull();
-        userData.Links.Count.Should().Be(1);
-        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, filter: validFilter);
 
         // - Embedded
         userData.Embedded.Should().NotBeNull();
@@ -97,8 +105,13 @@ public class GetPageOfUsersWithFilter : APIsTestBase<StartUp>
             
             //actualUser.DateOfBirth.Should().Be(expectedUser.DateOfBirth.InternationalFormat());
         }
+
+        // - Links
+        userData.Links.Should().NotBeNull();
+        userData.Links.Count.Should().Be(1);
+        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, filter: validFilter);
     }
-    
+
     [Test]
     [Category("Unhappy")]
     [TestCase("Id:ShouldNotBeUsed")]
@@ -108,8 +121,9 @@ public class GetPageOfUsersWithFilter : APIsTestBase<StartUp>
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
 
-        // Act...
         var url = $"/api/v1/users?filter={invalidFilter}";
+
+        // Act...
         var httpResponse = await _client.GetAsync(url);
 
         // Assert...

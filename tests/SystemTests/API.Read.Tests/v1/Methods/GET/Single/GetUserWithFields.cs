@@ -16,15 +16,16 @@ public class GetUserWithFields : APIsTestBase<StartUp>
     {
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
+
         var userId = Guid.NewGuid();
         var expectedUser = GenerateTestUser(userId);
         AddUserToDatabase(expectedUser);
+
         NumberOfUsersInDatabase().Should().Be(1);
 
-        validFields = AddToFieldsIfMissing("Id", validFields);        
+        var url = $"/api/v1/users/{userId}?fields={validFields}";
 
         // Act...
-        var url = $"/api/v1/users/{userId}?fields={validFields}";
         var result = await _client.GetAsync(url);
 
         // Assert...
@@ -38,33 +39,22 @@ public class GetUserWithFields : APIsTestBase<StartUp>
 
         var userData = DeserializeUserData(content);
         userData.Should().NotBeNull();
-        
-        var fields = DetermineExpectedAndUnexpectedFields(validFields);
 
-        ShouldBeEqual(fields.Expected, userData.User, expectedUser);
-        ShouldBeNull(fields.Unexpected, userData.User);
+        validFields = AddToFieldsIfMissing("Id", validFields);
+        var (expected, unexpected) = DetermineExpectedAndUnexpectedFields(validFields);
 
-        //userData.Links.Count().Should().Be(2);
-        //var getUserLink = userData.Links.Single(_ => _.Method == "GET");
-        //getUserLink.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
-        //var deleteUserLink = userData.Links.Single(_ => _.Method == "DELETE");
-        //deleteUserLink.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
-    }
+        // - User
+        userData.User.Should().NotBeNull();
+        ShouldBeEquivalent(expected, userData.User, expectedUser);
+        ShouldBeNull(unexpected, userData.User);
 
-    private (IList<string> Expected, IList<string> Unexpected) DetermineExpectedAndUnexpectedFields(string validFields)
-    {
-        var expectedFields = new List<string>();
-        var unexpectedFields = AllUserFields<Users.API.Models.Response.v1.UserResponse>();
+        // - Links
+        userData.Links.Should().NotBeNull();
+        userData.Links.Count.Should().Be(2);
+        LinksForUserShouldBeCorrect(userData.Links, userId);
 
-        foreach (var expectedField in validFields.Split(','))
-        {
-            expectedFields.Add(expectedField);
-            unexpectedFields.Remove(expectedField);
-        }
-
-        unexpectedFields.Remove("Links");
-
-        return (expectedFields, unexpectedFields);
+        // - Embedded
+        userData.Embedded.Should().BeNull();
     }
 
     [Test]
@@ -74,9 +64,10 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
 
-        // Act...
         var userId = Guid.NewGuid();
         var url = $"/api/v1/users/{userId}?fields=fielddoesnotexist";
+
+        // Act...
         var result = await _client.GetAsync(url);
 
         // Assert...
@@ -104,66 +95,22 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         value.Should().Be("The fields value is invalid. e.g. fields=id,lastname");
     }
 
-    private static string AddToFieldsIfMissing(string toAdd, string fields)
-    {
-        var listOfFields = new List<string>();
-        var hasId = false;
-        foreach (var field in fields.Split(','))
-        {
-            if (field.ToLower() == toAdd.ToLower()) hasId = true;
-            listOfFields.Add(field);
-        }
-        if (!hasId) listOfFields.Add(toAdd);
-        return string.Join(",", listOfFields);
-    }
-
-    private IList<string> AllUserFields<T>() where T : class
-    {
-        var userFields = new List<string>();
-
-        var propertyInfos = typeof(T).GetProperties(BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-        foreach (var propertyInfo in propertyInfos)
-        {
-            userFields.Add(propertyInfo.Name);
-        }
-
-        return userFields;
-    }
-
-    private object GetValue<T>(T t, string fieldName) where T : class
-    {
-        var propertyInfo = typeof(T).GetProperty(fieldName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-
-        var type = propertyInfo.PropertyType;
-        var value = propertyInfo.GetValue(t);
-        var underlying = Nullable.GetUnderlyingType(type);
-        if (underlying != null)
-        {
-            switch (underlying.FullName)
-            {
-                case "System.DateTime": return ((DateTime)value).ToString("yyyy-MM-dd");
-            }
-        }
-
-        return value;
-    }
-
-    private void ShouldBeEqual(IList<string> fieldNames, Models.Response.v1.UserResponse actual, Domain.Models.User expected)
+    private static void ShouldBeEquivalent(IList<string> fieldNames, Models.Response.v1.UserResponse actual, Domain.Models.User expected)
     {
         foreach (var fieldName in fieldNames)
         {
-            ShouldBeEqual(fieldName, actual, expected);
+            ShouldBeEquivalent(fieldName, actual, expected);
         }
     }
 
-    private void ShouldBeEqual(string fieldName, Models.Response.v1.UserResponse actual, Domain.Models.User expected)
+    private static void ShouldBeEquivalent(string fieldName, Models.Response.v1.UserResponse actual, Domain.Models.User expected)
     {
         var actualValue = GetValue(actual, fieldName);
         var expectedValue = GetValue(expected, fieldName);
         actualValue.Should().Be(expectedValue);
     }
 
-    private void ShouldBeNull(IList<string> fieldNames, Models.Response.v1.UserResponse actual)
+    private static void ShouldBeNull(IList<string> fieldNames, Models.Response.v1.UserResponse actual)
     {
         foreach (var fieldName in fieldNames)
         {
@@ -171,7 +118,7 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         }
     }
 
-    private void ShouldBeNull(string fieldName, Models.Response.v1.UserResponse actual)
+    private static void ShouldBeNull(string fieldName, Models.Response.v1.UserResponse actual)
     {
         var actualValue = GetValue(actual, fieldName);
         actualValue.Should().BeNull();

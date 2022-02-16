@@ -34,19 +34,8 @@ public class TestBase
     }
 
     [SetUp]
-    public async Task SetUp()
+    public virtual void SetUp()
     {
-        //var configuration = GetConfiguration();
-        //var section = configuration.GetSection(nameof(MongoSettings));
-        //var settings = section.Get<MongoSettings>();
-
-        //_testFixture = new TestFixture(settings.Username, settings.Password);
-        //_autoFixture = new Fixture();
-        //_autoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
-        //_autoFixture.Customizations.Add(new AddUserRequestSpecimenBuilder());
-
-        //await _testFixture.RunBeforeTests();
-
         DeleteAllUsersFromDatabase();
     }
 
@@ -64,10 +53,9 @@ public class TestBase
     }
 
     [TearDown]
-    public async Task TearDown()
+    public virtual void TearDown()
     {
         DeleteAllUsersFromDatabase();
-        //await _testFixture.RunAfterTests();
     }
 
     [OneTimeTearDown]

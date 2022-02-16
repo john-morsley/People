@@ -8,13 +8,16 @@ public class GetUser : APIsTestBase<StartUp>
     {
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
+
         var userId = Guid.NewGuid();
         var expected = GenerateTestUser(userId);
         AddUserToDatabase(expected);
+
         NumberOfUsersInDatabase().Should().Be(1);
 
-        // Act...
         var url = $"/api/v1/users/{userId}";
+
+        // Act...
         var result = await _client.GetAsync(url);
 
         // Assert...
@@ -28,16 +31,16 @@ public class GetUser : APIsTestBase<StartUp>
         var userData = DeserializeUserData(content);
         userData.Should().NotBeNull();
 
-        // User...
+        // - User
         userData.User.Should().NotBeNull();
         ShouldBeEquivalentTo(userData, expected);
 
-        // Links...
+        // - Links
         userData.Links.Should().NotBeNull();
         userData.Links.Count.Should().Be(2);
         LinksForUserShouldBeCorrect(userData.Links, userId);
 
-        // Embedded...
+        // - Embedded
         userData.Embedded.Should().BeNull();
     }
 
@@ -48,9 +51,10 @@ public class GetUser : APIsTestBase<StartUp>
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
 
-        // Act...
         var userId = Guid.NewGuid();
         var url = $"/api/v1/users/{userId}";
+
+        // Act...
         var result = await _client.GetAsync(url);
 
         // Assert...
@@ -68,11 +72,11 @@ public class GetUser : APIsTestBase<StartUp>
     public async Task When_User_Is_Requested_With_Invalid_Id___Then_404_NotFound()
     {
         // Arrange...
-        var userId = Guid.Empty;
         NumberOfUsersInDatabase().Should().Be(0);
 
+        const string url = "/api/v1/users/invalid-user-id";
+
         // Act...
-        var url = $"/api/v1/users/invalid-user-id";
         var result = await _client.GetAsync(url);
 
         // Assert...

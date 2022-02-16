@@ -7,10 +7,14 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
     public async Task Given_No_Users_Exist___When_Page_Of_Users_Is_Requested___Then_204_NoContent()
     {
         // Arrange...
+        const int pageNumber = 1;
+        const int pageSize = 10;
+
         NumberOfUsersInDatabase().Should().Be(0);
 
+        var url = $"/api/v1/users?pageNumber={pageNumber}&PageSize={pageSize}";
+
         // Act...
-        var url = $"/api/v1/users?pageNumber=1&pageSize=10";
         var result = await _client.GetAsync(url);
 
         // Assert...
@@ -32,12 +36,13 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
         const int pageSize = 10;
 
         NumberOfUsersInDatabase().Should().Be(0);
-        var expectedUseer = GenerateTestUser();
-        AddUserToDatabase(expectedUseer);
+        var expectedUser = GenerateTestUser();
+        AddUserToDatabase(expectedUser);
         NumberOfUsersInDatabase().Should().Be(1);
 
-        // Act...
         var url = $"/api/v1/users?pageNumber={pageNumber}&PageSize={pageSize}";
+
+        // Act...
         var result = await _client.GetAsync(url);
 
         // Assert...
@@ -45,20 +50,22 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
+
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
+
         var userData = DeserializeUserData(content);
         userData.Should().NotBeNull();
 
-        // User...
+        // - User
         userData.User.Should().BeNull();
 
-        // Embedded...
+        // - Embedded
         userData.Embedded.Should().NotBeNull();
         userData.Embedded.Count.Should().Be(1);
-        ShouldBeEquivalentTo(userData.Embedded, expectedUseer);
+        ShouldBeEquivalentTo(userData.Embedded, expectedUser);
 
-        // Links...
+        // - Links
         userData.Links.Should().NotBeNull();
         userData.Links.Count.Should().Be(1);
         LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize);
@@ -69,12 +76,16 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
     public async Task Given_Multiple_Users_Exist___When_A_Page_Of_Users_Is_Requested___Then_200_OK_And_Page_Of_Users_Returned()
     {
         // Arrange...
+        const int pageNumber = 1;
+        const int pageSize = 10;
+
         NumberOfUsersInDatabase().Should().Be(0);
         var expectedUsers = AddUsersToDatabase(15);
         NumberOfUsersInDatabase().Should().Be(15);
 
+        var url = $"/api/v1/users?pageNumber={pageNumber}&PageSize={pageSize}";
+
         // Act...
-        var url = $"/api/v1/users?pageNumber=1&pageSize=10";
         var result = await _client.GetAsync(url);
 
         // Assert...
@@ -88,26 +99,18 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
         var userData = DeserializeUserData(content);
         userData.Should().NotBeNull();
 
-        // User
+        // - User
         userData.User.Should().BeNull();
 
-        // Embedded Users...
+        // - Embedded
         userData.Embedded.Should().NotBeNull();
         userData.Embedded.Count.Should().Be(10);
         ShouldBeEquivalentTo(userData.Embedded, expectedUsers);
 
-        // Links...
+        // - Links
+        userData.Links.Should().NotBeNull();
         userData.Links.Count.Should().Be(2);
-
-        var currentPageOfUsersLink = userData.Links.Single(_ => _.Method == "GET" && _.Relationship == "self");
-        currentPageOfUsersLink.Should().NotBeNull();
-        var currentPageOfUsersUrl = HttpUtility.UrlDecode(currentPageOfUsersLink.HypertextReference);
-        currentPageOfUsersUrl.Should().Be($"http://localhost/api/v1/users?pageNumber=1&pageSize=10&sort={Users.API.Models.Constants.Defaults.DefaultPageSort}");
-
-        var nextPageOfUsersLink = userData.Links.Single(_ => _.Method == "GET" && _.Relationship == "next");
-        nextPageOfUsersLink.Should().NotBeNull();
-        var nextPageOfUsersUrl = HttpUtility.UrlDecode(nextPageOfUsersLink.HypertextReference);
-        nextPageOfUsersUrl.Should().Be($"http://localhost/api/v1/users?pageNumber=1&pageSize=10&sort={Users.API.Models.Constants.Defaults.DefaultPageSort}");
+        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize);
     }
 
     [Test]
@@ -120,8 +123,9 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
         AddUserToDatabase(expectedUser);
         NumberOfUsersInDatabase().Should().Be(1);
 
+        const string url = "/api/v1/users";
+
         // Act...
-        var url = $"/api/v1/users";
         var result = await _client.GetAsync(url);
 
         // Assert...
@@ -129,20 +133,22 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
+
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
+
         var userData = DeserializeUserData(content);
         userData.Should().NotBeNull();
 
-        // User...
+        // - User
         userData.User.Should().BeNull();
 
-        // Embedded...
+        // - Embedded
         userData.Embedded.Should().NotBeNull();
         userData.Embedded.Count.Should().Be(1);
         ShouldBeEquivalentTo(userData.Embedded, expectedUser);
 
-        // Links...
+        // - Links
         userData.Links.Should().NotBeNull();
         userData.Links.Count.Should().Be(1);
         LinksForPageOfUsersShouldBeCorrect(userData.Links,  Users.API.Models.Constants.Defaults.DefaultPageNumber, Users.API.Models.Constants.Defaults.DefaultPageSize);
@@ -157,8 +163,9 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
         var expectedUsers = AddUsersToDatabase(5);
         NumberOfUsersInDatabase().Should().Be(5);
 
+        const string url = "/api/v1/users";
+
         // Act...
-        var url = $"/api/v1/users";
         var result = await _client.GetAsync(url);
 
         // Assert...
@@ -166,8 +173,10 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
+
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
+
         var userData = DeserializeUserData(content);
         userData.Should().NotBeNull();
 
@@ -184,5 +193,4 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
         userData.Embedded.Count.Should().Be(5);
         ShouldBeEquivalentTo(userData.Embedded, expectedUsers);
     }
-
 }

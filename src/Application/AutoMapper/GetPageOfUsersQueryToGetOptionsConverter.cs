@@ -19,14 +19,22 @@ public class GetPageOfUsersQueryToGetOptionsConverter : ITypeConverter<Users.App
             var filters = source.Filter.Split(',');
             foreach (var filter in filters) 
             {
-                if (string.IsNullOrEmpty(filter)) throw new ArgumentException(nameof(source), "Filter invalid. Found an empty filter section.");
+                if (string.IsNullOrEmpty(filter)) throw new ArgumentException("Filter invalid. Found an empty filter section.", nameof(source));
 
                 var parts = filter.Split(':');
                 var field = parts[0];
-                var value = parts[1];
-                if (string.IsNullOrEmpty(field)) throw new ArgumentException(nameof(source), "Filter (field:value) invalid. Found an empty field section.");
-                //if (string.IsNullOrEmpty(value)) throw new ArgumentException(nameof(source), "Filter (field:value) invalid. Found an empty value section.");
-                getOptions.AddFilter(new Filter(field, value));
+
+                if (parts.Length == 1)
+                {
+                    if (string.IsNullOrEmpty(field)) throw new ArgumentException("Filter (field) invalid. Found an empty field section.", nameof(source));
+                    getOptions.AddFilter(new Filter(field));
+                }
+                else if (parts.Length == 2)
+                {
+                    var value = parts[1];
+                    if (string.IsNullOrEmpty(field)) throw new ArgumentException("Filter (field:value) invalid. Found an empty field section.", nameof(source));
+                    getOptions.AddFilter(new Filter(field, value));
+                }
             }
         }
 
