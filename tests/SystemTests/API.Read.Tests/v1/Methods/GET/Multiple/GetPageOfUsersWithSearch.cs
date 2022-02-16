@@ -22,15 +22,16 @@ public class GetPageOfUsersWithSearch : APIsTestBase<StartUp>
         const int pageSize = 10;
 
         NumberOfUsersInDatabase().Should().Be(0);
+        var numberOfExpectedUsers = UserDataForSearch.Split('|').Length;
         var users = AddTestUsersToDatabase(usersData);
-        NumberOfUsersInDatabase().Should().Be(6);
+        NumberOfUsersInDatabase().Should().Be(numberOfExpectedUsers);
 
         // Act...
         var url = $"/api/v1/users?search={search}";
         var response = await _client.GetAsync(url);
 
         // Assert...
-        NumberOfUsersInDatabase().Should().Be(6);
+        NumberOfUsersInDatabase().Should().Be(numberOfExpectedUsers);
 
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -47,7 +48,7 @@ public class GetPageOfUsersWithSearch : APIsTestBase<StartUp>
         // Links...
         userData.Links.Should().NotBeNull();
         userData.Links.Count.Should().Be(1);
-        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, search: search);
+        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, search: search, totalNumber: numberOfExpectedUsers);
 
         // Embedded...
         userData.Embedded.Should().NotBeNull();

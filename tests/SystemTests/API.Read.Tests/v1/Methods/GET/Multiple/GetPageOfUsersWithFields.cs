@@ -56,7 +56,7 @@ public class GetPageOfUsersWithFields : APIsTestBase<StartUp>
         // - Links
         userData.Links.Should().NotBeNull();
         userData.Links.Count.Should().Be(1);
-        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, fields: validFields);
+        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, fields: validFields, totalNumber: 1);
     }
 
     [Test]

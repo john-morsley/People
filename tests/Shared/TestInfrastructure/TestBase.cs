@@ -141,7 +141,9 @@ public class TestBase
     }
 
     protected IList<Users.Domain.Models.User> AddUsersToDatabase(int numberOfUsersToAdd)
-    {        
+    {
+        if (numberOfUsersToAdd <= 0) return new List<Users.Domain.Models.User>();
+
         var additional = GetInMemoryConfiguration();
         var configuration = GetConfiguration(additional);
         var section = configuration.GetSection(nameof(MongoSettings));

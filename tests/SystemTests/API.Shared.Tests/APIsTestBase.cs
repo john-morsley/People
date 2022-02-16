@@ -172,28 +172,44 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
     protected void LinksForPageOfUsersShouldBeCorrect(
         IList<Users.API.Models.Shared.Link> links, 
         int pageNumber, 
-        int pageSize, 
+        int pageSize,
+        int totalNumber,
         string? fields = null,
         string? filter = null,
         string? search = null,
         string? sort = null)
     {
-        // Previous page...
-        if (pageNumber < 1)
-        {
+        string expectedUrl;
 
+        // Previous page...
+        if (pageNumber > 1)
+        {
+            var previousPageOfUsersLink = links.Single(_ => _.Relationship == "previous" && _.Method == "GET");
+            previousPageOfUsersLink.Should().NotBeNull();
+            expectedUrl = BuildExpectedUrl(pageNumber - 1, pageSize, fields, filter, search, sort);
+
+            var previousPageOfUsersUrl = HttpUtility.UrlDecode(previousPageOfUsersLink.HypertextReference);
+            previousPageOfUsersUrl.Should().Be(expectedUrl);
         }
 
         // Current page...
         var currentPageOfUsersLink = links.Single(_ => _.Relationship == "self" && _.Method == "GET");
         currentPageOfUsersLink.Should().NotBeNull();
-        var expectedUrl = BuildExpectedUrl(pageNumber, pageSize, fields, filter, search, sort);
+        expectedUrl = BuildExpectedUrl(pageNumber, pageSize, fields, filter, search, sort);
 
         var currentPageOfUsersUrl = HttpUtility.UrlDecode(currentPageOfUsersLink.HypertextReference);
         currentPageOfUsersUrl.Should().Be(expectedUrl);
 
         // Next page...
+        if (totalNumber > pageSize * pageNumber)
+        {
+            var nextPageOfUsersLink = links.Single(_ => _.Relationship == "next" && _.Method == "GET");
+            nextPageOfUsersLink.Should().NotBeNull();
+            expectedUrl = BuildExpectedUrl(pageNumber + 1, pageSize, fields, filter, search, sort);
 
+            var nextPageOfUsersUrl = HttpUtility.UrlDecode(nextPageOfUsersLink.HypertextReference);
+            nextPageOfUsersUrl.Should().Be(expectedUrl);
+        }
     }
 
     protected static void LinksForUserShouldBeCorrect(IList<Users.API.Models.Shared.Link> links, Guid userId)

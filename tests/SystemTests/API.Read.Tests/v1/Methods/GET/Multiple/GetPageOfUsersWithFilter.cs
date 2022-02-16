@@ -109,7 +109,7 @@ public class GetPageOfUsersWithFilter : APIsTestBase<StartUp>
         // - Links
         userData.Links.Should().NotBeNull();
         userData.Links.Count.Should().Be(1);
-        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, filter: validFilter);
+        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, filter: validFilter, totalNumber: users.Count);
     }
 
     [Test]

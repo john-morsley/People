@@ -68,7 +68,7 @@ public class GetPageOfUsersWithSort : APIsTestBase<StartUp>
         // - Links
         userData.Links.Should().NotBeNull();
         userData.Links.Count.Should().Be(1);
-        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, sort: validSort);
+        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, sort: validSort, totalNumber: users.Count);
 
         // - Embedded
         var index = 0;

@@ -247,7 +247,7 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
         if (pageOfUsers.HasNext)
         {
             var nextUrl = CreateUsersResourceUri(getPageOfUsersRequest, ResourceUriType.NextPage);
-            var nextLink = new Link(currentUrl, "next", "GET");
+            var nextLink = new Link(nextUrl, "next", "GET");
             links.Add(nextLink);
         }
 
