@@ -63,21 +63,21 @@ namespace API.Models.Shared.Tests
                 PropertyNameCaseInsensitive = true,
                 Converters =
                 {
-                    new Users.API.Models.Shared.UserDataConverter(),
+                    new Users.API.Models.Shared.UserResourceConverter(),
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
-            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserData>(json, options);
+            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
 
             // Assert...
             userData.Should().NotBeNull();
-            userData.User.Should().NotBeNull();
-            userData.User.Id.Should().Be(userId);
-            userData.User.FirstName.Should().Be("John");
-            userData.User.LastName.Should().Be("Doe");
-            userData.User.DateOfBirth.Should().BeNull();
-            userData.User.Gender.Should().BeNull();
-            userData.User.Sex.Should().BeNull();
+            userData.Data.Should().NotBeNull();
+            userData.Data.Id.Should().Be(userId);
+            userData.Data.FirstName.Should().Be("John");
+            userData.Data.LastName.Should().Be("Doe");
+            userData.Data.DateOfBirth.Should().BeNull();
+            userData.Data.Gender.Should().BeNull();
+            userData.Data.Sex.Should().BeNull();
             userData.Links.Should().BeNull();
             userData.Embedded.Should().BeNull();
         }
@@ -105,21 +105,21 @@ namespace API.Models.Shared.Tests
                 PropertyNameCaseInsensitive = true,
                 Converters =
                 {
-                    new Users.API.Models.Shared.UserDataConverter(),
+                    new Users.API.Models.Shared.UserResourceConverter(),
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
-            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserData>(json, options);
+            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
 
             // Assert...
             userData.Should().NotBeNull();
-            userData.User.Should().NotBeNull();
-            userData.User.Id.Should().Be(userId);
-            userData.User.FirstName.Should().Be("John");
-            userData.User.LastName.Should().Be("Doe");
-            userData.User.DateOfBirth.Should().Be(dob);
-            userData.User.Gender.Should().Be(Users.Domain.Enumerations.Gender.Cisgender);
-            userData.User.Sex.Should().Be(Users.Domain.Enumerations.Sex.Male);
+            userData.Data.Should().NotBeNull();
+            userData.Data.Id.Should().Be(userId);
+            userData.Data.FirstName.Should().Be("John");
+            userData.Data.LastName.Should().Be("Doe");
+            userData.Data.DateOfBirth.Should().Be(dob);
+            userData.Data.Gender.Should().Be(Users.Domain.Enumerations.Gender.Cisgender);
+            userData.Data.Sex.Should().Be(Users.Domain.Enumerations.Sex.Male);
             userData.Links.Should().BeNull();
             userData.Embedded.Should().BeNull();
         }
@@ -146,21 +146,21 @@ namespace API.Models.Shared.Tests
                 PropertyNameCaseInsensitive = true,
                 Converters =
                 {
-                    new Users.API.Models.Shared.UserDataConverter(),
+                    new Users.API.Models.Shared.UserResourceConverter(),
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
-            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserData>(json, options);
+            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
 
             // Assert...
             userData.Should().NotBeNull();
-            userData.User.Should().NotBeNull();
-            userData.User.Id.Should().Be(userId);
-            userData.User.FirstName.Should().Be("John");
-            userData.User.LastName.Should().Be("Doe");
-            userData.User.DateOfBirth.Should().BeNull();
-            userData.User.Gender.Should().BeNull();
-            userData.User.Sex.Should().BeNull();
+            userData.Data.Should().NotBeNull();
+            userData.Data.Id.Should().Be(userId);
+            userData.Data.FirstName.Should().Be("John");
+            userData.Data.LastName.Should().Be("Doe");
+            userData.Data.DateOfBirth.Should().BeNull();
+            userData.Data.Gender.Should().BeNull();
+            userData.Data.Sex.Should().BeNull();
             userData.Links.Should().BeNull();
             userData.Embedded.Should().BeNull();
         }
@@ -188,21 +188,21 @@ namespace API.Models.Shared.Tests
                 PropertyNameCaseInsensitive = true,
                 Converters =
                 {
-                    new Users.API.Models.Shared.UserDataConverter(),
+                    new Users.API.Models.Shared.UserResourceConverter(),
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
-            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserData>(json, options);
+            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
 
             // Assert...
             userData.Should().NotBeNull();
-            userData.User.Should().NotBeNull();
-            userData.User.Id.Should().Be(userId);
-            userData.User.FirstName.Should().Be("John");
-            userData.User.LastName.Should().Be("Doe");
-            userData.User.DateOfBirth.Should().BeNull();
-            userData.User.Gender.Should().BeNull();
-            userData.User.Sex.Should().BeNull();
+            userData.Data.Should().NotBeNull();
+            userData.Data.Id.Should().Be(userId);
+            userData.Data.FirstName.Should().Be("John");
+            userData.Data.LastName.Should().Be("Doe");
+            userData.Data.DateOfBirth.Should().BeNull();
+            userData.Data.Gender.Should().BeNull();
+            userData.Data.Sex.Should().BeNull();
             userData.Links.Should().NotBeNull();
             userData.Links.Count.Should().Be(2);
             var getLink = userData.Links.SingleOrDefault(_ => _.Method == "GET" && _.Relationship == "self");
@@ -243,15 +243,15 @@ namespace API.Models.Shared.Tests
                 PropertyNameCaseInsensitive = true,
                 Converters =
                 {
-                    new Users.API.Models.Shared.UserDataConverter(),
+                    new Users.API.Models.Shared.UserResourceConverter(),
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
-            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserData>(json, options);
+            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
 
             // Assert...
             userData.Should().NotBeNull();
-            userData.User.Should().BeNull();
+            userData.Data.Should().BeNull();
             userData.Links.Should().BeNull();
             
             userData.Embedded.Should().NotBeNull();
@@ -260,12 +260,12 @@ namespace API.Models.Shared.Tests
             var embeddedUserData = userData.Embedded.FirstOrDefault();
             embeddedUserData.Should().NotBeNull();
             embeddedUserData.Links.Count.Should().Be(2);
-            embeddedUserData.User.Id.Should().Be(userId);
-            embeddedUserData.User.FirstName.Should().Be("John");
-            embeddedUserData.User.LastName.Should().Be("Doe");
-            embeddedUserData.User.DateOfBirth.Should().BeNull();
-            embeddedUserData.User.Gender.Should().BeNull();
-            embeddedUserData.User.Sex.Should().BeNull();
+            embeddedUserData.Data.Id.Should().Be(userId);
+            embeddedUserData.Data.FirstName.Should().Be("John");
+            embeddedUserData.Data.LastName.Should().Be("Doe");
+            embeddedUserData.Data.DateOfBirth.Should().BeNull();
+            embeddedUserData.Data.Gender.Should().BeNull();
+            embeddedUserData.Data.Sex.Should().BeNull();
 
             var getLink = embeddedUserData.Links.SingleOrDefault(_ => _.Method == "GET" && _.Relationship == "self");
             getLink.Should().NotBeNull();
@@ -286,11 +286,11 @@ namespace API.Models.Shared.Tests
         {
             // Arrange...
             var json =
-                "{" +
+            "{" +
                 $"\"Id\":\"{invalidUserId}\"," +
                 "\"FirstName\":\"John\"," +
                 "\"LastName\":\"Doe\"," +
-                "}";
+            "}";
 
             // Act...
             var options = new JsonSerializerOptions
@@ -298,22 +298,22 @@ namespace API.Models.Shared.Tests
                 PropertyNameCaseInsensitive = true,
                 Converters =
                 {
-                    new Users.API.Models.Shared.UserDataConverter(),
+                    new Users.API.Models.Shared.UserResourceConverter(),
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
-            var exception = Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<Users.API.Models.Shared.UserData>(json, options));
+            var exception = Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options));
 
             // Assert...
             exception.Should().NotBeNull();
-            exception.Message.StartsWith("The JSON value could not be converted to Users.API.Models.Shared.UserData.").Should().BeTrue();
+            exception.Message.StartsWith("The JSON value could not be converted to Users.API.Models.Shared.UserResource.").Should().BeTrue();
             exception.InnerException.Should().NotBeNull();
             exception.InnerException.Message.Should().Be("The JSON value is not in a supported Guid format.");
 
 
 
             /*
-             * The JSON value could not be converted to Users.API.Models.Shared.UserData.
+             * The JSON value could not be converted to Users.API.Models.Shared.UserResource.
              * 12345678901234567890123456789012345678901234567890123456789012345678901234
              *          1         2         3         4         5         6         7
              *
@@ -325,8 +325,6 @@ namespace API.Models.Shared.Tests
 
         [Test]
         [Category("Unhappy")]
-        //[TestCase(null)]
-        //[TestCase("")]
         [TestCase(" ")]
         [TestCase("InvalidValue")]
         [TestCase("01/02/2003")]
@@ -349,11 +347,11 @@ namespace API.Models.Shared.Tests
                 PropertyNameCaseInsensitive = true,
                 Converters =
                 {
-                    new Users.API.Models.Shared.UserDataConverter(),
+                    new Users.API.Models.Shared.UserResourceConverter(),
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
-            var exception = Assert.Throws<InvalidOperationException>(() => JsonSerializer.Deserialize<Users.API.Models.Shared.UserData>(json, options));
+            var exception = Assert.Throws<InvalidOperationException>(() => JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options));
 
             // Assert...
             exception.Message.Should().Be($"DateOfBirth is not valid: Expected format is 'YYYY-MM-DD', actual value: '{invalidDob}'");
@@ -361,8 +359,6 @@ namespace API.Models.Shared.Tests
 
         [Test]
         [Category("Unhappy")]
-        //[TestCase(null)]
-        //[TestCase("")]
         [TestCase(" ")]
         [TestCase("InvalidValue")]
         public void Given_JSON_With_Invalid_Sex___When_Deserialized_With_Converter___Then_Should_Throw_InvalidOperationException(string sex)
@@ -383,11 +379,11 @@ namespace API.Models.Shared.Tests
                 PropertyNameCaseInsensitive = true,
                 Converters =
                 {
-                    new Users.API.Models.Shared.UserDataConverter(),
+                    new Users.API.Models.Shared.UserResourceConverter(),
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
-            var exception = Assert.Throws<InvalidOperationException>(() => JsonSerializer.Deserialize<Users.API.Models.Shared.UserData>(json, options));
+            var exception = Assert.Throws<InvalidOperationException>(() => JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options));
 
             // Assert...
             exception.Message.Should().Be($"Sex is not valid: Actual value: '{sex}'");
@@ -395,8 +391,6 @@ namespace API.Models.Shared.Tests
 
         [Test]
         [Category("Unhappy")]
-        //[TestCase(null)]
-        //[TestCase("")]
         [TestCase(" ")]
         [TestCase("InvalidValue")]
         public void Given_JSON_With_Invalid_Gender___When_Deserialized_With_Converter___Then_Should_Throw_InvalidOperationException(string gender)
@@ -417,11 +411,11 @@ namespace API.Models.Shared.Tests
                 PropertyNameCaseInsensitive = true,
                 Converters =
                 {
-                    new Users.API.Models.Shared.UserDataConverter(),
+                    new Users.API.Models.Shared.UserResourceConverter(),
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
-            var exception = Assert.Throws<InvalidOperationException>(() => JsonSerializer.Deserialize<Users.API.Models.Shared.UserData>(json, options));
+            var exception = Assert.Throws<InvalidOperationException>(() => JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options));
 
             // Assert...
             exception.Message.Should().Be($"Gender is not valid: Actual value: '{gender}'");

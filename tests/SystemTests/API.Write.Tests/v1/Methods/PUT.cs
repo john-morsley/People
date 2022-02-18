@@ -68,7 +68,7 @@ public class PUT : APIsTestBase<StartUp>
         userData.Should().NotBeNull();
 
         // - User
-        userData.User.Should().BeNull();
+        userData.Data.Should().BeNull();
 
         // - Links
         userData.Links.Should().BeNull();

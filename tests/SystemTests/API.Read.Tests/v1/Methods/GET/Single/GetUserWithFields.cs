@@ -44,9 +44,9 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         var (expected, unexpected) = DetermineExpectedAndUnexpectedFields(validFields);
 
         // - User
-        userData.User.Should().NotBeNull();
-        ShouldBeEquivalent(expected, userData.User, expectedUser);
-        ShouldBeNull(unexpected, userData.User);
+        userData.Data.Should().NotBeNull();
+        ShouldBeEquivalent(expected, userData.Data, expectedUser);
+        ShouldBeNull(unexpected, userData.Data);
 
         // - Links
         userData.Links.Should().NotBeNull();

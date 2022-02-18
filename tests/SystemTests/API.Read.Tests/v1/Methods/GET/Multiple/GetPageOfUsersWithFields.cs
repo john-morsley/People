@@ -44,7 +44,7 @@ public class GetPageOfUsersWithFields : APIsTestBase<StartUp>
         var (expected, unexpected) = DetermineExpectedAndUnexpectedFields(validFieldsIncludingId);
 
         // - User
-        userData.User.Should().BeNull();
+        userData.Data.Should().BeNull();
 
         // - Embedded
         userData.Embedded.Should().NotBeNull();
@@ -98,18 +98,18 @@ public class GetPageOfUsersWithFields : APIsTestBase<StartUp>
 
     private static void ShouldBeEquivalent(
         IEnumerable<string> fieldNames, 
-        IEnumerable<Users.API.Models.Shared.UserData> embedded,
+        IEnumerable<Users.API.Models.Shared.UserResource> embedded,
         IEnumerable<Users.Domain.Models.User> expectedUsers)
     {
         foreach (var userData in embedded)
         {
             userData.Should().NotBeNull();
-            userData.User.Should().NotBeNull();
+            userData.Data.Should().NotBeNull();
             userData.Links.Should().NotBeNull();
             userData.Embedded.Should().BeNull();
-            var expectedUser = expectedUsers.SingleOrDefault(_ => _.Id == userData.User.Id);
+            var expectedUser = expectedUsers.SingleOrDefault(_ => _.Id == userData.Data.Id);
             expectedUser.Should().NotBeNull();
-            ShouldBeEquivalent(fieldNames, userData.User, expectedUser);
+            ShouldBeEquivalent(fieldNames, userData.Data, expectedUser);
         }
     }
 
@@ -133,12 +133,12 @@ public class GetPageOfUsersWithFields : APIsTestBase<StartUp>
 
     private static void ShouldBeNull(
         IEnumerable<string> fieldNames,
-        IEnumerable<Users.API.Models.Shared.UserData> embedded)
+        IEnumerable<Users.API.Models.Shared.UserResource> embedded)
     {
         foreach (var userData in embedded)
         {
             userData.Should().NotBeNull();
-            userData.User.Should().NotBeNull();
+            userData.Data.Should().NotBeNull();
             userData.Links.Should().NotBeNull();
             userData.Embedded.Should().BeNull();
         }

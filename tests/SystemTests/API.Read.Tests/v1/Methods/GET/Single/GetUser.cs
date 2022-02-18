@@ -32,7 +32,7 @@ public class GetUser : APIsTestBase<StartUp>
         userData.Should().NotBeNull();
 
         // - User
-        userData.User.Should().NotBeNull();
+        userData.Data.Should().NotBeNull();
         ShouldBeEquivalentTo(userData, expected);
 
         // - Links

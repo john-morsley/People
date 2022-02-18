@@ -11,6 +11,9 @@
 
             PropertyMappings = propertyMappings;
 
+            RuleFor(_ => _.PageNumber).Must(i => i > 0).WithMessage("The pageNumber value is invalid. It must be greater than zero.");
+            RuleFor(_ => _.PageSize).Must(i => i > 0).WithMessage("The pageSize value is invalid. It must be greater than zero.");
+
             RuleFor(_ => _.Fields).Must(BeValidFields).WithMessage("The fields value is invalid. e.g. fields=id,lastname");
             RuleFor(_ => _.Filter).Must(BeValidFilter).WithMessage("The filter value is invalid. e.g. filter=sex:male");
             RuleFor(_ => _.Sort).Must(BeValidSort).WithMessage($"The sort value is invalid. e.g. sort={Users.API.Models.Constants.Defaults.DefaultPageSort}");

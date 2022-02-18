@@ -29,7 +29,7 @@ public class POST_AddUser : APIsTestBase<StartUp>
         userData.Should().NotBeNull();
 
         // - User
-        userData.User.Should().NotBeNull();
+        userData.Data.Should().NotBeNull();
 
         // - Links
         userData.Links.Should().NotBeNull();

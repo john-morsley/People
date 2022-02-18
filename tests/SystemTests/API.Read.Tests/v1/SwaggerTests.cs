@@ -71,8 +71,6 @@ public class SwaggerTests
         httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var response = await httpResponse.Content.ReadAsStringAsync();
         response.Length.Should().BeGreaterThan(0);
-        //var swagger = JObject.Parse(response);
-        //swagger.Count.Should().Be(4);
     }
 
     [TearDown]

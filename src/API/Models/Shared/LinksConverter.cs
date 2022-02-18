@@ -8,18 +8,18 @@ using Users.API.Models.Response.v1;
 
 namespace Users.API.Models.Shared;
 
-//public class UserDataConverter : JsonConverter<UserData>
+//public class UserResourceConverter : JsonConverter<UserResource>
 //{
 //    public override bool CanConvert(Type typeToConvert)
 //    {
-//        return typeof(UserData).IsAssignableFrom(typeToConvert);
+//        return typeof(UserResource).IsAssignableFrom(typeToConvert);
 //    }
 
-//    public override UserData Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+//    public override UserResource Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 //    {
 //        if (reader.TokenType != JsonTokenType.StartObject)  throw new JsonException("Expected StartObject token");
 
-//        var userData = new UserData();
+//        var userData = new UserResource();
 //        var user = new UserResponse();
 
 //        while (reader.Read())
@@ -97,7 +97,7 @@ namespace Users.API.Models.Shared;
 //        //throw new JsonException("Expected EndObject token");
 //    }
 
-//    public override void Write(Utf8JsonWriter writer, UserData value, JsonSerializerOptions options)
+//    public override void Write(Utf8JsonWriter writer, UserResource value, JsonSerializerOptions options)
 //    {
 //        throw new NotImplementedException();
 

@@ -107,19 +107,19 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         return expectedUrl;
     }
 
-    protected static Users.API.Models.Shared.UserData DeserializeUserData(string json)
+    protected static Users.API.Models.Shared.UserResource DeserializeUserData(string json)
     {
         var options = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new Users.API.Models.Shared.UserDataConverter(),
+                new Users.API.Models.Shared.UserResourceConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
 
-        return JsonSerializer.Deserialize<Users.API.Models.Shared.UserData>(json, options);
+        return JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
     }
 
     protected static (IList<string> Expected, IList<string> Unexpected) DetermineExpectedAndUnexpectedFields(string validFields)
@@ -226,80 +226,80 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         deleteUserLink.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
     }
 
-    protected static void LinksForUsersShouldBeCorrect(IList<UserData> embedded)
+    protected static void LinksForUsersShouldBeCorrect(IList<UserResource> embedded)
     {
         foreach (var userData in embedded)
         {
             userData.Should().NotBeNull();
-            userData.User.Should().NotBeNull();
+            userData.Data.Should().NotBeNull();
             userData.Links.Should().NotBeNull();
             userData.Embedded.Should().BeNull();
-            var userId = userData.User.Id;
+            var userId = userData.Data.Id;
             LinksForUserShouldBeCorrect(userData.Links, userId);
         }
     }
 
-    protected void ShouldBeEquivalentTo(Users.API.Models.Shared.UserData userData, Users.Domain.Models.User user)
+    protected void ShouldBeEquivalentTo(Users.API.Models.Shared.UserResource resource, Users.Domain.Models.User user)
     {
-        userData.Should().NotBeNull();
+        resource.Should().NotBeNull();
         user.Should().NotBeNull();
-        userData.User.Should().NotBeNull();
-        userData.User.Id.Should().Be(user.Id);
-        userData.User.FirstName.Should().Be(user.FirstName);
-        userData.User.LastName.Should().Be(user.LastName);
+        resource.Data.Should().NotBeNull();
+        resource.Data.Id.Should().Be(user.Id);
+        resource.Data.FirstName.Should().Be(user.FirstName);
+        resource.Data.LastName.Should().Be(user.LastName);
         if (user.DateOfBirth.HasValue)
         {
-            userData.User.DateOfBirth.Should().Be(user.DateOfBirth?.ToString("yyyy-MM-dd"));
+            resource.Data.DateOfBirth.Should().Be(user.DateOfBirth?.ToString("yyyy-MM-dd"));
         }
-        userData.User.Sex.Should().Be(user.Sex);
-        userData.User.Gender.Should().Be(user.Gender);
+        resource.Data.Sex.Should().Be(user.Sex);
+        resource.Data.Gender.Should().Be(user.Gender);
     }
 
-    protected void ShouldBeEquivalentTo(IList<Users.API.Models.Shared.UserData> embedded, Users.Domain.Models.User user)
+    protected void ShouldBeEquivalentTo(IList<Users.API.Models.Shared.UserResource> embedded, Users.Domain.Models.User user)
     {
         var users = new List<Users.Domain.Models.User> { user };
         ShouldBeEquivalentTo(embedded, users);
     }
 
-    protected void ShouldBeEquivalentTo(IList<Users.API.Models.Shared.UserData> embedded, IList<Users.Domain.Models.User> users)
+    protected void ShouldBeEquivalentTo(IList<Users.API.Models.Shared.UserResource> embedded, IList<Users.Domain.Models.User> users)
     {
-        foreach (var userData in embedded)
+        foreach (var resource in embedded)
         {
-            userData.Should().NotBeNull();
-            var embeddedUser = userData.User;
+            resource.Should().NotBeNull();
+            var embeddedUser = resource.Data;
             var userId = embeddedUser.Id;
             var user = users.Single(_ => _.Id == userId);
             user.Should().NotBeNull();
-            ShouldBeEquivalentTo(userData, user);
-            //ShoudBeEquivalentTo(userData, user);
-            //        ShouldBeCorrect(userData.Links, userId);
+            ShouldBeEquivalentTo(resource, user);
+            //ShoudBeEquivalentTo(resource, user);
+            //ShouldBeCorrect(resource.Links, userId);
         }
     }
 
-    //private void ShoudBeEquivalentTo(Users.API.Models.Shared.UserData userData, Users.Domain.Models.User user)
+    //private void ShoudBeEquivalentTo(Users.API.Models.Shared.UserResource resource, Users.Domain.Models.User user)
     //{
     //    throw new NotImplementedException();
     //}
 
-    //protected void ShouldBeEquivalentTo(IEnumerable<Users.API.Models.Shared.UserData> embedded, Users.Domain.Models.User user)
+    //protected void ShouldBeEquivalentTo(IEnumerable<Users.API.Models.Shared.UserResource> embedded, Users.Domain.Models.User user)
     //{
     //    var users = new List<Users.Domain.Models.User> { user };
     //    ShoudBeEquivalentTox(embedded, users);
     //}
 
-    //protected void ShouldBeEquivalentTo(IEnumerable<Users.API.Models.Shared.UserData> embedded, IList<Users.Domain.Models.User> users)
+    //protected void ShouldBeEquivalentTo(IEnumerable<Users.API.Models.Shared.UserResource> embedded, IList<Users.Domain.Models.User> users)
     //{
-    //    foreach (var userData in embedded)
+    //    foreach (var resource in embedded)
     //    {
-    //        var embeddedUser = userData.User;
+    //        var embeddedUser = resource.User;
     //        var userId = embeddedUser.Id;
     //        var user = users.SingleOrDefault(_ => _.Id == userId);
-    //        //ShoudBeEquivalentTo(userData, user);
-    //        ShouldBeCorrect(userData.Links, userId);
+    //        //ShoudBeEquivalentTo(resource, user);
+    //        ShouldBeCorrect(resource.Links, userId);
     //    }
     //}
 
-    //protected void ShoudBeEquivalentTo(Users.API.Models.Shared.UserData userData, Users.Domain.Models.User user)
+    //protected void ShoudBeEquivalentTo(Users.API.Models.Shared.UserResource resource, Users.Domain.Models.User user)
     //{
     //userResponse.Should().NotBeNull();
     //user.Should().NotBeNull();

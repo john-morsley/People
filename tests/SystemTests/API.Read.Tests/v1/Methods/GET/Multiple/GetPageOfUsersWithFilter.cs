@@ -76,7 +76,7 @@ public class GetPageOfUsersWithFilter : APIsTestBase<StartUp>
         userData.Should().NotBeNull();
 
         // - User
-        userData.User.Should().BeNull();
+        userData.Data.Should().BeNull();
 
         // - Embedded
         userData.Embedded.Should().NotBeNull();
@@ -87,18 +87,18 @@ public class GetPageOfUsersWithFilter : APIsTestBase<StartUp>
             var firstName = kvp[0];
             var lastName = kvp[1];
             var expectedUser = users.Single(_ => _.FirstName == firstName && _.LastName == lastName);
-            var actualUserData = userData.Embedded.Single(_ => _.User.FirstName == firstName && _.User.LastName == lastName);
+            var actualUserData = userData.Embedded.Single(_ => _.Data.FirstName == firstName && _.Data.LastName == lastName);
             actualUserData.Should().NotBeNull();
 
             // User...
-            actualUserData.User.Id.Should().Be(expectedUser.Id);
-            actualUserData.User.Sex.Should().Be(expectedUser.Sex);
-            actualUserData.User.Gender.Should().Be(expectedUser.Gender);
+            actualUserData.Data.Id.Should().Be(expectedUser.Id);
+            actualUserData.Data.Sex.Should().Be(expectedUser.Sex);
+            actualUserData.Data.Gender.Should().Be(expectedUser.Gender);
 
             // Links...
             actualUserData.Links.Should().NotBeNull();
             actualUserData.Links.Count.Should().Be(2);
-            LinksForUserShouldBeCorrect(actualUserData.Links, actualUserData.User.Id);
+            LinksForUserShouldBeCorrect(actualUserData.Links, actualUserData.Data.Id);
 
             // Embedded...
             actualUserData.Embedded.Should().BeNull();

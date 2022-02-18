@@ -12,9 +12,8 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
 
         NumberOfUsersInDatabase().Should().Be(0);
 
-        var url = $"/api/v1/users?pageNumber={pageNumber}&PageSize={pageSize}";
-
         // Act...
+        var url = $"/api/v1/users?pageNumber={pageNumber}&PageSize={pageSize}";
         var result = await _client.GetAsync(url);
 
         // Assert...
@@ -32,8 +31,6 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
     [TestCase(1, 1, 1, 1, false, false)]
     [TestCase(2, 1, 1, 1, false, true)]
     [TestCase(3, 2, 1, 1, true, true)]
-    //[TestCase(30)]
-    //[TestCase(100)]
     public async Task Given_One_User_Exists___When_A_Page_Of_Users_Is_Requested___Then_200_OK_And_Page_Of_Users_Returned(
         int numberOfUsers,
         int pageNumber,
@@ -47,9 +44,8 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
         var expectedUsers = AddUsersToDatabase(numberOfUsers);
         NumberOfUsersInDatabase().Should().Be(numberOfUsers);
 
-        var url = $"/api/v1/users?pageNumber={pageNumber}&PageSize={pageSize}";
-
         // Act...
+        var url = $"/api/v1/users?pageNumber={pageNumber}&pageSize={pageSize}";
         var result = await _client.GetAsync(url);
 
         // Assert...
@@ -61,32 +57,31 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var userData = DeserializeUserData(content);
-        userData.Should().NotBeNull();
+        var userResource = DeserializeUserData(content);
+        userResource.Should().NotBeNull();
 
         // - User
-        userData.User.Should().BeNull();
+        userResource.Data.Should().BeNull();
 
         // - Embedded
-        userData.Embedded.Should().NotBeNull();
-        userData.Embedded.Count.Should().Be(expectedNumberOfUsers);
-        ShouldBeEquivalentTo(userData.Embedded, expectedUsers);
+        userResource.Embedded.Should().NotBeNull();
+        userResource.Embedded.Count.Should().Be(expectedNumberOfUsers);
+        var embedded = userResource.Embedded;
+        ShouldBeEquivalentTo(embedded, expectedUsers);
 
         // - Links
         var expectedNumberOfLinks = 1;
         if (hasBeforeLink) expectedNumberOfLinks++;
         if (hasAfterLink) expectedNumberOfLinks++;
-        userData.Links.Should().NotBeNull();
-        userData.Links.Count.Should().Be(expectedNumberOfLinks);
-        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, expectedNumberOfUsers);
+        userResource.Links.Should().NotBeNull();
+        userResource.Links.Count.Should().Be(expectedNumberOfLinks);
+        LinksForPageOfUsersShouldBeCorrect(userResource.Links, pageNumber, pageSize, expectedNumberOfUsers);
     }
 
     [Test]
     [Category("Happy")]
     [TestCase(0, 1, 1)]
     [TestCase(1, 2, 1)]
-    //[TestCase(30)]
-    //[TestCase(100)]
     public async Task Given_One_User_Exists___When_A_Page_Of_Users_Is_Requested___Then_204_NoContent(
         int numberOfUsers,
         int pageNumber,
@@ -94,14 +89,11 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
     {
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
-        //var expectedUser = GenerateTestUser();
-        //AddUserToDatabase(expectedUser);
         AddUsersToDatabase(numberOfUsers);
         NumberOfUsersInDatabase().Should().Be(numberOfUsers);
 
-        var url = $"/api/v1/users?pageNumber={pageNumber}&PageSize={pageSize}";
-
         // Act...
+        var url = $"/api/v1/users?pageNumber={pageNumber}&pageSize={pageSize}";
         var result = await _client.GetAsync(url);
 
         // Assert...
@@ -132,34 +124,30 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
 
     [Test]
     [Category("Unhappy")]
-    [TestCase(0, 0, 0)]
-    [TestCase(0, 1, 0)]
-    [TestCase(0, 0, 1)]
-    public async Task Given_One_User_Exists___When_A_Page_Of_Users_Is_Requested___Then_500_InternalServerError(
-        int numberOfUsers,
+    [TestCase(0, 1)]
+    [TestCase(1, 0)]
+    public async Task When_A_Page_Of_Users_Is_Requested_With_Invalid_Page_Parameters___Then_400_BadRequest(
         int pageNumber,
         int pageSize)
     {
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
-        AddUsersToDatabase(numberOfUsers);
-        NumberOfUsersInDatabase().Should().Be(numberOfUsers);
-
-        var url = $"/api/v1/users?pageNumber={pageNumber}&PageSize={pageSize}";
 
         // Act...
+        var url = $"/api/v1/users?pageNumber={pageNumber}&PageSize={pageSize}";
         var result = await _client.GetAsync(url);
 
         // Assert...
-        NumberOfUsersInDatabase().Should().Be(numberOfUsers);
+        NumberOfUsersInDatabase().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeFalse();
-        result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
 
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
         // ToDo --> Process Error Object
+
     }
 
     //[Test]

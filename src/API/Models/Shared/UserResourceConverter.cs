@@ -1,28 +1,20 @@
-﻿using System.Globalization;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Users.API.Models.Response.v1;
+﻿namespace Users.API.Models.Shared;
 
-//using Users.API.Models.Response.v1;
-
-namespace Users.API.Models.Shared;
-
-public class UserDataConverter : JsonConverter<UserData>
+public class UserResourceConverter : JsonConverter<UserResource>
 {
     public override bool CanConvert(Type typeToConvert)
     {
-        return typeof(UserData).IsAssignableFrom(typeToConvert);
+        return typeof(UserResource).IsAssignableFrom(typeToConvert);
     }
 
-    public override UserData Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override UserResource Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartObject)  throw new JsonException("Expected StartObject token");
 
-        var userData = new UserData();
-        var user = new UserResponse();
+        var userResource = new UserResource();
+        var data = new UserResponse();
         var links = new List<Link>();
-        var embedded = new List<UserData>();
+        var embedded = new List<UserResource>();
 
         while (reader.Read())
         {
@@ -37,13 +29,13 @@ public class UserDataConverter : JsonConverter<UserData>
                     switch (propertyName)
                     {
                         case "Id":
-                            user.Id = reader.GetGuid();
+                            data.Id = reader.GetGuid();
                             break;
                         case "FirstName":
-                            user.FirstName = reader.GetString();
+                            data.FirstName = reader.GetString();
                             break;
                         case "LastName":
-                            user.LastName = reader.GetString();
+                            data.LastName = reader.GetString();
                             break;
                         case "DateOfBirth":
                             var potentialDate = reader.GetString();
@@ -53,7 +45,7 @@ public class UserDataConverter : JsonConverter<UserData>
                             {
                                 throw new InvalidOperationException($"DateOfBirth is not valid: Expected format is 'YYYY-MM-DD', actual value: '{potentialDate}'");
                             }
-                            user.DateOfBirth = dt.ToString("yyyy-MM-dd");
+                            data.DateOfBirth = dt.ToString("yyyy-MM-dd");
                             break;
                         case "Sex":
                             var potentialSex = reader.GetString();
@@ -62,7 +54,7 @@ public class UserDataConverter : JsonConverter<UserData>
                             {
                                 throw new InvalidOperationException($"Sex is not valid: Actual value: '{potentialSex}'");
                             }
-                            user.Sex = sex;
+                            data.Sex = sex;
                             break;
                         case "Gender":
                             var potentialGender = reader.GetString();
@@ -71,7 +63,7 @@ public class UserDataConverter : JsonConverter<UserData>
                             {
                                 throw new InvalidOperationException($"Gender is not valid: Actual value: '{potentialGender}'");
                             }
-                            user.Gender = gender;
+                            data.Gender = gender;
                             break;
                         case "_links":
                             if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException("Expected StartArray token");
@@ -90,8 +82,8 @@ public class UserDataConverter : JsonConverter<UserData>
                             while (reader.Read())
                             {
                                 if (reader.TokenType == JsonTokenType.EndArray) break;
-                                var userDatum = JsonSerializer.Deserialize<UserData>(ref reader, options);
-                                embedded.Add(userDatum);
+                                var embeddedUserResource = JsonSerializer.Deserialize<UserResource>(ref reader, options);
+                                embedded.Add(embeddedUserResource);
                             }
 
                             break;
@@ -104,15 +96,14 @@ public class UserDataConverter : JsonConverter<UserData>
             }
         }
 
-        if (user.Id != Guid.Empty) userData.User = user;
-        if (links.Count > 0) userData.Links = links;
-        if (embedded.Count > 0) userData.Embedded = embedded;
-        return userData;
+        if (data.Id != Guid.Empty) userResource.AddData(data);
+        if (links.Count > 0) userResource.AddLinks(links);
+        if (embedded.Count > 0) userResource.AddEmbedded(embedded);
 
-        //throw new JsonException("Expected EndObject token");
+        return userResource;
     }
 
-    public override void Write(Utf8JsonWriter writer, UserData value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, UserResource value, JsonSerializerOptions options)
     {
         throw new NotImplementedException();
 
