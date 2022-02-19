@@ -8,10 +8,10 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
 {
     protected const string API_MEDIA_TYPE = "application/json";
 
-    protected MongoContext _mongoContext;
+    protected MongoContext? _mongoContext;
 
-    private TestServer _server;
-    protected HttpClient _client;
+    private TestServer? _server;
+    protected HttpClient? _client;
 
     [SetUp]
     public override void SetUp()
@@ -42,8 +42,8 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
     {
         base.TearDown();
 
-        _client.Dispose();
-        _server.Dispose();
+        _client?.Dispose();
+        _server?.Dispose();
     }
 
     protected static string AddToFieldsIfMissing(string toAdd, string fields)
@@ -107,7 +107,7 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         return expectedUrl;
     }
 
-    protected static Users.API.Models.Shared.UserResource DeserializeUserData(string json)
+    protected static Users.API.Models.Shared.UserResource? DeserializeUserResource(string json)
     {
         var options = new JsonSerializerOptions
         {
@@ -151,12 +151,14 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         return testUpdateUser;
     }
 
-    protected static object GetValue<T>(T t, string fieldName) where T : class
+    protected static object? GetValue<T>(T t, string fieldName) where T : class
     {
         var propertyInfo = typeof(T).GetProperty(fieldName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
-        var type = propertyInfo.PropertyType;
-        var value = propertyInfo.GetValue(t);
+        var type = propertyInfo?.PropertyType;
+        if (type == null) return null;
+        var value = propertyInfo?.GetValue(t);
+        if (value == null) return null;
         var underlying = Nullable.GetUnderlyingType(type);
         if (underlying != null)
         {
@@ -170,7 +172,7 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
     }
 
     protected void LinksForPageOfUsersShouldBeCorrect(
-        IList<Users.API.Models.Shared.Link> links, 
+        IList<Users.API.Models.Shared.Link>? links, 
         int pageNumber, 
         int pageSize,
         int totalNumber,
@@ -226,7 +228,7 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         deleteUserLink.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
     }
 
-    protected static void LinksForUsersShouldBeCorrect(IList<UserResource> embedded)
+    protected static void LinksForUsersShouldBeCorrect(IList<UserResource>? embedded)
     {
         foreach (var userData in embedded)
         {

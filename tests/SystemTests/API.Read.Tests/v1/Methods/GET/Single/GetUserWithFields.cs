@@ -37,7 +37,7 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var userData = DeserializeUserData(content);
+        var userData = DeserializeUserResource(content);
         userData.Should().NotBeNull();
 
         validFields = AddToFieldsIfMissing("Id", validFields);

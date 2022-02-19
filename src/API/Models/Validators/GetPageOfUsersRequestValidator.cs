@@ -21,7 +21,7 @@
 
         public IPropertyMappings PropertyMappings { get; }
 
-        protected bool BeValidSort(string sort)
+        protected bool BeValidSort(string? sort)
         {
             if (string.IsNullOrEmpty(sort)) return true;
 
@@ -55,14 +55,14 @@
             return PropertyMappings.DoesValidMappingExistFor<Users.API.Models.Request.v1.GetUserRequest, Users.Domain.Models.User>(string.Join(",", fields));
         }
 
-        protected bool BeValidFields(string fields)
+        protected bool BeValidFields(string? fields)
         {
             if (fields == null) return true;
 
             return PropertyMappings.DoesValidMappingExistFor<Users.API.Models.Request.v1.GetUserRequest, Users.Domain.Models.User>(fields);
         }
 
-        protected bool BeValidFilter(string filter)
+        protected bool BeValidFilter(string? filter)
         {
             if (string.IsNullOrEmpty(filter)) return true;
 

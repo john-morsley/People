@@ -29,7 +29,7 @@ public class PUT : APIsTestBase<StartUp>
         var content = await httpResponse.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var userData = DeserializeUserData(content);
+        var userData = DeserializeUserResource(content);
         var actualUser = GetUserFromDatabase(userId);
         // As an update has taken place, every property of the actual user, should differ from the original user (except Id).
         actualUser.Should().NotBeEquivalentTo(originalUser);
@@ -64,7 +64,7 @@ public class PUT : APIsTestBase<StartUp>
         var content = await response.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var userData = DeserializeUserData(content);
+        var userData = DeserializeUserResource(content);
         userData.Should().NotBeNull();
 
         // - User

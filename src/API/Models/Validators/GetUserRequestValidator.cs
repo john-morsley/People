@@ -13,7 +13,7 @@
 
         public IPropertyMappings PropertyMappings { get; }
 
-        protected bool BeValidFields(string fields)
+        protected bool BeValidFields(string? fields)
         {
             if (fields == null) return true;
 

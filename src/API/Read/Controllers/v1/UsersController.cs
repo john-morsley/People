@@ -1,5 +1,8 @@
 ﻿namespace Users.API.Read.Controllers.v1;
 
+/// <summary>
+/// 
+/// </summary>
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/users")]
@@ -10,6 +13,15 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="mediator"></param>
+    /// <param name="mapper"></param>
+    /// <param name="configuration"></param>
+    /// <param name="context"></param>
+    /// <param name="apiVersionDescriptionProvider"></param>
     public UsersController(
         ILogger<UsersController> logger,
         IMediator mediator,
@@ -148,7 +160,7 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     /// <summary>
     /// Gets the content length of a page of users
     /// </summary>
-    /// <param name="getUsersRequest">
+    /// <param name="getPageOfUsersRequest">
     /// A GetUsersRequest object which contains fields for paging, searching, filtering, sorting and shaping user data</param>
     /// <returns>The content length of a page of users</returns>
     /// <response code="200">Success - OK - Returns the requested page of users</response>
@@ -186,6 +198,10 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
         return Ok();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     // -------------------------------------------------- OPTIONS --> ALLOWED HTTP METHODS
     [HttpOptions]
     public IActionResult GetOptions()

@@ -254,7 +254,6 @@ public class PagedListTests
         pagedList?.Count.Should().Be(0);
         pagedList?.CurrentPage.Should().Be(0);
         pagedList?.TotalPages.Should().Be(0);
-        ////pagedList?.TotalCount.Should().Be(0);
         pagedList?.PageSize.Should().Be(0);
     }
 
@@ -283,7 +282,6 @@ public class PagedListTests
         pagedList?.HasNext.Should().BeFalse();
         pagedList?.CurrentPage.Should().Be(1);
         pagedList?.TotalPages.Should().Be(1);
-        ////pagedList?.TotalCount.Should().Be(0);
         pagedList?.PageSize.Should().Be(1);
     }
 
@@ -312,7 +310,6 @@ public class PagedListTests
         pagedList?.HasNext.Should().BeTrue();
         pagedList?.CurrentPage.Should().Be(2);
         pagedList?.TotalPages.Should().Be(3);
-        //pagedList?.TotalCount.Should().Be(0);
         pagedList?.PageSize.Should().Be(1);
     }
 
@@ -338,8 +335,9 @@ public class PagedListTests
 
     private string GetJsonFromFile(string fileName)
     {
-        string workingDirectory = Directory.GetCurrentDirectory();
-        string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
+        var workingDirectory = Directory.GetCurrentDirectory();
+        var projectDirectory = Directory.GetParent(workingDirectory)?.Parent?.Parent?.FullName;
+        if (projectDirectory == null) throw new InvalidOperationException("Cannot determine project directory.");
         var fullPathAndFileName = Path.Combine(projectDirectory, "JSON", fileName);
         var json = File.ReadAllText(fullPathAndFileName);
         return json;
@@ -371,9 +369,12 @@ public class PagedListTests
 
     private Users.API.Models.Response.v1.UserResponse GetUserResponse(Guid id, string firstName, string lastName, Sex? sex, Gender? gender)
     {
-        return new Users.API.Models.Response.v1.UserResponse()
+        return new Users.API.Models.Response.v1.UserResponse(id)
         {
-            Id = id, FirstName = firstName, LastName = lastName, Sex = sex, Gender = gender
+            FirstName = firstName, 
+            LastName = lastName,
+            Sex = sex, 
+            Gender = gender
         };
     }
 

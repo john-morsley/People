@@ -4,6 +4,22 @@
         <name>Users.API.Read</name>
     </assembly>
     <members>
+        <member name="T:Users.API.Read.Controllers.v1.UsersController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Read.Controllers.v1.UsersController.#ctor(Microsoft.Extensions.Logging.ILogger{Users.API.Read.Controllers.v1.UsersController},MediatR.IMediator,AutoMapper.IMapper,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Mvc.ApiExplorer.IApiVersionDescriptionProvider)">
+            <summary>
+            
+            </summary>
+            <param name="logger"></param>
+            <param name="mediator"></param>
+            <param name="mapper"></param>
+            <param name="configuration"></param>
+            <param name="context"></param>
+            <param name="apiVersionDescriptionProvider"></param>
+        </member>
         <member name="M:Users.API.Read.Controllers.v1.UsersController.Get(Users.API.Models.Request.v1.GetUserRequest)">
             <summary>
             Get a single user by their unique identifier
@@ -43,12 +59,18 @@
             <summary>
             Gets the content length of a page of users
             </summary>
-            <param name="getUsersRequest">
+            <param name="getPageOfUsersRequest">
             A GetUsersRequest object which contains fields for paging, searching, filtering, sorting and shaping user data</param>
             <returns>The content length of a page of users</returns>
             <response code="200">Success - OK - Returns the requested page of users</response>
             <response code="204">Success - No Content - No users matched given criteria</response>
             <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
+        </member>
+        <member name="M:Users.API.Read.Controllers.v1.UsersController.GetOptions">
+            <summary>
+            
+            </summary>
+            <returns></returns>
         </member>
     </members>
 </doc>

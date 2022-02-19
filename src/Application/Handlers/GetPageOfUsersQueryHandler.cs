@@ -19,7 +19,7 @@ public sealed class GetPageOfUsersQueryHandler : IRequestHandler<Users.Applicati
 
         var getOptions = _mapper.Map<Users.Application.Models.GetOptions>(query);
 
-        var pageOfUsers = await _userRepository.GetPageAsync(getOptions);
+        var pageOfUsers = _userRepository.GetPage(getOptions);
 
         return pageOfUsers;
     }

@@ -34,7 +34,7 @@ public abstract class BaseController : ControllerBase
         var links = new List<Link>();
 
         //string url;
-        Link link;
+        //Link link;
 
         //if (string.IsNullOrWhiteSpace(getUserRequest.Fields))
         //{

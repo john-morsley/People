@@ -12,7 +12,12 @@ public class UserResourceConverter : JsonConverter<UserResource>
         if (reader.TokenType != JsonTokenType.StartObject)  throw new JsonException("Expected StartObject token");
 
         var userResource = new UserResource();
-        var data = new UserResponse();
+        var id = Guid.Empty;
+        string? firstName = null;
+        string? lastName = null;
+        Sex? sex = null;
+        Gender? gender = null;
+        string? dateOfBirth = null;
         var links = new List<Link>();
         var embedded = new List<UserResource>();
 
@@ -29,13 +34,33 @@ public class UserResourceConverter : JsonConverter<UserResource>
                     switch (propertyName)
                     {
                         case "Id":
-                            data.Id = reader.GetGuid();
+                            id = reader.GetGuid();
                             break;
                         case "FirstName":
-                            data.FirstName = reader.GetString();
+                            firstName = reader.GetString();
+                            //if (!string.IsNullOrWhiteSpace(firstName)) data.FirstName = firstName;
                             break;
                         case "LastName":
-                            data.LastName = reader.GetString();
+                            lastName = reader.GetString();
+                            //if (!string.IsNullOrWhiteSpace(lastName)) data.LastName = lastName;
+                            break;
+                        case "Sex":
+                            var potentialSex = reader.GetString();
+                            if (string.IsNullOrEmpty(potentialSex)) break;
+                            if (!Enum.TryParse<Sex>(potentialSex, ignoreCase: true, out var resultSex))
+                            {
+                                throw new InvalidOperationException($"Sex is not valid: Actual value: '{potentialSex}'");
+                            }
+                            sex = resultSex;
+                            break;
+                        case "Gender":
+                            var potentialGender = reader.GetString();
+                            if (string.IsNullOrEmpty(potentialGender)) break;
+                            if (!Enum.TryParse<Gender>(potentialGender, ignoreCase: true, out var resultGender))
+                            {
+                                throw new InvalidOperationException($"Gender is not valid: Actual value: '{potentialGender}'");
+                            }
+                            gender = resultGender;
                             break;
                         case "DateOfBirth":
                             var potentialDate = reader.GetString();
@@ -45,25 +70,7 @@ public class UserResourceConverter : JsonConverter<UserResource>
                             {
                                 throw new InvalidOperationException($"DateOfBirth is not valid: Expected format is 'YYYY-MM-DD', actual value: '{potentialDate}'");
                             }
-                            data.DateOfBirth = dt.ToString("yyyy-MM-dd");
-                            break;
-                        case "Sex":
-                            var potentialSex = reader.GetString();
-                            if (string.IsNullOrEmpty(potentialSex)) break;
-                            if (!Enum.TryParse<Sex>(potentialSex, ignoreCase: true, out var sex))
-                            {
-                                throw new InvalidOperationException($"Sex is not valid: Actual value: '{potentialSex}'");
-                            }
-                            data.Sex = sex;
-                            break;
-                        case "Gender":
-                            var potentialGender = reader.GetString();
-                            if (string.IsNullOrEmpty(potentialGender)) break;
-                            if (!Enum.TryParse<Gender>(potentialGender, ignoreCase: true, out var gender))
-                            {
-                                throw new InvalidOperationException($"Gender is not valid: Actual value: '{potentialGender}'");
-                            }
-                            data.Gender = gender;
+                            dateOfBirth = dt.ToString("yyyy-MM-dd");
                             break;
                         case "_links":
                             if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException("Expected StartArray token");
@@ -72,7 +79,7 @@ public class UserResourceConverter : JsonConverter<UserResource>
                             {
                                 if (reader.TokenType == JsonTokenType.EndArray) break;
                                 var link = JsonSerializer.Deserialize<Link>(ref reader, options);
-                                links.Add(link);
+                                if (link != null) links.Add(link);
                             }
 
                             break;
@@ -83,7 +90,7 @@ public class UserResourceConverter : JsonConverter<UserResource>
                             {
                                 if (reader.TokenType == JsonTokenType.EndArray) break;
                                 var embeddedUserResource = JsonSerializer.Deserialize<UserResource>(ref reader, options);
-                                embedded.Add(embeddedUserResource);
+                                if (embeddedUserResource != null) embedded.Add(embeddedUserResource);
                             }
 
                             break;
@@ -96,7 +103,19 @@ public class UserResourceConverter : JsonConverter<UserResource>
             }
         }
 
-        if (data.Id != Guid.Empty) userResource.AddData(data);
+        if (id != Guid.Empty)
+        {
+            var data = new UserResponse(id)
+            {
+                FirstName = firstName, 
+                LastName = lastName,
+                Sex = sex,
+                Gender = gender,
+                DateOfBirth = dateOfBirth
+            };
+            if (data.Id != Guid.Empty) userResource.AddData(data);
+        }
+
         if (links.Count > 0) userResource.AddLinks(links);
         if (embedded.Count > 0) userResource.AddEmbedded(embedded);
 

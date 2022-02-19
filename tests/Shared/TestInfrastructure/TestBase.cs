@@ -14,8 +14,8 @@ public class TestBase
     //                                    "FirstName:Linus,LastName:Torvalds,Sex:Male|" +
     //                                    "FirstName:Alan,LastName:Turing,Sex:Male";
                                     
-    protected TestFixture _testFixture;
-    protected Fixture _autoFixture;
+    protected TestFixture? _testFixture;
+    protected Fixture? _autoFixture;
 
     [OneTimeSetUp]
     public async Task OneTimeSetUp()

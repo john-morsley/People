@@ -4,6 +4,22 @@
         <name>Users.API.Write</name>
     </assembly>
     <members>
+        <member name="T:Users.API.Write.Controllers.v1.UsersController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.Controllers.v1.UsersController.#ctor(Microsoft.Extensions.Logging.ILogger{Users.API.Write.Controllers.v1.UsersController},MediatR.IMediator,AutoMapper.IMapper,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Mvc.ApiExplorer.IApiVersionDescriptionProvider)">
+            <summary>
+            
+            </summary>
+            <param name="logger"></param>
+            <param name="mediator"></param>
+            <param name="mapper"></param>
+            <param name="configuration"></param>
+            <param name="context"></param>
+            <param name="apiVersionDescriptionProvider"></param>
+        </member>
         <member name="M:Users.API.Write.Controllers.v1.UsersController.Post(Users.API.Models.Request.v1.AddUserRequest)">
             <summary>
             Create a user
@@ -61,6 +77,13 @@
             <summary>
             List the HTTP methods allowed
             </summary>
+        </member>
+        <member name="M:Users.API.Write.Controllers.v1.UsersController.ValidationProblem(Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary)">
+            <summary>
+            
+            </summary>
+            <param name="modelStateDictionary"></param>
+            <returns></returns>
         </member>
     </members>
 </doc>

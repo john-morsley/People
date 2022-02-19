@@ -1,5 +1,8 @@
 ﻿namespace Users.API.Write.Controllers.v1;
 
+/// <summary>
+/// 
+/// </summary>
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/users")]
@@ -10,6 +13,15 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="mediator"></param>
+    /// <param name="mapper"></param>
+    /// <param name="configuration"></param>
+    /// <param name="context"></param>
+    /// <param name="apiVersionDescriptionProvider"></param>
     public UsersController(
         ILogger<UsersController> logger,
         IMediator mediator,
@@ -179,6 +191,11 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
         return Ok();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="modelStateDictionary"></param>
+    /// <returns></returns>
     public override ActionResult ValidationProblem([ActionResultObjectValue] ModelStateDictionary modelStateDictionary)
     {
         var options = HttpContext.RequestServices.GetRequiredService<IOptions<ApiBehaviorOptions>>();

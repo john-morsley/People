@@ -1,12 +1,11 @@
-﻿
-namespace Users.API.Models.Request.v1;
+﻿namespace Users.API.Models.Request.v1;
 
 [ModelBinder(BinderType = typeof(GetUserRequestBinder))]
 public class GetUserRequest
 {
     public Guid Id { get; set; }
 
-    public string Fields { get; set; }
+    public string? Fields { get; set; }
 }
 
 public class GetUserRequestBinder : IModelBinder
@@ -38,9 +37,7 @@ public class GetUserRequestBinder : IModelBinder
 
         bindingContext.Result = ModelBindingResult.Success(getUserRequest);
 
-        //await Task.CompletedTask;
-
-        //return;
+        await Task.CompletedTask;
     }
 }
 

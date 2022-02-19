@@ -32,7 +32,7 @@ internal class Get : UserRepositoryTests
 
         // Act...
         var getUsersOptions = new GetOptions();
-        var pageOfUsers = await sut.GetPageAsync(getUsersOptions);
+        var pageOfUsers = sut.GetPage(getUsersOptions);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(10);
@@ -64,7 +64,7 @@ internal class Get : UserRepositoryTests
         var getUsersOptions = new GetOptions();
         getUsersOptions.PageSize = 1;
         getUsersOptions.PageNumber = 1;
-        var pageOfUsers = await sut.GetPageAsync(getUsersOptions);
+        var pageOfUsers = sut.GetPage(getUsersOptions);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(10);
@@ -89,11 +89,10 @@ internal class Get : UserRepositoryTests
         var getUsersOptions = new GetOptions();
         getUsersOptions.PageSize = 10;
         getUsersOptions.PageNumber = 2;
-        var pageOfUsers = await sut.GetPageAsync(getUsersOptions);
+        var pageOfUsers = sut.GetPage(getUsersOptions);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(25);
-        //pageOfUsers.Count.Should().Be(1);
         pageOfUsers.Count.Should().Be(10);
         pageOfUsers.CurrentPage.Should().Be(2);
         pageOfUsers.TotalPages.Should().Be(3);
@@ -103,7 +102,7 @@ internal class Get : UserRepositoryTests
     }
 
     [Test]
-    public async Task Getting_A_Page_Of_Users_With_Search_Criteria_Should_Result_In_A_Page_Of_Users_That_Match_The_Search_Being_Returned()
+    public void Getting_A_Page_Of_Users_With_Search_Criteria_Should_Result_In_A_Page_Of_Users_That_Match_The_Search_Being_Returned()
     {
         // Arrange...
         var sut = new UserRepository(_mongoContext);
@@ -118,7 +117,7 @@ internal class Get : UserRepositoryTests
         getUsersOptions.PageSize = 1;
         getUsersOptions.PageNumber = 1;
         getUsersOptions.Search = "orsle";
-        var pageOfUsers = await sut.GetPageAsync(getUsersOptions);
+        var pageOfUsers = sut.GetPage(getUsersOptions);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(11);
@@ -128,7 +127,7 @@ internal class Get : UserRepositoryTests
     }
 
     [Test]
-    public async Task Getting_A_Page_Of_Users_With_Filter_Criteria_Should_Result_In_A_Page_Of_Users_That_Match_The_Filter()
+    public void Getting_A_Page_Of_Users_With_Filter_Criteria_Should_Result_In_A_Page_Of_Users_That_Match_The_Filter()
     {
         // Arrange...
         var sut = new UserRepository(_mongoContext);
@@ -145,7 +144,7 @@ internal class Get : UserRepositoryTests
         getUsersOptions.PageSize = 2;
         getUsersOptions.PageNumber = 1;
         getUsersOptions.AddFilter(new Filter("LastName", "Doe"));
-        var pageOfUsers = await sut.GetPageAsync(getUsersOptions);
+        var pageOfUsers = sut.GetPage(getUsersOptions);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(12);

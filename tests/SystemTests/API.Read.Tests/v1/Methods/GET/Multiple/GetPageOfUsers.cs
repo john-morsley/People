@@ -57,7 +57,7 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var userResource = DeserializeUserData(content);
+        var userResource = DeserializeUserResource(content);
         userResource.Should().NotBeNull();
 
         // - User
@@ -105,7 +105,7 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().Be(0);
 
-        //var userData = DeserializeUserData(content);
+        //var userData = DeserializeUserResource(content);
         //userData.Should().NotBeNull();
 
         // - User
@@ -177,7 +177,7 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
     //    var content = await result.Content.ReadAsStringAsync();
     //    content.Length.Should().BeGreaterThan(0);
 
-    //    var userData = DeserializeUserData(content);
+    //    var userData = DeserializeUserResource(content);
     //    userData.Should().NotBeNull();
 
     //    // - User
@@ -219,7 +219,7 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
 
     //    var content = await result.Content.ReadAsStringAsync();
     //    content.Length.Should().BeGreaterThan(0);
-    //    var userData = DeserializeUserData(content);
+    //    var userData = DeserializeUserResource(content);
     //    userData.Should().NotBeNull();
 
     //    // - User
@@ -261,7 +261,7 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
 
     //    var content = await result.Content.ReadAsStringAsync();
     //    content.Length.Should().BeGreaterThan(0);
-    //    var userData = DeserializeUserData(content);
+    //    var userData = DeserializeUserResource(content);
     //    userData.Should().NotBeNull();
 
     //    // - User
@@ -301,7 +301,7 @@ public class GetPageOfUsers : APIsTestBase<StartUp>
     //    var content = await result.Content.ReadAsStringAsync();
     //    content.Length.Should().BeGreaterThan(0);
 
-    //    var userData = DeserializeUserData(content);
+    //    var userData = DeserializeUserResource(content);
     //    userData.Should().NotBeNull();
 
     //    // - User

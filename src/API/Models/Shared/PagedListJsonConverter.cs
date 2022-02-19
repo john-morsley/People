@@ -52,7 +52,7 @@ public class PagedListJsonConverter : JsonConverter<Users.API.Models.Shared.Page
                             {
                                 if (reader.TokenType == JsonTokenType.EndArray) break;
                                 var user = JsonSerializer.Deserialize<UserResponse>(ref reader, options);
-                                pagedList.Add(user);
+                                if (user != null) pagedList.Add(user);
                             }
 
                             break;

@@ -4,7 +4,7 @@ public class MongoContext : IMongoContext
 {
     private readonly IConfiguration _configuration;
     private readonly List<Func<Task>> _commands;
-    private MongoSettings MongoSettings;
+    private MongoSettings _mongoSettings;
 
     private IMongoDatabase Database { get; set; }
 
@@ -41,7 +41,7 @@ public class MongoContext : IMongoContext
         if (MongoClient != null) return;
         
         var section = _configuration.GetSection(nameof(MongoSettings));
-        MongoSettings = section.Get<MongoSettings>();
+        _mongoSettings = section.Get<MongoSettings>();
 
         //var connectionString = GetConnectionString(MongoSettings);
         MongoClient = new MongoClient(ConnectionString);
@@ -58,14 +58,14 @@ public class MongoContext : IMongoContext
 
             return true;
         }
-        catch (Exception e)
+        catch //(Exception e)
         {
             // ToDo --> Log e            
         }
         return false;
     }
 
-    public string ConnectionString => GetConnectionString(MongoSettings);
+    public string ConnectionString => GetConnectionString(_mongoSettings);
 
     private string GetConnectionString(MongoSettings mongoSettings)
     {

@@ -37,26 +37,26 @@ public class GetPageOfUsersWithFields : APIsTestBase<StartUp>
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var userData = DeserializeUserData(content);
-        userData.Should().NotBeNull();
+        var userResource = DeserializeUserResource(content);
+        userResource.Should().NotBeNull();
 
         var validFieldsIncludingId = AddToFieldsIfMissing("Id", validFields);
         var (expected, unexpected) = DetermineExpectedAndUnexpectedFields(validFieldsIncludingId);
 
         // - User
-        userData.Data.Should().BeNull();
+        userResource?.Data.Should().BeNull();
 
         // - Embedded
-        userData.Embedded.Should().NotBeNull();
-        userData.Embedded.Count.Should().Be(1);
-        ShouldBeEquivalent(expected, userData.Embedded, users);
-        ShouldBeNull(unexpected, userData.Embedded);
-        LinksForUsersShouldBeCorrect(userData.Embedded);
+        userResource?.Embedded.Should().NotBeNull();
+        userResource?.Embedded?.Count.Should().Be(1);
+        ShouldBeEquivalent(expected, userResource?.Embedded, users);
+        ShouldBeNull(unexpected, userResource?.Embedded);
+        LinksForUsersShouldBeCorrect(userResource?.Embedded);
 
         // - Links
-        userData.Links.Should().NotBeNull();
-        userData.Links.Count.Should().Be(1);
-        LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize, fields: validFields, totalNumber: 1);
+        userResource?.Links.Should().NotBeNull();
+        userResource?.Links?.Count.Should().Be(1);
+        LinksForPageOfUsersShouldBeCorrect(userResource?.Links, pageNumber, pageSize, fields: validFields, totalNumber: 1);
     }
 
     [Test]

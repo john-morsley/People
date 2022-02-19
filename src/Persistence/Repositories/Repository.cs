@@ -24,11 +24,11 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
         }
     }
 
-    public virtual async Task<TEntity> GetByIdAsync(Guid id)
+    public async virtual Task<TEntity> GetByIdAsync(Guid id)
     {
         try
         {
-            return _collection.Find<TEntity>(user => user.Id == id).SingleOrDefault();
+            return await _collection.Find<TEntity>(user => user.Id == id).SingleOrDefaultAsync();
         }
         catch (Exception e)
         {
@@ -37,7 +37,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
         }
     }
 
-    public virtual async Task<IPagedList<TEntity>> GetPageAsync(IGetOptions options)
+    public virtual IPagedList<TEntity> GetPage(IGetOptions options)
     {
         if (options == null) throw new ArgumentNullException(nameof(options));
 

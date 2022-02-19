@@ -2,9 +2,9 @@
 
 public abstract class Resource<T> where T : class
 {
-    public T Data { get; private set; }
+    public T? Data { get; private set; }
 
-    public IList<Link> Links { get; private set; }
+    public IList<Link>? Links { get; private set; }
 
     //public IList<Resource<T>> Embedded { get; private set; }
 

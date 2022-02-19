@@ -67,19 +67,19 @@ namespace API.Models.Shared.Tests
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
-            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
+            var userResource = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
 
             // Assert...
-            userData.Should().NotBeNull();
-            userData.Data.Should().NotBeNull();
-            userData.Data.Id.Should().Be(userId);
-            userData.Data.FirstName.Should().Be("John");
-            userData.Data.LastName.Should().Be("Doe");
-            userData.Data.DateOfBirth.Should().BeNull();
-            userData.Data.Gender.Should().BeNull();
-            userData.Data.Sex.Should().BeNull();
-            userData.Links.Should().BeNull();
-            userData.Embedded.Should().BeNull();
+            userResource.Should().NotBeNull();
+            userResource?.Data.Should().NotBeNull();
+            userResource?.Data.Id.Should().Be(userId);
+            userResource?.Data.FirstName.Should().Be("John");
+            userResource?.Data.LastName.Should().Be("Doe");
+            userResource?.Data.DateOfBirth.Should().BeNull();
+            userResource?.Data.Gender.Should().BeNull();
+            userResource?.Data.Sex.Should().BeNull();
+            userResource?.Links.Should().BeNull();
+            userResource?.Embedded.Should().BeNull();
         }
 
         [Test]
@@ -109,19 +109,19 @@ namespace API.Models.Shared.Tests
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
-            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
+            var userResource = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
 
             // Assert...
-            userData.Should().NotBeNull();
-            userData.Data.Should().NotBeNull();
-            userData.Data.Id.Should().Be(userId);
-            userData.Data.FirstName.Should().Be("John");
-            userData.Data.LastName.Should().Be("Doe");
-            userData.Data.DateOfBirth.Should().Be(dob);
-            userData.Data.Gender.Should().Be(Users.Domain.Enumerations.Gender.Cisgender);
-            userData.Data.Sex.Should().Be(Users.Domain.Enumerations.Sex.Male);
-            userData.Links.Should().BeNull();
-            userData.Embedded.Should().BeNull();
+            userResource.Should().NotBeNull();
+            userResource?.Data.Should().NotBeNull();
+            userResource?.Data.Id.Should().Be(userId);
+            userResource?.Data.FirstName.Should().Be("John");
+            userResource?.Data.LastName.Should().Be("Doe");
+            userResource?.Data.DateOfBirth.Should().Be(dob);
+            userResource?.Data.Gender.Should().Be(Users.Domain.Enumerations.Gender.Cisgender);
+            userResource?.Data.Sex.Should().Be(Users.Domain.Enumerations.Sex.Male);
+            userResource?.Links.Should().BeNull();
+            userResource?.Embedded.Should().BeNull();
         }
 
         [Test]
@@ -150,19 +150,19 @@ namespace API.Models.Shared.Tests
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
-            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
+            var userResource = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
 
             // Assert...
-            userData.Should().NotBeNull();
-            userData.Data.Should().NotBeNull();
-            userData.Data.Id.Should().Be(userId);
-            userData.Data.FirstName.Should().Be("John");
-            userData.Data.LastName.Should().Be("Doe");
-            userData.Data.DateOfBirth.Should().BeNull();
-            userData.Data.Gender.Should().BeNull();
-            userData.Data.Sex.Should().BeNull();
-            userData.Links.Should().BeNull();
-            userData.Embedded.Should().BeNull();
+            userResource.Should().NotBeNull();
+            userResource?.Data.Should().NotBeNull();
+            userResource?.Data.Id.Should().Be(userId);
+            userResource?.Data.FirstName.Should().Be("John");
+            userResource?.Data.LastName.Should().Be("Doe");
+            userResource?.Data.DateOfBirth.Should().BeNull();
+            userResource?.Data.Gender.Should().BeNull();
+            userResource?.Data.Sex.Should().BeNull();
+            userResource?.Links.Should().BeNull();
+            userResource?.Embedded.Should().BeNull();
         }
 
         [Test]
@@ -192,27 +192,27 @@ namespace API.Models.Shared.Tests
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
-            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
+            var userResource = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
 
             // Assert...
-            userData.Should().NotBeNull();
-            userData.Data.Should().NotBeNull();
-            userData.Data.Id.Should().Be(userId);
-            userData.Data.FirstName.Should().Be("John");
-            userData.Data.LastName.Should().Be("Doe");
-            userData.Data.DateOfBirth.Should().BeNull();
-            userData.Data.Gender.Should().BeNull();
-            userData.Data.Sex.Should().BeNull();
-            userData.Links.Should().NotBeNull();
-            userData.Links.Count.Should().Be(2);
-            var getLink = userData.Links.SingleOrDefault(_ => _.Method == "GET" && _.Relationship == "self");
+            userResource.Should().NotBeNull();
+            userResource?.Data.Should().NotBeNull();
+            userResource?.Data.Id.Should().Be(userId);
+            userResource?.Data.FirstName.Should().Be("John");
+            userResource?.Data.LastName.Should().Be("Doe");
+            userResource?.Data.DateOfBirth.Should().BeNull();
+            userResource?.Data.Gender.Should().BeNull();
+            userResource?.Data.Sex.Should().BeNull();
+            userResource?.Links.Should().NotBeNull();
+            userResource?.Links.Count.Should().Be(2);
+            var getLink = userResource?.Links.SingleOrDefault(_ => _.Method == "GET" && _.Relationship == "self");
             getLink.Should().NotBeNull();
-            getLink.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
-            var deleteLink = userData.Links.SingleOrDefault(_ => _.Method == "DELETE" && _.Relationship == "self");
-            deleteLink.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
+            getLink?.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
+            var deleteLink = userResource?.Links.SingleOrDefault(_ => _.Method == "DELETE" && _.Relationship == "self");
+            deleteLink?.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
             deleteLink.Should().NotBeNull();
 
-            userData.Embedded.Should().BeNull();
+            userResource?.Embedded.Should().BeNull();
         }
 
         [Test]
@@ -247,31 +247,32 @@ namespace API.Models.Shared.Tests
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
-            var userData = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
+            var userResource = JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options);
 
             // Assert...
-            userData.Should().NotBeNull();
-            userData.Data.Should().BeNull();
-            userData.Links.Should().BeNull();
+            userResource.Should().NotBeNull();
+            userResource?.Data.Should().BeNull();
+            userResource?.Links.Should().BeNull();
             
-            userData.Embedded.Should().NotBeNull();
-            userData.Embedded.Count.Should().Be(1);
+            userResource?.Embedded.Should().NotBeNull();
+            userResource?.Embedded.Count.Should().Be(1);
 
-            var embeddedUserData = userData.Embedded.FirstOrDefault();
+            var embeddedUserData = userResource?.Embedded.FirstOrDefault();
             embeddedUserData.Should().NotBeNull();
-            embeddedUserData.Links.Count.Should().Be(2);
-            embeddedUserData.Data.Id.Should().Be(userId);
-            embeddedUserData.Data.FirstName.Should().Be("John");
-            embeddedUserData.Data.LastName.Should().Be("Doe");
-            embeddedUserData.Data.DateOfBirth.Should().BeNull();
-            embeddedUserData.Data.Gender.Should().BeNull();
-            embeddedUserData.Data.Sex.Should().BeNull();
+            embeddedUserData?.Links.Count.Should().Be(2);
+            embeddedUserData?.Data.Id.Should().Be(userId);
+            embeddedUserData?.Data.FirstName.Should().Be("John");
+            embeddedUserData?.Data.LastName.Should().Be("Doe");
+            embeddedUserData?.Data.DateOfBirth.Should().BeNull();
+            embeddedUserData?.Data.Gender.Should().BeNull();
+            embeddedUserData?.Data.Sex.Should().BeNull();
 
-            var getLink = embeddedUserData.Links.SingleOrDefault(_ => _.Method == "GET" && _.Relationship == "self");
+            var getLink = embeddedUserData?.Links.SingleOrDefault(_ => _.Method == "GET" && _.Relationship == "self");
             getLink.Should().NotBeNull();
-            getLink.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
-            var deleteLink = embeddedUserData.Links.SingleOrDefault(_ => _.Method == "DELETE" && _.Relationship == "self");
-            deleteLink.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
+            getLink?.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
+            
+            var deleteLink = embeddedUserData?.Links.SingleOrDefault(_ => _.Method == "DELETE" && _.Relationship == "self");
+            deleteLink?.HypertextReference.Should().Be($"http://localhost/api/v1/users/{userId}");
             deleteLink.Should().NotBeNull();
 
         }
@@ -306,9 +307,9 @@ namespace API.Models.Shared.Tests
 
             // Assert...
             exception.Should().NotBeNull();
-            exception.Message.StartsWith("The JSON value could not be converted to Users.API.Models.Shared.UserResource.").Should().BeTrue();
-            exception.InnerException.Should().NotBeNull();
-            exception.InnerException.Message.Should().Be("The JSON value is not in a supported Guid format.");
+            exception?.Message.StartsWith("The JSON value could not be converted to Users.API.Models.Shared.UserResource.").Should().BeTrue();
+            exception?.InnerException.Should().NotBeNull();
+            exception?.InnerException?.Message.Should().Be("The JSON value is not in a supported Guid format.");
 
 
 
@@ -354,7 +355,7 @@ namespace API.Models.Shared.Tests
             var exception = Assert.Throws<InvalidOperationException>(() => JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options));
 
             // Assert...
-            exception.Message.Should().Be($"DateOfBirth is not valid: Expected format is 'YYYY-MM-DD', actual value: '{invalidDob}'");
+            exception?.Message.Should().Be($"DateOfBirth is not valid: Expected format is 'YYYY-MM-DD', actual value: '{invalidDob}'");
         }
 
         [Test]
@@ -386,7 +387,7 @@ namespace API.Models.Shared.Tests
             var exception = Assert.Throws<InvalidOperationException>(() => JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options));
 
             // Assert...
-            exception.Message.Should().Be($"Sex is not valid: Actual value: '{sex}'");
+            exception?.Message.Should().Be($"Sex is not valid: Actual value: '{sex}'");
         }
 
         [Test]
@@ -418,7 +419,7 @@ namespace API.Models.Shared.Tests
             var exception = Assert.Throws<InvalidOperationException>(() => JsonSerializer.Deserialize<Users.API.Models.Shared.UserResource>(json, options));
 
             // Assert...
-            exception.Message.Should().Be($"Gender is not valid: Actual value: '{gender}'");
+            exception?.Message.Should().Be($"Gender is not valid: Actual value: '{gender}'");
         }
     }
 }

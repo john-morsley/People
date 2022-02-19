@@ -25,7 +25,7 @@ public class POST_AddUser : APIsTestBase<StartUp>
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var userData = DeserializeUserData(content);
+        var userData = DeserializeUserResource(content);
         userData.Should().NotBeNull();
 
         // - User
@@ -101,11 +101,7 @@ public class POST_AddUser : APIsTestBase<StartUp>
 
         // Act...
         var url = $"/api/v1/users/";
-        var addUserRequest = new Users.API.Models.Request.v1.AddUserRequest
-        {
-            FirstName = "",
-            LastName = ""
-        };
+        var addUserRequest = new Users.API.Models.Request.v1.AddUserRequest(string.Empty, string.Empty);
         var addUserRequestJson = JsonSerializer.Serialize(addUserRequest);
         var payload = new StringContent(addUserRequestJson, System.Text.Encoding.UTF8, API_MEDIA_TYPE);
         var result = await _client.PostAsync(url, payload);

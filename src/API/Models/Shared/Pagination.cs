@@ -10,7 +10,7 @@ public class Pagination
 
     public uint PageSize { get; set; }
 
-    public string PreviousPageLink { get; set; }
+    public string? PreviousPageLink { get; set; }
 
-    public string NextPageLink { get; set; }
+    public string? NextPageLink { get; set; }
 }

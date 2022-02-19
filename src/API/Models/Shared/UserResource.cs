@@ -2,11 +2,11 @@
 
 public class UserResource : Resource<Users.API.Models.Response.v1.UserResponse>
 {
-    public IList<UserResource> Embedded { get; private set; }
+    public IList<UserResource>? Embedded { get; private set; }
 
     public void AddEmbedded(IList<UserResource> embedded)
     {
-        if (embedded == null) return;
+        //if (embedded == null) return;
         if (Embedded == null) Embedded = new List<UserResource>();
         Embedded = embedded;
 
