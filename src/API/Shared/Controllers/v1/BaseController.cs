@@ -16,13 +16,13 @@ public abstract class BaseController : ControllerBase
         //var temp = FullUrl();
     }
 
-    protected IConfiguration Configuration { get; set; }
+    protected IConfiguration? Configuration { get; set; }
 
     public IHttpContextAccessor Context { get; }
 
     public IApiVersionDescriptionProvider ApiVersionDescriptionProvider { get; }
 
-    protected ExpandoObject AddLinks(IDictionary<string, object> shapedUser, Guid userId)
+    protected ExpandoObject? AddLinks(IDictionary<string, object> shapedUser, Guid userId)
     {
         var links = CreateLinksForUser(userId);
         shapedUser.Add("_links", links);
@@ -86,8 +86,8 @@ public abstract class BaseController : ControllerBase
 
     private string BaseUrl()
     {
-        var request = Context.HttpContext.Request;
-        var baseUrl = $"{request.Scheme}://{request.Host}";
+        var request = Context?.HttpContext?.Request;
+        var baseUrl = $"{request?.Scheme}://{request?.Host}";
         return baseUrl;
     }
 
@@ -107,7 +107,10 @@ public abstract class BaseController : ControllerBase
 
     private string ControllerName()
     {
-        return this.ControllerContext.RouteData.Values["controller"].ToString().ToLower();
-        //return Request.RouteValues["controller"].ToString().ToLower();
+        var controllerValue = this.ControllerContext.RouteData.Values["controller"];
+        if (controllerValue == null) throw new NullReferenceException();
+        var controllerName = controllerValue.ToString();
+        if (controllerName == null) throw new NullReferenceException();
+        return controllerName.ToLower();
     }
 }

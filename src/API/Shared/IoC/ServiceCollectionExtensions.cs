@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
         {
             options.OperationFilter<SwaggerDefaultValues>();
             options.IncludeXmlComments(GetXmlCommentsFilePath(callingAssemblyName));
-            options.OrderActionsBy(apiDesc => $"{apiDesc.ActionDescriptor.RouteValues["controller"]}_{Array.IndexOf(methodsOrder, apiDesc.HttpMethod.ToUpper())}");
+            options.OrderActionsBy(apiDesc => $"{apiDesc.ActionDescriptor.RouteValues["controller"]}_{Array.IndexOf(methodsOrder, apiDesc?.HttpMethod?.ToUpper())}");
         });
 
         services.AddSwaggerGenNewtonsoftSupport();
