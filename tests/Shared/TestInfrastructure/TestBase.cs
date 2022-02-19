@@ -30,7 +30,14 @@ public class TestBase
         _autoFixture.Customizations.Add(new AddUserRequestSpecimenBuilder());
         _autoFixture.Customizations.Add(new UserSpecimenBuilder());
 
-        await _testFixture.RunBeforeTests();
+        try
+        {
+            await _testFixture.RunBeforeTests();
+        }
+        catch (Exception e)
+        {
+            throw new Exception("This may be Docker related. Check Docker is running.", e);
+        }
     }
 
     [SetUp]

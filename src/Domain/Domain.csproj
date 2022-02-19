@@ -4,6 +4,7 @@
         <TargetFramework>net6.0</TargetFramework>
         <AssemblyName>Users.Domain</AssemblyName>
         <RootNamespace>Users.Domain</RootNamespace>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
 </Project>
