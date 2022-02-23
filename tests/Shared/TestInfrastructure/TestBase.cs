@@ -1,4 +1,6 @@
-﻿namespace Shared.TestInfrastructure;
+﻿using System.Globalization;
+
+namespace Shared.TestInfrastructure;
 
 [TestFixture]
 public class TestBase
@@ -52,7 +54,7 @@ public class TestBase
         var configuration = GetConfiguration(additional);
         var section = configuration.GetSection(nameof(MongoSettings));
         var settings = section.Get<MongoSettings>();
-        var connectionString = _testFixture.MongoDBConnectionString;
+        var connectionString = _testFixture!.MongoDBConnectionString;
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
         var usersTable = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
@@ -68,12 +70,12 @@ public class TestBase
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
-       await _testFixture.RunAfterTests();
+       await _testFixture!.RunAfterTests();
     }
 
     internal int ContainerPort
     {
-        get { return _testFixture.GetContainerPort(); }
+        get { return _testFixture!.GetContainerPort(); }
     }
 
     protected virtual Dictionary<string, string> GetInMemoryConfiguration()
@@ -140,7 +142,7 @@ public class TestBase
         var configuration = GetConfiguration(additional);
         var section = configuration.GetSection(nameof(MongoSettings));
         var settings = section.Get<MongoSettings>();
-        var connectionString = _testFixture.MongoDBConnectionString;
+        var connectionString = _testFixture!.MongoDBConnectionString;
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
         var usersTable = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
@@ -155,7 +157,7 @@ public class TestBase
         var configuration = GetConfiguration(additional);
         var section = configuration.GetSection(nameof(MongoSettings));
         var settings = section.Get<MongoSettings>();
-        var connectionString = _testFixture.MongoDBConnectionString;
+        var connectionString = _testFixture!.MongoDBConnectionString;
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
         var usersTable = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
@@ -172,6 +174,16 @@ public class TestBase
     protected string GetTestString(string prepend = "")
     {
         return prepend + _autoFixture.Create<string>();
+    }
+
+    protected string? GenerateDifferentDateOfBirth(string? dateOfBirth)
+    {
+        if (dateOfBirth == null || 
+            !DateTime.TryParseExact(dateOfBirth, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var dt))
+        {
+            return "2001-02-03";
+        }
+        return dt.ToString("yyyy-MM-dd");
     }
 
     protected Gender? GenerateDifferentGender(Gender? gender)
@@ -199,17 +211,17 @@ public class TestBase
     protected Users.Domain.Models.User GenerateTestUser()
     {
         var user = _autoFixture.Create<Users.Domain.Models.User>();
-        user.Created = DateTime.UtcNow;
+        user.Created = new DateTime(2001, 01, 01);
         user.Updated = null;
         return user;
     }
 
-    protected Users.Domain.Models.User GenerateTestUser(Guid userId)
-    {
-        var user = GenerateTestUser();
-        user.Id = userId;
-        return user;
-    }
+    //protected Users.Domain.Models.User GenerateTestUser(Guid userId)
+    //{
+    //    var user = GenerateTestUser();
+    //    //user.Id = userId;
+    //    return user;
+    //}
 
     protected Users.Domain.Models.User GenerateTestUser(uint dateOfBirthYear, uint dateOfBirthMonth, uint dateOfBirthDay)
     {
@@ -224,11 +236,13 @@ public class TestBase
         var configuration = GetConfiguration(additional);
         var section = configuration.GetSection(nameof(MongoSettings));
         var settings = section.Get<MongoSettings>();
-        var connectionString = _testFixture.MongoDBConnectionString;
+        var connectionString = _testFixture!.MongoDBConnectionString;
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
-        var usersTable = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
-        var user = usersTable.Find<Users.Domain.Models.User>(user => user.Id == userId).SingleOrDefault();
+        var mongoCollectionSettings = new MongoCollectionSettings();
+        var usersTable = database.GetCollection<Users.Domain.Models.User>(settings.TableName, mongoCollectionSettings);
+        var options = new FindOptions();
+        var user = usersTable.Find<Users.Domain.Models.User>(user => user.Id == userId, options).SingleOrDefault();
         return user;
     }
 
@@ -238,7 +252,7 @@ public class TestBase
         var configuration = GetConfiguration(additional);
         var section = configuration.GetSection(nameof(MongoSettings));
         var settings = section.Get<MongoSettings>();
-        var connectionString = _testFixture.MongoDBConnectionString;
+        var connectionString = _testFixture!.MongoDBConnectionString;
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
         var usersTable = database.GetCollection<Users.Domain.Models.User>(settings.TableName);
@@ -251,7 +265,7 @@ public class TestBase
         var configuration = GetConfiguration(additional);
         var section = configuration.GetSection(nameof(MongoSettings));
         var settings = section.Get<MongoSettings>();
-        var connectionString = _testFixture.MongoDBConnectionString;
+        var connectionString = _testFixture!.MongoDBConnectionString;
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
         var usersTable = database.GetCollection<Users.Domain.Models.User>(settings.TableName);

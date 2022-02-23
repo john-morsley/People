@@ -5,7 +5,6 @@ global using Microsoft.AspNetCore.TestHost;
 global using Microsoft.Extensions.Configuration;
 global using MongoDB.Driver;
 global using NUnit.Framework;
-global using Persistence.Contexts;
 global using Shared.TestInfrastructure;
 global using System.Text.Json;
 global using System.Text.Json.Serialization;

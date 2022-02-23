@@ -19,8 +19,10 @@ public class AddUserRequestSpecimenBuilder : ISpecimenBuilder
 
         var dob = RandomGeneratorHelper.GenerateRandomDateOfBirth();
 
-        var user = new Users.API.Models.Request.v1.AddUserRequest(firstName, lastName)
+        var user = new Users.API.Models.Request.v1.AddUserRequest()
         {
+            FirstName = firstName,
+            LastName = lastName,
             Sex = context.Create<Sex?>(),
             Gender = context.Create<Gender?>(),
             DateOfBirth = $"{dob.Year:0000}-{dob.Month:00}-{dob.Day:00}"

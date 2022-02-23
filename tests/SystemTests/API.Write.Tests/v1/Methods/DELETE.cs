@@ -7,21 +7,25 @@ public class DELETE : APIsTestBase<StartUp>
     public async Task Given_User_Exists___When_Delete_Is_Attempted___Then_NoContent_And_User_Deleted()
     {
         // Arrange...
-        var userId = Guid.NewGuid();
-        var userToBeDeleted = GenerateTestUser(userId);
+        NumberOfUsersInDatabase().Should().Be(0);
+        var userToBeDeleted = GenerateTestUser();
+        var userId = userToBeDeleted.Id;
         AddUserToDatabase(userToBeDeleted);
         NumberOfUsersInDatabase().Should().Be(1);
 
         // Act...
         var url = $"/api/v1/users/{userId}";
-        var httpResponse = await _client.DeleteAsync(url);
+        var httpResponse = await _client!.DeleteAsync(url);
 
         // Assert...
+        NumberOfUsersInDatabase().Should().Be(0);
+
         httpResponse.IsSuccessStatusCode.Should().BeTrue();
         httpResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);        
+        
         var content = await httpResponse.Content.ReadAsStringAsync();
         content.Length.Should().Be(0);
-        NumberOfUsersInDatabase().Should().Be(0);
+        
         var shouldNotExistUser = GetUserFromDatabase(userId);
         shouldNotExistUser.Should().BeNull();
     }
@@ -40,10 +44,13 @@ public class DELETE : APIsTestBase<StartUp>
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(0);
+
         httpResponse.IsSuccessStatusCode.Should().BeFalse();
         httpResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        
         var content = await httpResponse.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
+
         // ToDo --> Check the error object
     }
 }

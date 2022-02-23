@@ -6,18 +6,19 @@ internal class Add : UserRepositoryTests
     public async Task Adding_A_User_Should_Result_In_That_User_Being_Added()
     {
         // Arrange...
-        var sut = new UserRepository(_mongoContext);            
-        var userId = Guid.NewGuid();
-        var user = GenerateTestUser(userId);
+        NumberOfUsersInDatabase().Should().Be(0);
+
+        var user = GenerateTestUser();
+
+        var sut = new UserRepository(_mongoContext);
 
         // Act...
         await sut.AddAsync(user);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);
-        var added = GetUserFromDatabase(userId);
-        added.Id.Should().Be(userId);
-        added.FirstName.Should().Be(user.FirstName);
-        added.LastName.Should().Be(user.LastName);
+
+        var added = GetUserFromDatabase(user.Id);
+        added.Should().BeEquivalentTo(user);
     }
 }

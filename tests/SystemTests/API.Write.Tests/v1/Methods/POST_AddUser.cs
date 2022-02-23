@@ -101,10 +101,10 @@ public class POST_AddUser : APIsTestBase<StartUp>
 
         // Act...
         var url = $"/api/v1/users/";
-        var addUserRequest = new Users.API.Models.Request.v1.AddUserRequest(string.Empty, string.Empty);
+        var addUserRequest = new Users.API.Models.Request.v1.AddUserRequest();
         var addUserRequestJson = JsonSerializer.Serialize(addUserRequest);
         var payload = new StringContent(addUserRequestJson, System.Text.Encoding.UTF8, API_MEDIA_TYPE);
-        var result = await _client.PostAsync(url, payload);
+        var result = await _client!.PostAsync(url, payload);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(0);
@@ -115,7 +115,7 @@ public class POST_AddUser : APIsTestBase<StartUp>
 
         var problemDetails = JsonSerializer.Deserialize<ValidationProblemDetails>(content);
         problemDetails.Should().NotBeNull();
-        problemDetails.Status.Should().Be((int)HttpStatusCode.UnprocessableEntity);
+        problemDetails!.Status.Should().Be((int)HttpStatusCode.UnprocessableEntity);
         problemDetails.Title.Should().Be("Validation error(s) occurred!");
         problemDetails.Detail.Should().Be("See the errors field for details.");
         problemDetails.Instance.Should().Be("/api/v1/users/");

@@ -1,4 +1,6 @@
-﻿namespace UserRepositoryTests;
+﻿using Users.Persistence.Contexts;
+
+namespace UserRepositoryTests;
 
 internal class UserRepositoryTests : TestBase
 {

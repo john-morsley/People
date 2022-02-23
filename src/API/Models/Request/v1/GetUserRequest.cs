@@ -13,15 +13,13 @@ public class GetUserRequestBinder : IModelBinder
     public async Task BindModelAsync(ModelBindingContext bindingContext)
     {
         // To read from body
-        var memoryStream = new MemoryStream();
+        //var memoryStream = new MemoryStream();
         var body = bindingContext.HttpContext.Request.Body;
         var reader = new StreamReader(body, Encoding.UTF8);
-        var text = reader.ReadToEnd();
-        //var cat = JsonConvert.DeserializeObject<Cat>(text);
+        //var text = reader.ReadToEnd();
 
         var vp = bindingContext.ValueProvider.GetValue("userId");
 
-        //Guid userId;
         if (!Guid.TryParse(vp.FirstValue, out var userId)) return;
 
         var getUserRequest = new Users.API.Models.Request.v1.GetUserRequest();

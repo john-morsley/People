@@ -15,7 +15,7 @@ public sealed class AddUserCommandHandler : IRequestHandler<Users.Application.Co
     {
         if (command == null) throw new ArgumentNullException(nameof(command));
 
-        Domain.Models.User user = _mapper.Map<Domain.Models.User>(command);
+        var user = _mapper.Map<Domain.Models.User>(command);
 
         await _userRepository.AddAsync(user);
 

@@ -1,4 +1,4 @@
-﻿namespace Persistence.Repositories;
+﻿namespace Users.Persistence.Repositories;
 
 public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity : class, IEntity<Guid>
 {
@@ -37,18 +37,18 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
         }
     }
 
-    public virtual IPagedList<TEntity> GetPage(IGetOptions options)
+    public async virtual Task<IPagedList<TEntity>> GetPageAsync(IGetOptions options)
     {
         if (options == null) throw new ArgumentNullException(nameof(options));
 
-        var entities = GetAll(options);
+        var entities = await GetAllAsync(options);
 
         var pagedList = PagedList<TEntity>.Create(entities, options.PageNumber, options.PageSize);
 
         return pagedList;
     }
 
-    public virtual async Task AddAsync(TEntity entity)
+    public async virtual Task AddAsync(TEntity entity)
     {
         // ToDo --> Set Created
         try
@@ -62,7 +62,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
         }
     }
 
-    public virtual async Task UpdateAsync(TEntity update)
+    public async virtual Task UpdateAsync(TEntity update)
     {
         // ToDo --> Set Updated
         try
@@ -76,7 +76,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
         }
     }
 
-    public virtual async Task DeleteAsync(Guid id)
+    public async virtual Task DeleteAsync(Guid id)
     {
         try
         {
@@ -89,9 +89,9 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
         }
     }
 
-    protected virtual IQueryable<TEntity> GetAll(IGetOptions options)
+    protected async virtual Task<IQueryable<TEntity>> GetAllAsync(IGetOptions options)
     {
-        var entities = AsQueryable();
+        var entities = await Task.Run(() => AsQueryable());
 
         entities = Sort(entities, options);
         entities = Filter(entities, options);

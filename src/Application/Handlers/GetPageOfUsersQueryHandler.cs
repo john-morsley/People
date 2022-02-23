@@ -1,6 +1,4 @@
-﻿using Users.Application.Models;
-
-namespace Users.Application.Handlers;
+﻿namespace Users.Application.Handlers;
 
 public sealed class GetPageOfUsersQueryHandler : IRequestHandler<Users.Application.Queries.GetPageOfUsersQuery, Users.Domain.Interfaces.IPagedList<Users.Domain.Models.User>>
 {
@@ -19,7 +17,7 @@ public sealed class GetPageOfUsersQueryHandler : IRequestHandler<Users.Applicati
 
         var getOptions = _mapper.Map<Users.Application.Models.GetOptions>(query);
 
-        var pageOfUsers = _userRepository.GetPage(getOptions);
+        var pageOfUsers = await _userRepository.GetPageAsync(getOptions);
 
         return pageOfUsers;
     }

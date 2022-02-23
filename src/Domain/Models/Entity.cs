@@ -1,22 +1,23 @@
-﻿using Users.Domain.Exceptions;
-using Users.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-
+﻿
 namespace Users.Domain.Models
 {
     public abstract class Entity<T> : IEntity<T>
     {
-        protected Entity() {}
+        //protected Entity() {}
+
+        public Entity(T id)
+        {
+            if (object.Equals(id, default(T))) throw new DomainModelIdException("The Id cannot be set to its default value!");
+            _id = id;
+        }
 
         protected T _id;
 
         public T Id
         {
-            get => _id;
-            set
-            {
-                if (object.Equals(value, default(T))) throw new DomainModelIdException("The Id cannot be set to its default value!");
+            get { return _id; }
+            private set {
+                if (object.Equals(value, default(T))) return; //throw new DomainModelIdException("The Id cannot be set to its default value!");
                 _id = value;
             }
         }

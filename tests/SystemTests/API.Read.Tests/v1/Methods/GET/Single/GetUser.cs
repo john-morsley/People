@@ -9,16 +9,14 @@ public class GetUser : APIsTestBase<StartUp>
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
 
-        var userId = Guid.NewGuid();
-        var expected = GenerateTestUser(userId);
+        var expected = GenerateTestUser();
         AddUserToDatabase(expected);
 
         NumberOfUsersInDatabase().Should().Be(1);
 
-        var url = $"/api/v1/users/{userId}";
-
         // Act...
-        var result = await _client.GetAsync(url);
+        var url = $"/api/v1/users/{expected.Id}";
+        var result = await _client!.GetAsync(url);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);
@@ -28,20 +26,20 @@ public class GetUser : APIsTestBase<StartUp>
 
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
-        var userData = DeserializeUserResource(content);
-        userData.Should().NotBeNull();
+        var userResource = DeserializeUserResource(content);
+        userResource.Should().NotBeNull();
 
         // - User
-        userData.Data.Should().NotBeNull();
-        ShouldBeEquivalentTo(userData, expected);
+        userResource!.Data.Should().NotBeNull();
+        ShouldBeEquivalentTo(userResource, expected);
 
         // - Links
-        userData.Links.Should().NotBeNull();
-        userData.Links.Count.Should().Be(2);
-        LinksForUserShouldBeCorrect(userData.Links, userId);
+        userResource!.Links.Should().NotBeNull();
+        userResource!.Links!.Count.Should().Be(2);
+        LinksForUserShouldBeCorrect(userResource.Links, expected.Id);
 
         // - Embedded
-        userData.Embedded.Should().BeNull();
+        userResource!.Embedded.Should().BeNull();
     }
 
     [Test]

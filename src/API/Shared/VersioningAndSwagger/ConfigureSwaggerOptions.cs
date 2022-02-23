@@ -17,7 +17,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     {
         if (options == null) throw new ArgumentNullException(nameof(options));
             
-        foreach (ApiVersionDescription description in _provider.ApiVersionDescriptions)
+        foreach (var description in _provider.ApiVersionDescriptions)
         {
             options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
         }

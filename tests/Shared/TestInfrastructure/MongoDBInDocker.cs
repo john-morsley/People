@@ -8,7 +8,7 @@ public class MongoDBInDocker
     public const string MONGODB_AUTHENTICATION_MECHANISM = "SCRAM-SHA-1";
     public const int MONGODB_PORT = 27017;
 
-    public static async Task<(string containerId, int port)> EnsureDockerStartedAndGetContainerIdAndPortAsync(string username, string password)
+    public async static Task<(string containerId, int port)> EnsureDockerStartedAndGetContainerIdAndPortAsync(string username, string password)
     {
         await CleanupRunningContainers();
 
@@ -75,7 +75,7 @@ public class MongoDBInDocker
         return new DockerClientConfiguration(new Uri(dockerUri)).CreateClient();
     }
 
-    private static async Task CleanupRunningContainers()
+    private async static Task CleanupRunningContainers()
     {
         var dockerClient = GetDockerClient();
 
@@ -93,20 +93,20 @@ public class MongoDBInDocker
             }
         }
     }
-    public static async Task EnsureDockerContainersStoppedAndRemovedAsync(string dockerContainerId)
+    public async static Task EnsureDockerContainersStoppedAndRemovedAsync(string dockerContainerId)
     {
         var dockerClient = GetDockerClient();
         await dockerClient.Containers.StopContainerAsync(dockerContainerId, new ContainerStopParameters());
         await dockerClient.Containers.RemoveContainerAsync(dockerContainerId, new ContainerRemoveParameters() { Force = true, RemoveVolumes = true });
     }
 
-    public static async Task EnsureDockerVolumesRemovedAsync(string volumeName)
+    public async static Task EnsureDockerVolumesRemovedAsync(string volumeName)
     {
         var dockerClient = GetDockerClient();
         await dockerClient.Volumes.RemoveAsync(volumeName);
     }
 
-    private static async Task WaitUntilDatabaseAvailableAsync(string username, string password, int databasePort)
+    private async static Task WaitUntilDatabaseAvailableAsync(string username, string password, int databasePort)
     {
         var start = DateTime.UtcNow;
         const int maxWaitTimeSeconds = 60;

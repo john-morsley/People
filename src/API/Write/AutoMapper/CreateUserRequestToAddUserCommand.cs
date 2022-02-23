@@ -1,7 +1,13 @@
 ﻿namespace Users.API.Write.AutoMapper;
 
+/// <summary>
+/// 
+/// </summary>
 public class CreateUserRequestToAddUserCommand : Profile
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public CreateUserRequestToAddUserCommand()
     {
         //CreateMap<string?, Domain.Enumerations.Sex?>()

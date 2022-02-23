@@ -1,14 +1,24 @@
 ﻿namespace Users.API.Write.AutoMapper;
 
+/// <summary>
+/// 
+/// </summary>
 public class PagedListTypeConverter : ITypeConverter<Users.Domain.Interfaces.IPagedList<Users.Domain.Models.User>,
                                                      Users.Domain.Interfaces.IPagedList<Users.API.Models.Response.v1.UserResponse>>
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="destination"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
     public Users.Domain.Interfaces.IPagedList<Users.API.Models.Response.v1.UserResponse> Convert(
         Users.Domain.Interfaces.IPagedList<Users.Domain.Models.User> source,
         Users.Domain.Interfaces.IPagedList<Users.API.Models.Response.v1.UserResponse> destination,
         ResolutionContext context)
     {
-        if (source == null) return null;
+        //if (source == null) return null;
 
         var conversion = new Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>();
 

@@ -38,13 +38,13 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     }
 
     /// <summary>
-    /// Create a user
+    /// Create a new user
     /// </summary>
     /// <param name="addUserRequest">An AddUserRequest object which contains all the necessary data to create a user</param>
     /// <returns>A URI to the newly added user in the header (location)</returns>
     /// <response code="201">Success - Added - The user was successfully Added</response>
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
-    // -------------------------------------------------- POST --> USER
+    // -------------------------------------------------- POST --> Add User
     [HttpPost(Name = "CreateUser")]
     [MapToApiVersion("1.0")]
     [Produces("application/json")]
@@ -52,13 +52,13 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post([FromBody] Users.API.Models.Request.v1.AddUserRequest addUserRequest)
     {
-        if (addUserRequest == null) return BadRequest();
+        //if (addUserRequest == null) return BadRequest();
 
         var userResponse = await AddUser(addUserRequest);
 
         var shapedUser = userResponse.ShapeData();
 
-        var shapedUserWithLinks = AddLinks(shapedUser, userResponse.Id);
+        var shapedUserWithLinks = AddLinks(shapedUser!, userResponse.Id);
 
         return Created($"http://localhost/api/v1/users/{userResponse.Id}", shapedUserWithLinks);
     }
@@ -71,6 +71,7 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     /// <response code="204">Success - No Content - User was successfully deleted</response>
     /// <response code="400">Error - Bad Request - It was not possible to bind the request JSON</response>
     /// <response code="404">Error - Not Found - No user matched the given identifier</response>
+    // -------------------------------------------------- DELETE --> Delete User
     [HttpDelete("{userId:guid}", Name = "DeleteUser")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -95,6 +96,7 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     /// <response code="200">Success - OK - The user was successfully updated</response>
     /// <response code="404">Error - Not Found - Could not find the corresponding user for the given identifier</response>
     /// <response code="422">Error - Unprocessable Entity - It was not possible to bind the request JSON</response>
+    // -------------------------------------------------- PUT --> Upsert User
     [HttpPut("{userId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -103,7 +105,7 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
         [FromRoute] Guid userId,
         [FromBody] Users.API.Models.Request.v1.UpdateUserRequest updateUserRequest)
     {
-        if (updateUserRequest == null) return BadRequest();
+        //if (updateUserRequest == null) return BadRequest();
 
         // As we are upserting, we either update or add...
         if (await DoesUserExist(userId))
@@ -144,11 +146,12 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    // -------------------------------------------------- PATCH --> Upsert User
     public async Task<IActionResult> Patch(
         [FromRoute] Guid userId,
         [FromBody] JsonPatchDocument<Users.API.Models.Request.v1.PartiallyUpdateUserRequest> patchDocument)
     {
-        if (patchDocument == null) return BadRequest();
+        //if (patchDocument == null) return BadRequest();
 
         Users.API.Models.Request.v1.PartiallyUpdateUserRequest partiallyUpdateUserRequest;
 
@@ -261,9 +264,4 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
         var updatedUserResponse = _mapper.Map<Users.API.Models.Response.v1.UserResponse>(updatedUser);
         return updatedUserResponse;
     }
-
-    //protected override string GetLink()
-    //{
-    //    return "write";
-    //}
 }

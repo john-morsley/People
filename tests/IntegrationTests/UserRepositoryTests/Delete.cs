@@ -6,14 +6,17 @@ internal class Delete : UserRepositoryTests
     public async Task Deleting_A_User_Should_Result_In_That_User_Being_Deleted()
     {
         // Arrange...
-        var sut = new UserRepository(_mongoContext);
-        var userId = Guid.NewGuid();
-        var user = GenerateTestUser(userId);
+        NumberOfUsersInDatabase().Should().Be(0);
+
+        var user = GenerateTestUser();
         AddUserToDatabase(user);
+
         NumberOfUsersInDatabase().Should().Be(1);
 
+        var sut = new UserRepository(_mongoContext);
+
         // Act...
-        await sut.DeleteAsync(userId);
+        await sut.DeleteAsync(user.Id);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(0);

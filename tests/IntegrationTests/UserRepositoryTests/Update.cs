@@ -6,11 +6,14 @@ internal class Update : UserRepositoryTests
     public async Task Updating_A_User_Should_Result_In_That_User_Being_Updated()
     {
         // Arrange...
-        var sut = new UserRepository(_mongoContext);
-        var userId = Guid.NewGuid();
-        var existing = GenerateTestUser(userId);
+        NumberOfUsersInDatabase().Should().Be(0);
+
+        var existing = GenerateTestUser();
         AddUserToDatabase(existing);
+
         NumberOfUsersInDatabase().Should().Be(1);
+
+        var sut = new UserRepository(_mongoContext);
 
         // Act...
         existing.FirstName = _autoFixture.Create<string>();
@@ -19,9 +22,9 @@ internal class Update : UserRepositoryTests
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);
-        var updated = GetUserFromDatabase(userId);
-        updated.Id.Should().Be(userId);
-        updated.FirstName.Should().Be(existing.FirstName);
-        updated.LastName.Should().Be(existing.LastName);
+
+        var updated = GetUserFromDatabase(existing.Id);
+        updated.Id.Should().Be(existing.Id);
+        updated.Should().BeEquivalentTo(existing);
     }
 }

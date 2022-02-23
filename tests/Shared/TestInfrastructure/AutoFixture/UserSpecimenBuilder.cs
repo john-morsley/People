@@ -18,7 +18,7 @@ public class UserSpecimenBuilder : ISpecimenBuilder
         var lastName = nameof(Users.API.Models.Request.v1.AddUserRequest.LastName) + "___" + context.Create<string>();
         var dob = RandomGeneratorHelper.GenerateRandomDateOfBirth();
 
-        var user = new Users.Domain.Models.User()
+        var user = new Users.Domain.Models.User(firstName, lastName)
         {
             FirstName = firstName,
             LastName = lastName,

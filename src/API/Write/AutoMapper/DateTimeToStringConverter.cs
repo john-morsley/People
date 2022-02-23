@@ -1,8 +1,18 @@
 ﻿namespace Users.API.Write.AutoMapper;
 
-public class DateTimeToStringConverter : ITypeConverter<DateTime?, string>
+/// <summary>
+/// 
+/// </summary>
+public class DateTimeToStringConverter : ITypeConverter<DateTime?, string?>
 {
-    public string Convert(DateTime? source, string destination, ResolutionContext context)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="destination"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public string? Convert(DateTime? source, string? destination, ResolutionContext context)
     {
         if (source == null) return null;
 

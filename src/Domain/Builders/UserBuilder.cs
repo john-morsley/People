@@ -58,13 +58,12 @@ public class UserBuilder
     
     public Users.Domain.Models.User Build()
     {
-        var user = new Users.Domain.Models.User();
-
-        user.FirstName = _firstName;
-        user.LastName = _lastName;
-        user.Sex = _sex;
-        user.Gender = _gender;
-        user.DateOfBirth = _dateOfBirth;
+        var user = new Users.Domain.Models.User(_firstName, _lastName)
+        {
+            Sex = _sex,
+            Gender = _gender,
+            DateOfBirth = _dateOfBirth
+        };
 
         return user;
     }

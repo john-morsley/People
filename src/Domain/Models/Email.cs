@@ -5,6 +5,8 @@ namespace Users.Domain.Models
 {
     public class Email : Entity<Guid>
     {
+        public Email(string value) : base (Guid.NewGuid()) {}
+
         public string Value { get; set; }
 
         public bool IsValidated { get; set; }

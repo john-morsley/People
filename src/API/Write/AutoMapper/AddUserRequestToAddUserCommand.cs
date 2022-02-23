@@ -1,17 +1,19 @@
-﻿using AutoMapper;
-//using Morsley.UK.YearPlanner.Users.API.Converters;
+﻿namespace Users.API.Write.AutoMapper;
 
-namespace Users.API.Write.AutoMapper
+/// <summary>
+/// 
+/// </summary>
+public class AddUserRequestToAddUserCommand : Profile
 {
-    public class AddUserRequestToAddUserCommand : Profile
+    /// <summary>
+    /// 
+    /// </summary>
+    public AddUserRequestToAddUserCommand()
     {
-        public AddUserRequestToAddUserCommand()
-        {
-            //CreateMap<string?, Domain.Enumerations.Sex?>().ConvertUsing(new StringSexToEnumSexConverter());
+        //CreateMap<string?, Domain.Enumerations.Sex?>().ConvertUsing(new StringSexToEnumSexConverter());
 
-            //CreateMap<string?, Domain.Enumerations.Title?>().ConvertUsing(new StringTitleToEnumTitleConverter());
+        //CreateMap<string?, Domain.Enumerations.Title?>().ConvertUsing(new StringTitleToEnumTitleConverter());
 
-            CreateMap<Users.API.Models.Request.v1.AddUserRequest, Application.Commands.AddUserCommand>();
-        }
+        CreateMap<Users.API.Models.Request.v1.AddUserRequest, Application.Commands.AddUserCommand>();
     }
 }

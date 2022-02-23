@@ -17,14 +17,17 @@ public class PATCH : APIsTestBase<StartUp>
     public async Task Given_User_Exists___When_Replace_Patch_Partial_Update_User___Then_200_OK_And_User_Partially_Updated()
     {
         // Arrange...
-        var userId = Guid.NewGuid();
-        var userToBeUpdated = GenerateTestUser(userId);
+        NumberOfUsersInDatabase().Should().Be(0);
+
+        var userToBeUpdated = GenerateTestUser();
         AddUserToDatabase(userToBeUpdated);
+
         NumberOfUsersInDatabase().Should().Be(1);
-        string replacementFirstName = GetTestString("ReplacementFirstName");
+
+        var replacementFirstName = GetTestString("ReplacementFirstName");
 
         // Act...
-        var url = $"/api/v1/users/{userId}";
+        var url = $"/api/v1/users/{userToBeUpdated.Id}";
         var partiallyUpdateUserJson = string.Empty +
         "[" +
             "{" +
@@ -34,16 +37,18 @@ public class PATCH : APIsTestBase<StartUp>
             "}" +
         "]";
         var payload = new StringContent(partiallyUpdateUserJson, System.Text.Encoding.UTF8, API_MEDIA_TYPE);
-        var httpResponse = await _client.PatchAsync(url, payload);
+        var httpResponse = await _client!.PatchAsync(url, payload);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);
+
         httpResponse.IsSuccessStatusCode.Should().BeTrue();
         httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await httpResponse.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
-        var actualUser = GetUserFromDatabase(userId);
+
+        var actualUser = GetUserFromDatabase(userToBeUpdated.Id);
         actualUser.Should().NotBeEquivalentTo(userToBeUpdated);
         actualUser.FirstName.Should().Be(replacementFirstName);
     }
@@ -53,14 +58,16 @@ public class PATCH : APIsTestBase<StartUp>
     public async Task Given_User_Exists___When_Remove_Patch_Partial_Update_User___Then_200_OK_And_User_Partially_Updated()
     {
         // Arrange...
-        var userId = Guid.NewGuid();
-        var userToBeUpdated = GenerateTestUser(userId);
+        NumberOfUsersInDatabase().Should().Be(0);
+
+        var userToBeUpdated = GenerateTestUser();
         userToBeUpdated.Sex = Users.Domain.Enumerations.Sex.Male;
         AddUserToDatabase(userToBeUpdated);
+
         NumberOfUsersInDatabase().Should().Be(1);
 
         // Act...
-        var url = $"/api/v1/users/{userId}";
+        var url = $"/api/v1/users/{userToBeUpdated.Id}";
         var partiallyUpdateUserJson = string.Empty +
         "[" +
             "{" +
@@ -69,7 +76,7 @@ public class PATCH : APIsTestBase<StartUp>
             "}" +
         "]";
         var payload = new StringContent(partiallyUpdateUserJson, System.Text.Encoding.UTF8, API_MEDIA_TYPE);
-        var httpResponse = await _client.PatchAsync(url, payload);
+        var httpResponse = await _client!.PatchAsync(url, payload);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);
@@ -78,7 +85,8 @@ public class PATCH : APIsTestBase<StartUp>
 
         var content = await httpResponse.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
-        var actualUser = GetUserFromDatabase(userId);
+
+        var actualUser = GetUserFromDatabase(userToBeUpdated.Id);
         actualUser.Should().NotBeEquivalentTo(userToBeUpdated);
         actualUser.Sex.Should().BeNull();
     }
@@ -88,14 +96,16 @@ public class PATCH : APIsTestBase<StartUp>
     public async Task Given_User_Exists___When_Add_Patch_Partial_Update_User___Then_200_OK_And_User_Partially_Updated()
     {
         // Arrange...
-        var userId = Guid.NewGuid();
-        var userToBeUpdated = GenerateTestUser(userId);
+        NumberOfUsersInDatabase().Should().Be(0);
+
+        var userToBeUpdated = GenerateTestUser();
         userToBeUpdated.Sex = null;
         AddUserToDatabase(userToBeUpdated);
+
         NumberOfUsersInDatabase().Should().Be(1);
 
         // Act...
-        var url = $"/api/v1/users/{userId}";
+        var url = $"/api/v1/users/{userToBeUpdated.Id}";
         var partiallyUpdateUserJson = string.Empty +
         "[" +
             "{" +
@@ -105,16 +115,17 @@ public class PATCH : APIsTestBase<StartUp>
             "}" +
         "]";
         var payload = new StringContent(partiallyUpdateUserJson, System.Text.Encoding.UTF8, API_MEDIA_TYPE);
-        var httpResponse = await _client.PatchAsync(url, payload);
+        var httpResponse = await _client!.PatchAsync(url, payload);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);
+
         httpResponse.IsSuccessStatusCode.Should().BeTrue();
         httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await httpResponse.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
-        var actualUser = GetUserFromDatabase(userId);
+        var actualUser = GetUserFromDatabase(userToBeUpdated.Id);
         actualUser.Should().NotBeEquivalentTo(userToBeUpdated);
         //actualUser.FirstName.Should().Be(replacementFirstName);
     }
@@ -124,13 +135,15 @@ public class PATCH : APIsTestBase<StartUp>
     public async Task Given_User_Exists___When_Copy_Patch_Partial_Update_User___Then_200_OK_And_User_Partially_Updated()
     {
         // Arrange...
-        var userId = Guid.NewGuid();
-        var userToBeUpdated = GenerateTestUser(userId);
+        NumberOfUsersInDatabase().Should().Be(0);
+
+        var userToBeUpdated = GenerateTestUser();
         AddUserToDatabase(userToBeUpdated);
+
         NumberOfUsersInDatabase().Should().Be(1);
 
         // Act...
-        var url = $"/api/v1/users/{userId}";
+        var url = $"/api/v1/users/{userToBeUpdated.Id}";
         var partiallyUpdateUserJson = string.Empty +
         "[" +
             "{" +
@@ -140,16 +153,18 @@ public class PATCH : APIsTestBase<StartUp>
             "}" +
         "]";
         var payload = new StringContent(partiallyUpdateUserJson, System.Text.Encoding.UTF8, API_MEDIA_TYPE);
-        var httpResponse = await _client.PatchAsync(url, payload);
+        var httpResponse = await _client!.PatchAsync(url, payload);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);
+
         httpResponse.IsSuccessStatusCode.Should().BeTrue();
         httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await httpResponse.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
-        var actualUser = GetUserFromDatabase(userId);
+
+        var actualUser = GetUserFromDatabase(userToBeUpdated.Id);
         actualUser.Should().NotBeEquivalentTo(userToBeUpdated);
         actualUser.LastName.Should().Be(userToBeUpdated.FirstName);
     }
@@ -178,7 +193,7 @@ public class PATCH : APIsTestBase<StartUp>
             "}" +
         "]";
         var payload = new StringContent(partiallyUpdateUserJson, System.Text.Encoding.UTF8, API_MEDIA_TYPE);
-        var httpResponse = await _client.PatchAsync(url, payload);
+        var httpResponse = await _client!.PatchAsync(url, payload);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);

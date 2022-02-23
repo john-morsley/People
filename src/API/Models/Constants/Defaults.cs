@@ -6,6 +6,5 @@ public class Defaults
     public const int DefaultPageSize = 10;
     public const int MaximumPageSize = 100;
 
-
     public const string DefaultPageSort  = "LastName:asc,FirstName:asc";
 }

@@ -30,14 +30,14 @@ public class UserResponse
         return $"Id: {Id} | FirstName: {firstName} | LastName: {lastName} | Sex: {sex} | Gender: {gender} | DateOfBirth: {dateOfBirth}";
     }
 
-    private string? FormatStringValue(string? value)
+    private string FormatStringValue(string? value)
     {
         if (value == null) return "[Null]";
         if (!string.IsNullOrEmpty(FirstName) && FirstName.Length == 0) return "[Empty]";
         return value;
     }
 
-    private string? FormatEnumValue<T>(T value)
+    private static string? FormatEnumValue<T>(T value)
     {
         if (value == null) return "[Null]";
         var type = typeof(T);

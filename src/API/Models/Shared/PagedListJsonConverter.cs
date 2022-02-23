@@ -1,9 +1,4 @@
-﻿using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Users.API.Models.Response.v1;
-
-namespace Users.API.Models.Shared;
+﻿namespace Users.API.Models.Shared;
 
 public class PagedListJsonConverter : JsonConverter<Users.API.Models.Shared.PagedList<Users.API.Models.Response.v1.UserResponse>>
 {

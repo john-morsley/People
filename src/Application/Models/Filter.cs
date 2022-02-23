@@ -7,7 +7,6 @@ public class Filter : Users.Domain.Interfaces.IFilter
         if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Cannot be null or empty!", nameof(key));
 
         Key = key;
-        Value = null;
     }
 
     public Filter(string key, string value)
@@ -21,5 +20,5 @@ public class Filter : Users.Domain.Interfaces.IFilter
 
     public string Key { get; }
 
-    public string Value { get; }
+    public string? Value { get; }
 }

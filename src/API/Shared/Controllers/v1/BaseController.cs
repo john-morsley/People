@@ -7,7 +7,7 @@ namespace Users.API.Shared.Controllers.v1;
 
 public abstract class BaseController : ControllerBase
 {
-    public BaseController(IHttpContextAccessor context, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
+    protected BaseController(IHttpContextAccessor context, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
     {
         Context = context;
         ApiVersionDescriptionProvider = apiVersionDescriptionProvider;
@@ -63,7 +63,6 @@ public abstract class BaseController : ControllerBase
 
         return links;
     }
-
 
     protected virtual Users.API.Models.Shared.Link GetUserLink(Guid userId)
     {

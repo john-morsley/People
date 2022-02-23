@@ -1,16 +1,16 @@
-﻿namespace Persistence.Contexts;
+﻿namespace Users.Persistence.Contexts;
 
 public class MongoContext : IMongoContext
 {
     private readonly IConfiguration _configuration;
     private readonly List<Func<Task>> _commands;
-    private MongoSettings _mongoSettings;
+    private MongoSettings? _mongoSettings;
 
-    private IMongoDatabase Database { get; set; }
+    private IMongoDatabase? Database { get; set; }
 
-    public MongoClient MongoClient { get; set; }
+    public MongoClient? MongoClient { get; set; }
 
-    public IClientSessionHandle Session { get; set; }
+    public IClientSessionHandle? Session { get; set; }
 
     public MongoContext(IConfiguration configuration)
     {
@@ -26,6 +26,8 @@ public class MongoContext : IMongoContext
     public IMongoCollection<T> GetCollection<T>(string name)
     {
         ConfigureMongo();
+
+        if (Database == null) throw new InvalidOperationException("Database cannot be null.");
 
         return Database.GetCollection<T>(name);
     }
@@ -44,7 +46,7 @@ public class MongoContext : IMongoContext
         _mongoSettings = section.Get<MongoSettings>();
 
         //var connectionString = GetConnectionString(MongoSettings);
-        MongoClient = new MongoClient(ConnectionString);
+        MongoClient = new MongoClient(GetConnectionString());
         Database = MongoClient.GetDatabase(_configuration["MongoSettings:DatabaseName"]);
     }
 
@@ -65,7 +67,11 @@ public class MongoContext : IMongoContext
         return false;
     }
 
-    public string ConnectionString => GetConnectionString(_mongoSettings);
+    public string GetConnectionString()
+    {
+        if (_mongoSettings == null) throw new InvalidOperationException("MongoSettings cannot be null.");
+        return GetConnectionString(_mongoSettings);
+    }
 
     private string GetConnectionString(MongoSettings mongoSettings)
     {

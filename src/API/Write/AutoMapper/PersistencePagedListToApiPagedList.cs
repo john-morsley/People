@@ -1,7 +1,13 @@
 ﻿namespace Users.API.Write.AutoMapper;
 
+/// <summary>
+/// 
+/// </summary>
 public class PersistencePagedListToApiPagedList : Profile
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public PersistencePagedListToApiPagedList()
     {
         CreateMap<Users.Domain.Models.User,

@@ -28,15 +28,17 @@ public class HEAD : APIsTestBase<StartUp>
     {
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
-        var userId = Guid.NewGuid();
-        var expected = GenerateTestUser(userId);
+
+        var expected = GenerateTestUser();
         AddUserToDatabase(expected);
+
         NumberOfUsersInDatabase().Should().Be(1);
-        var url = $"/api/v1/users/{userId}";
+
+        var url = $"/api/v1/users/{expected.Id}";
         var expectedContentLength = await GetExpectedContentLength(url);
 
         // Act...
-        var result = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url));
+        var result = await _client!.SendAsync(new HttpRequestMessage(HttpMethod.Head, url));
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);

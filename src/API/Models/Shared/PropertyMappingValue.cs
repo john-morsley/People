@@ -8,9 +8,7 @@ public class PropertyMappingValue
 
     public PropertyMappingValue(IEnumerable<string> destinationProperties, bool revertSort = false)
     {
-        if (destinationProperties == null) throw new ArgumentNullException(nameof(destinationProperties));
-
-        DestinationProperties = destinationProperties;
+        DestinationProperties = destinationProperties ?? throw new ArgumentNullException(nameof(destinationProperties));
         RevertSort = revertSort;
     }
 }

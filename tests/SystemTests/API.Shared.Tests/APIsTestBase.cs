@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Web;
 using Users.API.Models.Shared;
+using Users.Persistence.Contexts;
 
 namespace API.Shared.Tests;
 
@@ -33,6 +34,7 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
 
         _server = new TestServer(webHostBuilder);
         _client = _server.CreateClient();
+        if (_client == null) throw new InvalidOperationException("Cannot create HttpClient.");
 
         base.SetUp();
     }
@@ -143,11 +145,12 @@ public class APIsTestBase<TStartUp> : TestBase where TStartUp : class
         return _autoFixture.Create<Users.API.Models.Request.v1.AddUserRequest>();
     }
 
-    protected Users.API.Models.Request.v1.UpdateUserRequest GenerateTestUpdateUserRequest(Sex? sex = null, Gender? gender = null)
+    protected Users.API.Models.Request.v1.UpdateUserRequest GenerateTestUpdateUserRequest(Sex? sex = null, Gender? gender = null, string? dateOfBirth = null)
     {
         var testUpdateUser = _autoFixture.Create<Users.API.Models.Request.v1.UpdateUserRequest>();
         if (testUpdateUser.Sex == sex) testUpdateUser.Sex = GenerateDifferentSex(sex);
         if (testUpdateUser.Gender == gender) testUpdateUser.Gender = GenerateDifferentGender(gender);
+        testUpdateUser.DateOfBirth = GenerateDifferentDateOfBirth(dateOfBirth);
         return testUpdateUser;
     }
 

@@ -17,16 +17,15 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         // Arrange...
         NumberOfUsersInDatabase().Should().Be(0);
 
-        var userId = Guid.NewGuid();
-        var expectedUser = GenerateTestUser(userId);
-        AddUserToDatabase(expectedUser);
+        var user = GenerateTestUser();
+        AddUserToDatabase(user);
 
         NumberOfUsersInDatabase().Should().Be(1);
 
-        var url = $"/api/v1/users/{userId}?fields={validFields}";
+        var url = $"/api/v1/users/{user.Id}?fields={validFields}";
 
         // Act...
-        var result = await _client.GetAsync(url);
+        var result = await _client!.GetAsync(url);
 
         // Assert...
         NumberOfUsersInDatabase().Should().Be(1);
@@ -37,24 +36,24 @@ public class GetUserWithFields : APIsTestBase<StartUp>
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var userData = DeserializeUserResource(content);
-        userData.Should().NotBeNull();
+        var userResource = DeserializeUserResource(content);
+        userResource.Should().NotBeNull();
 
         validFields = AddToFieldsIfMissing("Id", validFields);
         var (expected, unexpected) = DetermineExpectedAndUnexpectedFields(validFields);
 
         // - User
-        userData.Data.Should().NotBeNull();
-        ShouldBeEquivalent(expected, userData.Data, expectedUser);
-        ShouldBeNull(unexpected, userData.Data);
+        userResource!.Data.Should().NotBeNull();
+        ShouldBeEquivalent(expected, userResource.Data, user);
+        ShouldBeNull(unexpected, userResource.Data);
 
         // - Links
-        userData.Links.Should().NotBeNull();
-        userData.Links.Count.Should().Be(2);
-        LinksForUserShouldBeCorrect(userData.Links, userId);
+        userResource.Links.Should().NotBeNull();
+        userResource.Links!.Count.Should().Be(2);
+        LinksForUserShouldBeCorrect(userResource.Links, user.Id);
 
         // - Embedded
-        userData.Embedded.Should().BeNull();
+        userResource.Embedded.Should().BeNull();
     }
 
     [Test]

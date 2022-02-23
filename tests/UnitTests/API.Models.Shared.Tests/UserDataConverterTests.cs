@@ -1,10 +1,11 @@
 ﻿using System.Dynamic;
 using System.Linq;
 using System.Text.Json.Serialization;
+using Users.API.Models.Response.v1;
 
 namespace API.Models.Shared.Tests
 {
-    public class UserDataConverterTests
+    public class UserResponseConverterTests
     {
 
         /*
@@ -23,7 +24,6 @@ namespace API.Models.Shared.Tests
         }
         
         */
-
 
         /*
             {
@@ -46,7 +46,7 @@ namespace API.Models.Shared.Tests
 
         [Test]
         [Category("Happy")]
-        public void Given_Valid_But_Minimal_JSON___When_Deserialized_With_Converter___Then_Should_Produce_User_Data_Object()
+        public void Given_Valid_But_Minimal_JSON___When_Deserialized_With_Converter___Then_Should_Produce_User_Re_Object()
         {
             // Arrange...
             var userId = Guid.NewGuid();

@@ -2,10 +2,8 @@
 global using Microsoft.Extensions.DependencyInjection;
 global using MongoDB.Driver;
 global using Persistence.Configuration;
-global using Persistence.Contexts;
 global using Persistence.Interfaces;
 global using Persistence.Models;
-global using Persistence.Repositories;
 global using System;
 global using System.Collections.Generic;
 global using System.Linq;

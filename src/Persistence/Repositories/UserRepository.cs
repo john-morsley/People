@@ -1,6 +1,4 @@
-﻿using Users.Domain.Models;
-
-namespace Persistence.Repositories;
+﻿namespace Users.Persistence.Repositories;
 
 public class UserRepository : Repository<Users.Domain.Models.User>, IUserRepository
 {
@@ -35,7 +33,7 @@ public class UserRepository : Repository<Users.Domain.Models.User>, IUserReposit
         if (string.IsNullOrWhiteSpace(options.Search)) return users;
 
         return users.Where(u => u.FirstName.Contains(options.Search) ||
-                                u.LastName.Contains(options.Search));
+                                    u.LastName.Contains(options.Search));
     }
 
     private IEnumerable<IFilter> ExtractUserSpecificFilters(IEnumerable<IFilter> originalFilters)

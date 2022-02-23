@@ -1,4 +1,7 @@
-﻿namespace Users.Persistence.IoC;
+﻿using Users.Persistence.Contexts;
+using Users.Persistence.Repositories;
+
+namespace Users.Persistence.IoC;
 
 public static class PersistenceServiceCollectionExtensions
 {

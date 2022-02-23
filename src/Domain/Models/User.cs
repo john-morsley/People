@@ -1,25 +1,28 @@
-﻿namespace Users.Domain.Models;
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace Users.Domain.Models;
 
 public class User : Entity<Guid>
 {
-    private string _firstName;
-    private string _lastName;
+    private string _firstName = string.Empty;
+    private string _lastName = string.Empty;
     private DateTime? _dateOfBirth;
 
-    private IList<Address> _addresses;
-    private IList<Email> _emails;
-    private IList<Phone> _phones;
+    private readonly IList<Address> _addresses = new List<Address>();
+    private readonly IList<Email> _emails = new List<Email>();
+    private readonly IList<Phone> _phones = new List<Phone>();
 
-    public User()
+    public User() : base(Guid.NewGuid()) {}
+
+    public User(string firstName, string lastName) : base(Guid.NewGuid())
     {
-        _id = Guid.NewGuid();
-        _addresses = new List<Address>();
-        _emails = new List<Email>();
-        _phones = new List<Phone>();
+        SetFirstName(firstName);
+        SetLastName(lastName);
     }
 
-    public User(string firstName, string lastName) : this()
+    public User(Guid id, string firstName, string lastName) : base(id)
     {
+        
         SetFirstName(firstName);
         SetLastName(lastName);
     }
@@ -40,11 +43,10 @@ public class User : Entity<Guid>
 
     public Gender? Gender { get; set; }
 
-    public DateTime? DateOfBirth 
+    public DateTime? DateOfBirth
     {
         get => _dateOfBirth;
-        set
-        {
+        set {
             if (!value.HasValue)
             {
                 _dateOfBirth = null;
@@ -111,12 +113,11 @@ public class User : Entity<Guid>
 
     private string FormatStringValue(string value)
     {
-        if (value == null) return "[Null]";
         if (!string.IsNullOrEmpty(FirstName) && FirstName.Length == 0) return "[Empty]";
         return value;
     }
 
-    private string FormatEnumValue<T>(T value)
+    private static string? FormatEnumValue<T>(T value)
     {
         if (value == null) return "[Null]";
         var type = typeof(T);
@@ -125,7 +126,7 @@ public class User : Entity<Guid>
         return Enum.GetName(type, value);
     }
 
-    private string FormatDateTimeValue(DateTime? dt)
+    private static string FormatDateTimeValue(DateTime? dt)
     {
         if (dt == null) return "[Null]";
         return $"{dt.Value.Year:0000}-{dt.Value.Month:00}-{dt.Value.Day:00}";

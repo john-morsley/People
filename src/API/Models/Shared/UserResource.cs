@@ -39,8 +39,4 @@ public class UserResource : Resource<Users.API.Models.Response.v1.UserResponse>
 
         return $"Data: {data} | Links: {numberOfLinks} | Embedded: {numberOfEmbedded}";
     }
-
-
-
-    
 }

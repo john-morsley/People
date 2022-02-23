@@ -1,7 +1,13 @@
 ﻿namespace Users.API.Write.AutoMapper;
 
+/// <summary>
+/// 
+/// </summary>
 public class PartiallyUpdateUserRequestToPartiallyUpdateUserCommand : Profile
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public PartiallyUpdateUserRequestToPartiallyUpdateUserCommand()
     {
         //CreateMap<string?, Domain.Enumerations.Sex?>()

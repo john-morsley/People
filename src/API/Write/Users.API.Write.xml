@@ -4,6 +4,144 @@
         <name>Users.API.Write</name>
     </assembly>
     <members>
+        <member name="T:Users.API.Write.AutoMapper.AddUserRequestToAddUserCommand">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.AutoMapper.AddUserRequestToAddUserCommand.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Users.API.Write.AutoMapper.CreateUserRequestToAddUserCommand">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.AutoMapper.CreateUserRequestToAddUserCommand.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Users.API.Write.AutoMapper.DateTimeToStringConverter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.AutoMapper.DateTimeToStringConverter.Convert(System.Nullable{System.DateTime},System.String,AutoMapper.ResolutionContext)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="destination"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Users.API.Write.AutoMapper.DeleteUserRequestToDeleteUserCommand">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.AutoMapper.DeleteUserRequestToDeleteUserCommand.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Users.API.Write.AutoMapper.GetUserRequestToGetUserQuery">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.AutoMapper.GetUserRequestToGetUserQuery.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Users.API.Write.AutoMapper.PagedListTypeConverter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.AutoMapper.PagedListTypeConverter.Convert(Users.Domain.Interfaces.IPagedList{Users.Domain.Models.User},Users.Domain.Interfaces.IPagedList{Users.API.Models.Response.v1.UserResponse},AutoMapper.ResolutionContext)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="destination"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Users.API.Write.AutoMapper.PartiallyUpdateUserRequestToAddUserRequest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.AutoMapper.PartiallyUpdateUserRequestToAddUserRequest.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Users.API.Write.AutoMapper.PartiallyUpdateUserRequestToPartiallyUpdateUserCommand">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.AutoMapper.PartiallyUpdateUserRequestToPartiallyUpdateUserCommand.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Users.API.Write.AutoMapper.PersistencePagedListToApiPagedList">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.AutoMapper.PersistencePagedListToApiPagedList.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Users.API.Write.AutoMapper.UpdateUserRequestToAddUserCommand">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.AutoMapper.UpdateUserRequestToAddUserCommand.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Users.API.Write.AutoMapper.UpdateUserRequestToUpdateUserCommand">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.AutoMapper.UpdateUserRequestToUpdateUserCommand.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Users.API.Write.AutoMapper.UserToPartiallyUpdateUserRequest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.AutoMapper.UserToPartiallyUpdateUserRequest.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Users.API.Write.AutoMapper.UserToUserResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.AutoMapper.UserToUserResponse.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:Users.API.Write.Controllers.v1.UsersController">
             <summary>
             
@@ -22,7 +160,7 @@
         </member>
         <member name="M:Users.API.Write.Controllers.v1.UsersController.Post(Users.API.Models.Request.v1.AddUserRequest)">
             <summary>
-            Create a user
+            Create a new user
             </summary>
             <param name="addUserRequest">An AddUserRequest object which contains all the necessary data to create a user</param>
             <returns>A URI to the newly added user in the header (location)</returns>
@@ -84,6 +222,47 @@
             </summary>
             <param name="modelStateDictionary"></param>
             <returns></returns>
+        </member>
+        <member name="T:Users.API.Write.Program">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.Program.Main(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+        </member>
+        <member name="T:Users.API.Write.StartUp">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Users.API.Write.StartUp.Configuration">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Users.API.Write.StartUp.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            
+            </summary>
+            <param name="configuration"></param>
+        </member>
+        <member name="M:Users.API.Write.StartUp.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:Users.API.Write.StartUp.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.AspNetCore.Mvc.ApiExplorer.IApiVersionDescriptionProvider)">
+            <summary>
+            
+            </summary>
+            <param name="applicationBuilder"></param>
+            <param name="webHostEnvironment"></param>
+            <param name="apiVersionDescriptionProvider"></param>
         </member>
     </members>
 </doc>

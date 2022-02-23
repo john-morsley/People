@@ -6,7 +6,7 @@ public interface IRepository<TEntity> : IDisposable where TEntity : class
 
     Task<TEntity> GetByIdAsync(Guid id);
 
-    IPagedList<TEntity> GetPage(IGetOptions options);
+    Task<IPagedList<TEntity>> GetPageAsync(IGetOptions options);
 
     Task AddAsync(TEntity obj);
 

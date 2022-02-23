@@ -2,12 +2,10 @@
 
 public class PropertyMapping<TSource, TDestination> : IPropertyMapping
 {
-    public Dictionary<string, PropertyMappingValue> _mappings { get; set; }
+    public Dictionary<string, PropertyMappingValue> Mappings { get; set; }
 
     public PropertyMapping(Dictionary<string, PropertyMappingValue> mappings)
     {
-        if (mappings == null) throw new ArgumentNullException(nameof(mappings));
-
-        _mappings = mappings;
+        Mappings = mappings ?? throw new ArgumentNullException(nameof(mappings));
     }
 }

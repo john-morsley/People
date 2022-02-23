@@ -57,7 +57,6 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> Get(Users.API.Models.Request.v1.GetUserRequest getUserRequest)
     {
-        if (getUserRequest == null) return BadRequest();
         if (getUserRequest.Id == Guid.Empty) return BadRequest();
 
         var userResponse = await GetUserResponse(getUserRequest);
@@ -66,7 +65,7 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
 
         var shapedUser = userResponse.ShapeData(getUserRequest.Fields);
 
-        var shapedUserWithLinks = AddLinks(shapedUser, userResponse.Id);
+        var shapedUserWithLinks = AddLinks(shapedUser!, userResponse.Id);
 
         return Ok(shapedUserWithLinks);
     }
@@ -88,16 +87,14 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<Users.API.Models.Response.v1.UserResponse>> Head(Users.API.Models.Request.v1.GetUserRequest getUserRequest)
     {
-        if (getUserRequest == null) return BadRequest();
-
         var userResponse = await GetUserResponse(getUserRequest);
 
         if (userResponse == null) return NoContent();
 
         var shapedUser = userResponse.ShapeData(getUserRequest.Fields);
-        var linkedShapedUser = AddLinks(shapedUser, userResponse.Id);
+        var linkedShapedUser = AddLinks(shapedUser!, userResponse.Id);
 
-        Response.ContentLength = CalculateContentLength(linkedShapedUser);
+        Response.ContentLength = CalculateContentLength(linkedShapedUser!);
 
         return Ok();
     }
@@ -210,10 +207,9 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
         return Ok();
     }
 
-    private long CalculateContentLength<T>(T obj) where T : class
+    private static long? CalculateContentLength<T>(T obj) where T : class
     {
         var encoderSettings = new TextEncoderSettings();
-        //encoderSettings.AllowCharacters('\u0026'); // &
         encoderSettings.AllowRange(UnicodeRanges.All);
         var options = new JsonSerializerOptions
         {
@@ -250,29 +246,38 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
         if (pageOfUsers.HasPrevious)
         {
             var previousUrl = CreateUsersResourceUri(getPageOfUsersRequest, ResourceUriType.PreviousPage);
-            var previousLink = new Link(previousUrl, "previous", "GET");
-            links.Add(previousLink);
+            if (previousUrl != null)
+            {
+                var previousLink = new Link(previousUrl, "previous", "GET");
+                links.Add(previousLink);
+            }
         }
 
         // Current page...
         var currentUrl = CreateUsersResourceUri(getPageOfUsersRequest, ResourceUriType.Current);
-        var currentLink = new Link(currentUrl, "self", "GET");
-        links.Add(currentLink);
+        if (currentUrl != null)
+        {
+            var currentLink = new Link(currentUrl, "self", "GET");
+            links.Add(currentLink);
+        }
 
         // Next page...
         if (pageOfUsers.HasNext)
         {
             var nextUrl = CreateUsersResourceUri(getPageOfUsersRequest, ResourceUriType.NextPage);
-            var nextLink = new Link(nextUrl, "next", "GET");
-            links.Add(nextLink);
+            if (nextUrl != null)
+            {
+                var nextLink = new Link(nextUrl, "next", "GET");
+                links.Add(nextLink);
+            }
         }
 
         return links;
     }
 
-    private string CreateUsersResourceUri(Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest, Users.API.Models.Shared.ResourceUriType type)
+    private string? CreateUsersResourceUri(Users.API.Models.Request.v1.GetPageOfUsersRequest getPageOfUsersRequest, Users.API.Models.Shared.ResourceUriType type)
     {
-        string link;
+        string? link;
         switch (type)
         {
             case Users.API.Models.Shared.ResourceUriType.PreviousPage:                
@@ -351,14 +356,14 @@ public class UsersController : Users.API.Shared.Controllers.v1.BaseController
         return pagination;
     }
 
-    private async Task<Users.API.Models.Response.v1.UserResponse> GetUserResponse(Users.API.Models.Request.v1.GetUserRequest getUserRequest)
+    private async Task<Users.API.Models.Response.v1.UserResponse?> GetUserResponse(Users.API.Models.Request.v1.GetUserRequest getUserRequest)
     {
         if (getUserRequest == null) throw new ArgumentNullException(nameof(getUserRequest));
 
         var getUserQuery = _mapper.Map<Users.Application.Queries.GetUserQuery>(getUserRequest);
 
         var user = await _mediator.Send(getUserQuery);
-        if (user == null) return null;
+        //if (user == null) return null;
 
         var userResponse = _mapper.Map<Users.API.Models.Response.v1.UserResponse>(user);
 

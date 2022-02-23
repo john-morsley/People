@@ -1,12 +1,15 @@
 ﻿namespace Users.API.Models.Request.v1;
 
+/// <summary>
+/// The object used to request a page of users.
+/// </summary>
 public class GetPageOfUsersRequest
 {
     private int _pageNumber = Defaults.DefaultPageNumber;
     private int _pageSize = Defaults.DefaultPageSize;
 
     /// <summary>
-    /// The page number of the page numbers available.
+    /// The page number to be requested.
     /// </summary>
     public int PageNumber
     {
@@ -38,12 +41,12 @@ public class GetPageOfUsersRequest
     public string? Fields { get; set; }
 
     /// <summary>
-    /// The filter value is used for filtering results. i.e. filter=sex:male
+    /// The filter value is used for filtering results. i.e. filter=sex:male or filter=sex (no value)
     /// </summary>
     public string? Filter { get; set; }
 
     /// <summary>
-    /// The search value is used for searching within text searchable fields. i.e. search=aa
+    /// The search value is used for searching within text searchable fields. i.e. search=abc
     /// </summary>
     public string? Search { get; set; }
 

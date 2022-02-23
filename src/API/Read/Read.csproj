@@ -6,10 +6,16 @@
         <AssemblyName>Users.API.Read</AssemblyName>
         <RootNamespace>Users.API.Read</RootNamespace>
         <StartupObject>Users.API.Read.Program</StartupObject>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
       <DocumentationFile>Users.API.Read.xml</DocumentationFile>
+      <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>

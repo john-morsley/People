@@ -1,7 +1,5 @@
-﻿using FluentValidation;
+﻿namespace Users.API.Models.Validators;
 
-namespace Users.API.Models.v1.Validators
-{
     public class UpdateUserRequestValidator : AbstractValidator<Users.API.Models.Request.v1.UpdateUserRequest>
     {
         public UpdateUserRequestValidator()
@@ -21,4 +19,3 @@ namespace Users.API.Models.v1.Validators
             //    .IsEnumName(typeof(Sex), caseSensitive: false);
         }
     }
-}

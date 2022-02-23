@@ -3,20 +3,17 @@
 public class UserTests
 {
     [Test]
-    public void EmptyUserToString()
+    public void MinimalUserToString()
     {
         // Arrange...
         var userId = Guid.NewGuid();
-        var user = new User()
-        {
-            Id = userId,
-        };
+        var user = new User(userId, "John", "Doe");
 
         // Act...
         var result = user.ToString();
 
         // Assert...
-        result.Should().Be($"Id: {userId} | FirstName: [Null] | LastName: [Null] | Sex: [Null] | Gender: [Null] | DateOfBirth: [Null]");
+        result.Should().Be($"Id: {userId} | FirstName: John | LastName: Doe | Sex: [Null] | Gender: [Null] | DateOfBirth: [Null]");
     }
 
     [Test]
@@ -24,11 +21,8 @@ public class UserTests
     {
         // Arrange...
         var userId = Guid.NewGuid();
-        var user = new User
+        var user = new User(userId, "John", "Doe")
         {
-            Id = userId,
-            FirstName = "John",
-            LastName = "Doe",
             Sex = Sex.Male,
             Gender = Gender.Cisgender,
             DateOfBirth = new DateTime(2000, 4, 1, 0, 0, 0, 0, DateTimeKind.Utc)
