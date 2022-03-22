@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Morsley.UK.People.API.Security</name>
+    </assembly>
+    <members>
+        <member name="T:Morsley.UK.People.API.Security.Endpoints.LoginEndpoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Security.Endpoints.LoginEndpoint.MapLoginEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            
+            </summary>
+            <param name="application"></param>
+        </member>
+        <member name="T:Morsley.UK.People.API.Security.Interfaces.IAuthenticationService">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Security.Interfaces.IAuthenticationService.Login(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="username"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Morsley.UK.People.API.Security.Interfaces.IAuthorizationService">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Security.Models.User">
+            <summary>
+            
+            </summary>
+            <param name="Id"></param>
+            <param name="FirstName"></param>
+            <param name="LastName"></param>
+            <param name="Username"></param>
+            <param name="Email"></param>
+            <param name="Role"></param>
+        </member>
+        <member name="M:Morsley.UK.People.API.Security.Models.User.#ctor(System.Guid,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="Id"></param>
+            <param name="FirstName"></param>
+            <param name="LastName"></param>
+            <param name="Username"></param>
+            <param name="Email"></param>
+            <param name="Role"></param>
+        </member>
+        <member name="T:Morsley.UK.People.API.Security.Services.AuthenticationService">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Security.Services.AuthenticationService.Login(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="username"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Morsley.UK.People.API.Security.Services.AuthorizationService">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Security.Token.GenerateTokenParameters">
+            <summary>
+            
+            </summary>
+            <param name="FirstName"></param>
+            <param name="LastName"></param>
+            <param name="Username"></param>
+            <param name="Email"></param>
+            <param name="Role"></param>
+            <param name="Key"></param>
+            <param name="Issuer"></param>
+            <param name="Audience"></param>
+            <param name="TimeToLiveInMintes"></param>
+        </member>
+        <member name="M:Morsley.UK.People.API.Security.Token.GenerateTokenParameters.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="FirstName"></param>
+            <param name="LastName"></param>
+            <param name="Username"></param>
+            <param name="Email"></param>
+            <param name="Role"></param>
+            <param name="Key"></param>
+            <param name="Issuer"></param>
+            <param name="Audience"></param>
+            <param name="TimeToLiveInMintes"></param>
+        </member>
+        <member name="T:Morsley.UK.People.API.Security.Token.JWT">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Security.Token.JWT.#ctor(Serilog.ILogger)">
+            <summary>
+            
+            </summary>
+            <param name="logger"></param>
+        </member>
+        <member name="M:Morsley.UK.People.API.Security.Token.JWT.GenerateToken(Morsley.UK.People.API.Security.Token.GenerateTokenParameters)">
+            <summary>
+            
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SecurityProgram">
+            <summary>
+            Required for System Testing only!
+            </summary>
+        </member>
+    </members>
+</doc>

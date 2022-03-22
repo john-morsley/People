@@ -1,6 +1,6 @@
-# Users
+# People
 
-An ASP.NET application for users.
+An ASP.NET application for managing people.
 
 As we are going to implement a CQRS approach, I have split the read and write parts of the API into separate projects. They can now be deployed and scaled independently. 
 
@@ -10,28 +10,31 @@ For HATEOAS see https://en.wikipedia.org/wiki/HATEOAS
 
 ### GET
 
-1. User
-2. Users (Page)
+1. Person -> /api/person/id - Where id is a GUID
+2. People (Page) -> /api/people/
 
-1. User
-
-Expected JSON
+Person JSON
 
 ```
 {
     "Id":"6149ed6f-1fed-49a5-bee3-1e9bfcd6ee57",
     "FirstName": "John",
     "LastName": "Doe",
-    "Sex": 3,
-    "Gender": 2,
+    "Sex": "Male",
+    "Gender": "Giscender",
     "DateOfBirth": "2000-04-01",
     "_links": [
-        {"hypertextReference":"http://localhost/api/v1/users/6149ed6f-1fed-49a5-bee3-1e9bfcd6ee57","relationship":"self","method":"GET"},
-        {"hypertextReference":"http://localhost/api/v1/users/6149ed6f-1fed-49a5-bee3-1e9bfcd6ee57","relationship":"self","method":"DELETE"}
+        {"hypertextReference":"http://localhost/api/person/6149ed6f-1fed-49a5-bee3-1e9bfcd6ee57","relationship":"self","method":"GET"},
+        {"hypertextReference":"http://localhost/api/person/6149ed6f-1fed-49a5-bee3-1e9bfcd6ee57","relationship":"self","method":"DELETE"}
     ]
 }
 ```
 
+People JSON
+
+```
+ToDo
+```
 
 ## Write API
 
@@ -39,6 +42,20 @@ Expected JSON
 ### PUT
 ### PATCH
 ### DELETE
+
+## Logging
+
+The application utilises Serilog to perform some pretty cool logging features.
+
+### SEQ
+
+SEQ is a ?
+
+To use Seq, you must first install it: https://datalust.co/download/
+
+The default endpoint is: http://localhost:5341/
+
+Useername: admin/admin
 
 ## Tests
 

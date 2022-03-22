@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+	<RootNamespace>Morsley.UK.People.Services</RootNamespace>
+	<AssemblyName>Morsley.UK.People.Services</AssemblyName>
+	<Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Application\Morsley.UK.People.Application\Morsley.UK.People.Application.csproj" />
+    <ProjectReference Include="..\..\Presentation\Morsley.UK.People.API.Models\Morsley.UK.People.API.Models.csproj" />
+    <ProjectReference Include="..\Morsley.UK.People.Persistence\Morsley.UK.People.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>

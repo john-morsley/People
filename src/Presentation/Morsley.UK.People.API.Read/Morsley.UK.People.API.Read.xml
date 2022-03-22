@@ -1,0 +1,158 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Morsley.UK.People.API.Read</name>
+    </assembly>
+    <members>
+        <member name="T:Morsley.UK.People.API.Read.AutoMapper.GetPeopleRequestToGetPeopleQuery">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Read.AutoMapper.GetPeopleRequestToGetPeopleQuery.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Read.AutoMapper.GetPersonRequestToGetPersonQuery">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Read.AutoMapper.GetPersonRequestToGetPersonQuery.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Read.AutoMapper.NullableDateTimeTypeConverter">
+            <summary>
+            A type converter that converts a nullable DateTime to a nullable string..
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Read.AutoMapper.NullableDateTimeTypeConverter.Convert(System.Nullable{System.DateTime},System.String,AutoMapper.ResolutionContext)">
+            <summary>
+            Convert a nullable DateTime into a nullable string.
+            </summary>
+            <param name="source">The nullable DateTime to be converted.</param>
+            <param name="destination"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Morsley.UK.People.API.Read.AutoMapper.PagedListTypeConverter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Read.AutoMapper.PagedListTypeConverter.Convert(Morsley.UK.People.Application.Models.PagedList{Morsley.UK.People.Domain.Models.Person},Morsley.UK.People.API.Contracts.Responses.PagedList{Morsley.UK.People.API.Contracts.Responses.PersonResponse},AutoMapper.ResolutionContext)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="destination"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Morsley.UK.People.API.Read.AutoMapper.PeopleToPeopleResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Read.AutoMapper.PeopleToPeopleResponse.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Read.AutoMapper.PersonToPersonResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Read.AutoMapper.PersonToPersonResponse.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Read.Endpoints.GetPeopleEndpoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Read.Endpoints.GetPeopleEndpoint.MapGetPeopleEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            
+            </summary>
+            <param name="application"></param>
+        </member>
+        <member name="T:Morsley.UK.People.API.Read.Endpoints.GetPersonEndpoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Read.Endpoints.GetPersonEndpoint.MapGetPersonEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            
+            </summary>
+            <param name="application"></param>
+        </member>
+        <member name="T:Morsley.UK.People.API.Read.Endpoints.HeadPeopleEndpoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Read.Endpoints.HeadPeopleEndpoint.MapHeadPeopleEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            
+            </summary>
+            <param name="application"></param>
+        </member>
+        <member name="T:Morsley.UK.People.API.Read.Endpoints.HeadPersonEndpoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Read.Endpoints.HeadPersonEndpoint.MapHeadPersonEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            
+            </summary>
+            <param name="application"></param>
+        </member>
+        <member name="T:Morsley.UK.People.API.Read.Endpoints.OptionsPeopleEndpoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Read.Endpoints.OptionsPeopleEndpoint.MapOptionsPeopleEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            
+            </summary>
+            <param name="application"></param>
+        </member>
+        <member name="T:Morsley.UK.People.API.Read.Endpoints.OptionsPersonEndpoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Read.Endpoints.OptionsPersonEndpoint.MapOptionsPersonEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            
+            </summary>
+            <param name="application"></param>
+        </member>
+        <member name="T:Morsley.UK.People.API.Read.Endpoints.SwaggerEndpoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Read.Endpoints.SwaggerEndpoint.MapSwaggerEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            
+            </summary>
+            <param name="application"></param>
+        </member>
+        <member name="T:ReadProgram">
+            <summary>
+            Required for System Testing only!
+            </summary>
+        </member>
+    </members>
+</doc>

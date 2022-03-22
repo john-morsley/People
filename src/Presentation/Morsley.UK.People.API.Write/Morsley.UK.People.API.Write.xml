@@ -1,0 +1,206 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Morsley.UK.People.API.Write</name>
+    </assembly>
+    <members>
+        <member name="T:Morsley.UK.People.API.Write.AutoMapper.AddPersonRequestToAddPersonCommand">
+            <summary>
+            The AutoMapper profile for converting an AddPersonRequest to AddPersonCommand
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.AutoMapper.AddPersonRequestToAddPersonCommand.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.AutoMapper.CreatePersonRequestToAddPersonCommand">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.AutoMapper.CreatePersonRequestToAddPersonCommand.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.AutoMapper.DateTimeToStringConverter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.AutoMapper.DateTimeToStringConverter.Convert(System.Nullable{System.DateTime},System.String,AutoMapper.ResolutionContext)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="destination"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.AutoMapper.DeletePersonRequestToDeletePersonCommand">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.AutoMapper.DeletePersonRequestToDeletePersonCommand.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.AutoMapper.GetPersonRequestToGetPersonQuery">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.AutoMapper.GetPersonRequestToGetPersonQuery.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.AutoMapper.PagedListTypeConverter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.AutoMapper.PagedListTypeConverter.Convert(Morsley.UK.People.API.Contracts.Responses.PagedList{Morsley.UK.People.Domain.Models.Person},Morsley.UK.People.API.Contracts.Responses.PagedList{Morsley.UK.People.API.Contracts.Responses.PersonResponse},AutoMapper.ResolutionContext)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="destination"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.AutoMapper.PartiallyUpdatePersonRequestToPartiallyUpdatePersonCommand">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.AutoMapper.PartiallyUpdatePersonRequestToPartiallyUpdatePersonCommand.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.AutoMapper.PersistencePagedListToApiPagedList">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.AutoMapper.PersistencePagedListToApiPagedList.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.AutoMapper.PersonToPersonResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.AutoMapper.PersonToPersonResponse.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.AutoMapper.PersonToUpdatePersonRequest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.AutoMapper.PersonToUpdatePersonRequest.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.AutoMapper.UpdatePersonRequestToAddPersonCommand">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.AutoMapper.UpdatePersonRequestToAddPersonCommand.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.AutoMapper.UpdatePersonRequestToAddPersonRequest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.AutoMapper.UpdatePersonRequestToAddPersonRequest.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.AutoMapper.UpdatePersonRequestToUpdatePersonCommand">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.AutoMapper.UpdatePersonRequestToUpdatePersonCommand.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.Endpoints.AddPersonEndpoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.Endpoints.AddPersonEndpoint.MapAddPersonEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            
+            </summary>
+            <param name="application"></param>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.Endpoints.DeletePersonEndpoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.Endpoints.DeletePersonEndpoint.MapDeletePersonEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            
+            </summary>
+            <param name="application"></param>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.Endpoints.OptionsPersonEndpoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.Endpoints.OptionsPersonEndpoint.MapOptionsPersonEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            
+            </summary>
+            <param name="application"></param>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.Endpoints.PartiallyUpdatePersonEndpoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.Endpoints.PartiallyUpdatePersonEndpoint.MapPartiallyUpdatePersonEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            
+            </summary>
+            <param name="application"></param>
+        </member>
+        <member name="T:Morsley.UK.People.API.Write.Endpoints.UpdatePersonEndpoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.Endpoints.UpdatePersonEndpoint.MapUpdatePersonEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            
+            </summary>
+            <param name="application"></param>
+        </member>
+        <member name="T:WriteProgram">
+            <summary>
+            Required for System Testing only!
+            </summary>
+        </member>
+    </members>
+</doc>

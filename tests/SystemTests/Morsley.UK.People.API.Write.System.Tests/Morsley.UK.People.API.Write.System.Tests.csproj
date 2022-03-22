@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <AssemblyName>Morsley.UK.People.API.Write.Tests</AssemblyName>
+        <RootNamespace>Morsley.UK.People.API.Write.Tests</RootNamespace>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <WarningLevel>0</WarningLevel>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <WarningLevel>0</WarningLevel>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FluentAssertions" Version="6.5.1" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.42" />
+        <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.3" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+        <PackageReference Include="NUnit" Version="3.13.2" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+        <PackageReference Include="coverlet.collector" Version="3.1.2">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Serilog" Version="2.10.0" />
+        <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
+        <PackageReference Include="SerilogTimings" Version="2.3.0" />
+    </ItemGroup>
+    
+    
+    <ItemGroup>
+      <Content Include="appsettings.json">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+    
+    
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\src\Domain\Morsley.UK.People.Domain\Morsley.UK.People.Domain.csproj" />
+      <ProjectReference Include="..\..\..\src\Presentation\Morsley.UK.People.API.Security\Morsley.UK.People.API.Security.csproj" />
+      <ProjectReference Include="..\..\..\src\Presentation\Morsley.UK.People.API.Write\Morsley.UK.People.API.Write.csproj" />
+      <ProjectReference Include="..\..\Common\Morsley.UK.People.Tests.Common\Morsley.UK.People.Tests.Common.csproj" />
+      <ProjectReference Include="..\..\Fixtures\Morsley.UK.People.API.Test.Fixture\Morsley.UK.People.API.Test.Fixture.csproj" />
+    </ItemGroup>
+
+</Project>
