@@ -13,6 +13,7 @@ public static class SwaggerEndpoint
     {
         application.MapGet("/", (HttpContext context) => context.Response.Redirect("/swagger/index.html"))
                    .AllowAnonymous()
+                   .ExcludeFromDescription()
                    .WithName("GetSwagger");
     }
 }

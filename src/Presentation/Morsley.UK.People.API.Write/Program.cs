@@ -1,5 +1,3 @@
-using Morsley.UK.People.API.Common.IoC;
-
 Log.Logger = new LoggerConfiguration()
    .MinimumLevel.Verbose()
    .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
@@ -9,7 +7,7 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    Log.Information("Starting web host...");
+    Log.Information("Starting WRITE web host...");
 
     var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +20,10 @@ try
 
     //builder.Services.AddAntiforgery(); // ???
     //builder.Services.AddMvcCore(); // ???
+
+    builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
+    builder.Services.AddSingleton<IAuthorizationService, AuthorizationService>();
+
 
     var configuration = builder.Configuration;
 
@@ -61,15 +63,19 @@ try
 
     application.UseHttpsRedirection();
 
+    application.MapSwaggerEndpoint();
+
+    application.MapLoginEndpoint();
+
     application.MapOptionsPersonEndpoint();
 
     application.UseAuthentication();
     application.UseAuthorization();
 
     application.MapAddPersonEndpoint();
-    application.MapDeletePersonEndpoint();
     application.MapUpdatePersonEndpoint();
     application.MapPartiallyUpdatePersonEndpoint();
+    application.MapDeletePersonEndpoint();
 
     application.Run();
 }

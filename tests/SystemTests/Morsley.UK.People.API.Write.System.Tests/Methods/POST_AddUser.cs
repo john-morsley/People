@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.API.Write.Tests.Methods;
 
-public class POST_AddPerson : SecuredApplicationTestFixture<WriteProgram, SecurityProgram>
+public class POST_AddPerson : SecuredApplicationTestFixture<WriteProgram>
 {
     [SetUp]
     protected override void SetUp()

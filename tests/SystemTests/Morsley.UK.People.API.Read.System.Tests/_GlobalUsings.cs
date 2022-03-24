@@ -1,12 +1,15 @@
 ﻿global using FluentAssertions;
 global using HtmlAgilityPack;
+global using Morsley.UK.People.API.Contracts.Requests;
 global using Morsley.UK.People.API.Contracts.Responses;
 global using Morsley.UK.People.API.Contracts.Shared;
 global using Morsley.UK.People.API.Test.Fixture;
 global using NUnit.Framework;
 global using System;
 global using System.Collections.Generic;
+global using System.IdentityModel.Tokens.Jwt;
 global using System.Linq;
 global using System.Net;
 global using System.Net.Http;
+global using System.Net.Http.Json;
 global using System.Threading.Tasks;

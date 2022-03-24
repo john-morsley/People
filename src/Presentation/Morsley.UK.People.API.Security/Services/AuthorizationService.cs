@@ -5,5 +5,5 @@
 /// </summary>
 public class AuthorizationService : Interfaces.IAuthorizationService
 {
-    
+
 }

@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+
+  morsley_uk_people_users:
+    image: mongo
+    ports:
+    - 27000:27017
+    environment:
+    - MONGO_INITDB_ROOT_USERNAME=root
+    - MONGO_INITDB_ROOT_PASSWORD=password
+
+  morsley_uk_people_read:
+    image: mongo
+    ports:
+    - 27001:27017
+    environment:
+    - MONGO_INITDB_ROOT_USERNAME=root
+    - MONGO_INITDB_ROOT_PASSWORD=password
+
+  morsley_uk_people_write:
+    image: mongo
+    ports:
+    - 27002:27017
+    environment:
+    - MONGO_INITDB_ROOT_USERNAME=root
+    - MONGO_INITDB_ROOT_PASSWORD=password
+

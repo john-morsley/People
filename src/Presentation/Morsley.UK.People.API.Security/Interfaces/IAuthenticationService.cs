@@ -1,4 +1,6 @@
-﻿namespace Morsley.UK.People.API.Security.Interfaces;
+﻿using System.Threading.Tasks;
+
+namespace Morsley.UK.People.API.Security.Interfaces;
 
 /// <summary>
 /// 
@@ -11,5 +13,5 @@ public interface IAuthenticationService
     /// <param name="username"></param>
     /// <param name="password"></param>
     /// <returns></returns>
-    User? Login(string username, string password);
+    Task<User?> Login(string username, string password);
 }

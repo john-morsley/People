@@ -4,7 +4,6 @@ global using Microsoft.IdentityModel.Tokens;
 global using Morsley.UK.People.API.Common.Swagger;
 global using Morsley.UK.People.API.Contracts.Requests;
 global using Morsley.UK.People.API.Contracts.Responses;
-global using Morsley.UK.People.API.Security.Endpoints;
 global using Morsley.UK.People.API.Security.Models;
 global using Morsley.UK.People.API.Security.Token;
 global using Morsley.UK.People.Common;
@@ -19,3 +18,8 @@ global using IAuthorizationService = Morsley.UK.People.API.Security.Interfaces.I
 global using AuthenticationService = Morsley.UK.People.API.Security.Services.AuthenticationService;
 global using AuthorizationService = Morsley.UK.People.API.Security.Services.AuthorizationService;
 global using ILogger = Serilog.ILogger;
+global using System;
+global using System.Threading.Tasks;
+global using Microsoft.AspNetCore.Builder;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.Extensions.Configuration;

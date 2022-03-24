@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.API.Write.Tests.Methods;
 
-public class PUT_UpdatePerson : SecuredApplicationTestFixture<WriteProgram, SecurityProgram>
+public class PUT_UpdatePerson : SecuredApplicationTestFixture<WriteProgram>
 {
     // If an attempt is made to update a user via PUT and the user exists, then the user should be updated and a 200 OK
     // HTTP status code should be returned.

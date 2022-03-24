@@ -40,7 +40,8 @@ public abstract class ApplicationTestFixture<TProgram> : PeopleTestFixture
                     configuration.AddConfiguration(Configuration);
                 });
             });
-        HttpClient = factory.CreateClient(new WebApplicationFactoryClientOptions() {
+        HttpClient = factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
             BaseAddress = new System.Uri($"https://localhost:{ApplicationPort}")
         });
 
@@ -117,12 +118,13 @@ public abstract class ApplicationTestFixture<TProgram> : PeopleTestFixture
             sortParameter = $"&sort={Defaults.DefaultPageSort}";
         }
 
-        var expectedUrl = $"{baseUrl}" +
-                          $"?pageNumber={pageNumber}&pageSize={pageSize}" +
-                          $"{fieldsParameter}" +
-                          $"{filterParameter}" +
-                          $"{searchParameter}" +
-                          $"{sortParameter}";
+        var expectedUrl = 
+            $"{baseUrl}" +
+            $"?pageNumber={pageNumber}&pageSize={pageSize}" +
+            $"{fieldsParameter}" +
+            $"{filterParameter}" +
+            $"{searchParameter}" +
+            $"{sortParameter}";
 
         return expectedUrl;
     }
@@ -156,6 +158,15 @@ public abstract class ApplicationTestFixture<TProgram> : PeopleTestFixture
         unexpectedFields.Remove("Links");
 
         return (expectedFields, unexpectedFields);
+    }
+
+    protected async Task<long> DetermineExpectedContentLength(string url)
+    {
+        var result = await HttpClient!.GetAsync(url);
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        var content = await result.Content.ReadAsStringAsync();
+        return content.Length;
     }
 
     protected AddPersonRequest GenerateAddPersonRequest()

@@ -1,6 +1,6 @@
 namespace Morsley.UK.People.API.Read.System.Tests.Methods.GET.People
 {
-    public class GetPeopleWithSearchTests : SecuredApplicationTestFixture<ReadProgram, SecurityProgram>
+    public class GetPeopleWithSearchTests : SecuredApplicationTestFixture<ReadProgram>
     {
         private const string UserDataForSearch = "Saad Man|" +
                                                  "Whet Faartz|" +

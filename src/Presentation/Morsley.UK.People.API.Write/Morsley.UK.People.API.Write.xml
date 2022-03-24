@@ -186,6 +186,17 @@
             </summary>
             <param name="application"></param>
         </member>
+        <member name="T:Morsley.UK.People.API.Write.Endpoints.SwaggerEndpoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Morsley.UK.People.API.Write.Endpoints.SwaggerEndpoint.MapSwaggerEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            
+            </summary>
+            <param name="application"></param>
+        </member>
         <member name="T:Morsley.UK.People.API.Write.Endpoints.UpdatePersonEndpoint">
             <summary>
             

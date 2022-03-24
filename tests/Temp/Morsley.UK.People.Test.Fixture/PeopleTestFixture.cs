@@ -119,9 +119,9 @@
 
         //protected IConfiguration GetCurrentConfiguration()
         //{
-            //var additional = GetInMemoryConfiguration();
-            //var configuration = GetConfiguration(additional);
-            //return configuration;
+        //var additional = GetInMemoryConfiguration();
+        //var configuration = GetConfiguration(additional);
+        //return configuration;
         //}
 
         protected IList<Person> AddTestPeopleToDatabase(string personData)

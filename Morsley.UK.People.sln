@@ -32,7 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Fixtures", "Fixtures", "{F3A597F5-26FB-4136-B9ED-CF78CECC7F49}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F02AC20A-1C79-482F-8788-8AF566C62254}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_SolutionItems", "{F02AC20A-1C79-482F-8788-8AF566C62254}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		README.md = README.md
@@ -77,6 +77,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{146EF275-F8C3-4199-AE19-C067C005D5D0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Tests.Common", "tests\Common\Morsley.UK.People.Tests.Common\Morsley.UK.People.Tests.Common.csproj", "{3708597D-54B9-4BE9-9875-B95EF1E92C79}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infrastructure", "infrastructure", "{BCA17B32-BB69-42A7-AEB6-50D0F4C0E168}"
+	ProjectSection(SolutionItems) = preProject
+		infrastructure\docker-compose.yaml = infrastructure\docker-compose.yaml
+		infrastructure\README = infrastructure\README
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

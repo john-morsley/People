@@ -1,9 +1,4 @@
-﻿using FluentValidation;
-using Morsley.UK.People.API.Contracts.Requests;
-using Morsley.UK.People.API.Contracts.Responses;
-using Morsley.UK.People.API.Read.Services;
-
-namespace Morsley.UK.People.API.Read.Endpoints;
+﻿namespace Morsley.UK.People.API.Read.Endpoints;
 
 /// <summary>
 /// 
@@ -16,7 +11,7 @@ public static class GetPeopleEndpoint
     /// <param name="application"></param>
     public static void MapGetPeopleEndpoint(this WebApplication application)
     {
-        application.MapGet("/api/people", async (
+        application.MapMethods("/api/people", new[] { "GET" }, async (
                     GetPeopleRequest request,
                     IValidator<GetPeopleRequest> validator,
                     IMapper mapper,
@@ -28,7 +23,7 @@ public static class GetPeopleEndpoint
                    .Produces<IPagedList<PersonResponse>>(StatusCodes.Status200OK, "application/json")
                    .Produces(StatusCodes.Status422UnprocessableEntity)
                    .Produces(StatusCodes.Status500InternalServerError)
-                   .WithName("GetPeople");
+                   .WithName("GetPeople").AllowAnonymous();
     }
 
     private async static Task<IResult> GetPeople(
@@ -57,14 +52,5 @@ public static class GetPeopleEndpoint
         shapedPageOfPersonsWithLinksWithSelfLink.Add("_links", pageOfPersonsLinks);
 
         return Results.Ok(shapedPageOfPersonsWithLinksWithSelfLink);
-    }
-
-    private static void ValidateRequest(GetPeopleRequest request, IValidator<GetPeopleRequest> validator)
-    {
-        var validatioResult = validator.Validate(request);
-
-        if (validatioResult.IsValid) return;
-
-        //var errors = validatioResult.Errors();
     }
 }

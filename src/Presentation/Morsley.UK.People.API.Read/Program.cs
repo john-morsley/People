@@ -7,7 +7,7 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    Log.Information("Starting web host...");
+    Log.Information("Starting READ web host...");
 
     var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +17,9 @@ try
            .ReadFrom.Configuration(context.Configuration)
            .ReadFrom.Services(services)
            .Enrich.FromLogContext());
+
+    builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
+    builder.Services.AddSingleton<IAuthorizationService, AuthorizationService>();
 
     var configuration = builder.Configuration;
 
@@ -36,7 +39,7 @@ try
     if (string.IsNullOrWhiteSpace(key)) throw new InvalidOperationException($"Missing environment variable: {Constants.Morsley_UK_People_API_Security_JWT_KEY_Variable}");
     builder.Configuration.AddInMemoryCollection(new Dictionary<string, string> { { "Jwt:Key", key } });
 
-    builder.Services.AddCors();
+    //builder.Services.AddCors(); // ???
 
     builder.Services.AddAuthenticationAndAuthorization(builder.Configuration, Log.Logger);
 
@@ -49,8 +52,10 @@ try
     application.ConfigureSwagger();
 
     application.UseHttpsRedirection();
-    
-    //application.MapSwagger();
+
+    application.MapSwaggerEndpoint();
+
+    application.MapLoginEndpoint();
 
     application.MapOptionsPersonEndpoint();
     application.MapOptionsPeopleEndpoint();
@@ -59,9 +64,9 @@ try
     application.UseAuthorization();
 
     application.MapHeadPersonEndpoint();
-    application.MapGetPersonEndpoint();
-    
     application.MapHeadPeopleEndpoint();
+
+    application.MapGetPersonEndpoint();
     application.MapGetPeopleEndpoint();
 
     application.Run();

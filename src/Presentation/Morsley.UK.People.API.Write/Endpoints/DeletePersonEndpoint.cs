@@ -12,20 +12,21 @@ public static class DeletePersonEndpoint
     public static void MapDeletePersonEndpoint(this WebApplication application)
     {
         application.MapMethods("/api/person/{id}", new[] { "DELETE" }, async (
-                    DeletePersonRequest request,
+                    [FromRoute] Guid id,
                     [FromServices] IValidator<DeletePersonRequest> validator,
                     [FromServices] IMediator mediator,
                     [FromServices] ILogger logger)
                     =>
-                    await DeletePerson(request, validator, mediator, logger))
-                   .Accepts<DeletePersonRequest>("application/json")
+                    await DeletePerson(new DeletePersonRequest { Id = id }, validator, mediator, logger))
+                   //.Accepts("application/json")
                    .Produces(StatusCodes.Status204NoContent)
                    .Produces(StatusCodes.Status404NotFound)
                    .Produces(StatusCodes.Status422UnprocessableEntity)
                    .Produces(StatusCodes.Status500InternalServerError)
-                   .WithName("DeletePerson");
+                   .WithName("DeletePerson").WithDisplayName("Delete Person"); //.WithGroupName("Person");
     }
 
+    [HttpDelete]
     private async static Task<IResult> DeletePerson(
         DeletePersonRequest request,
         IValidator<DeletePersonRequest> validator,

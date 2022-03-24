@@ -23,9 +23,10 @@ public static class AddPersonEndpoint
                    .Produces<PersonResponse>(StatusCodes.Status200OK, "application/json")
                    .Produces(StatusCodes.Status422UnprocessableEntity)
                    .Produces(StatusCodes.Status500InternalServerError)
-                   .WithName("AddPerson");
+                   .WithName("AddPerson").WithDisplayName("Add Person"); //.WithGroupName("Person");
     }
 
+    [HttpPost]
     private async static Task<IResult> AddPerson(
         AddPersonRequest request,
         IValidator<AddPersonRequest> validator,

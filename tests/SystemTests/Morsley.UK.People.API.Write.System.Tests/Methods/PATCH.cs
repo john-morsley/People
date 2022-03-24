@@ -12,7 +12,7 @@ namespace Morsley.UK.People.API.Write.Tests.Methods;
 
 // Refer to: http://jsonpatch.com/
 
-public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WriteProgram, SecurityProgram>
+public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WriteProgram>
 {
     [Test]
     [Category("Happy")]

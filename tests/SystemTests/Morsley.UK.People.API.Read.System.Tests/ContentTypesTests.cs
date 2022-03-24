@@ -1,6 +1,6 @@
 namespace Morsley.UK.People.API.Read.System.Tests;
 
-public class ContentTypesTests : SecuredApplicationTestFixture<ReadProgram, SecurityProgram>
+public class ContentTypesTests : SecuredApplicationTestFixture<ReadProgram>
 {
     //[Test]
     //[Category("Unhappy")]

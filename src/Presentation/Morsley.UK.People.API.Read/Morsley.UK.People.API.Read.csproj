@@ -47,6 +47,7 @@
       <ProjectReference Include="..\..\Infrastructure\Morsley.UK.People.Persistence\Morsley.UK.People.Persistence.csproj" />
       <ProjectReference Include="..\Morsley.UK.People.API.Common\Morsley.UK.People.API.Common.csproj" />
       <ProjectReference Include="..\Morsley.UK.People.API.Contracts\Morsley.UK.People.API.Contracts.csproj" />
+      <ProjectReference Include="..\Morsley.UK.People.API.Security\Morsley.UK.People.API.Security.csproj" />
     </ItemGroup>
 
 </Project>

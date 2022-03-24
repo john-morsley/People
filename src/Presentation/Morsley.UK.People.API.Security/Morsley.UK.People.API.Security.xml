@@ -119,10 +119,5 @@
             <param name="parameters"></param>
             <returns></returns>
         </member>
-        <member name="T:SecurityProgram">
-            <summary>
-            Required for System Testing only!
-            </summary>
-        </member>
     </members>
 </doc>

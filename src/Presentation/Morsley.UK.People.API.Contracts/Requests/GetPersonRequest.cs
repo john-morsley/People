@@ -25,5 +25,9 @@ public record GetPersonRequest
         return ValueTask.FromResult<GetPersonRequest>(request);
     }
 
-    public static bool TryParse(string value) => true;
+    public static bool TryParse(string value, out object request)
+    {
+        request = new GetPeopleRequest();
+        return true;
+    }
 }

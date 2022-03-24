@@ -15,19 +15,20 @@ public static class GetPersonEndpoint
     public static void MapGetPersonEndpoint(this WebApplication application)
     {
         application.MapMethods("/api/person/{id}", new [] { "GET" }, async (
-                    GetPersonRequest request,
+                    [FromRoute] Guid id, 
+                    [FromQuery] string? fields,
                     IValidator<GetPersonRequest> validator,
                     IMapper mapper,
                     IMediator mediator,
                     ILogger logger)
                     =>
-                    await GetPerson(request, validator, mapper, mediator, logger))
-                   .Accepts<GetPersonRequest>("application/json")
+                    await GetPerson(new GetPersonRequest { Id = id, Fields = fields }, validator, mapper, mediator, logger))
+                   //.Accepts<GetPersonRequest>("application/json")
                    .Produces<PersonResponse>(StatusCodes.Status200OK, "application/json")
                    .Produces(StatusCodes.Status400BadRequest)
                    .Produces(StatusCodes.Status204NoContent)
                    .Produces<ProblemDetails>(StatusCodes.Status422UnprocessableEntity, "application/problem+json")
-                   .WithName("GetPerson"); //.AllowAnonymous();
+                   .WithName("GetPerson");
     }
 
     private async static Task<IResult> GetPerson(

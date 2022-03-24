@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.API.Write.Tests.Methods;
 
-public class DELETE : SecuredApplicationTestFixture<WriteProgram, SecurityProgram>
+public class DELETE : SecuredApplicationTestFixture<WriteProgram>
 {
     [Test]
     [Category("Happy")]

@@ -12,14 +12,19 @@ public static class HeadPeopleEndpoint
     public static void MapHeadPeopleEndpoint(this WebApplication application)
     {
         application.MapMethods("/api/people", new [] { "HEAD" }, async (
-                    GetPeopleRequest request,
+                    [FromQuery] int? pageNumber,
+                    [FromQuery] int? pageSize,
+                    [FromQuery] string? fields,
+                    [FromQuery] string? filter,
+                    [FromQuery] string? search,
+                    [FromQuery] string? sort,
                     HttpResponse httpResponse,
-                    IMapper mapper,
-                    IMediator mediator,
-                    ILogger logger)
+                    [FromServices] IMapper mapper,
+                    [FromServices] IMediator mediator,
+                    [FromServices] ILogger logger)
                     => 
-                    await HeadPeople(request, httpResponse,mapper, mediator, logger))
-                   .Accepts<GetPeopleRequest>("application/json")
+                    await HeadPeople(new GetPeopleRequest(pageNumber, pageSize, fields, filter, search, sort) , httpResponse,mapper, mediator, logger))
+                   //.Accepts<GetPeopleRequest>("application/json")
                    .Produces<IPagedList<PersonResponse>>(StatusCodes.Status200OK, "application/json")
                    .WithName("HeadPeople");
     }

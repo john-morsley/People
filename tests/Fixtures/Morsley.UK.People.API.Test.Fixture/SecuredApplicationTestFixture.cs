@@ -1,67 +1,80 @@
 ﻿namespace Morsley.UK.People.API.Test.Fixture;
 
-public abstract class SecuredApplicationTestFixture<TProgram, TSecurityProgram> : ApplicationTestFixture<TProgram>
+public abstract class SecuredApplicationTestFixture<TProgram> : ApplicationTestFixture<TProgram>
     where TProgram : class
-    where TSecurityProgram : class
 {
-    //protected const string SecurityUrl = "https://localhost:5000";
-
     protected const string Username = "johnmorsley";
     protected const string Password = "P@$$w0rd!";
 
-    protected HttpClient? SecurityClient;
+    private readonly string _key;
+    private readonly string _issuer;
+    private readonly string _audience;
 
-    private int _securityPort;
+    protected string LoginUrl => "/login";
 
-    protected int SecurityPort
+    public SecuredApplicationTestFixture()
     {
-        get
-        {
-            if (_securityPort == 0) _securityPort = GetSecurityPort(Configuration);
-            return _securityPort;
-        }
+        _audience = GetAudience();
+        _issuer = GetIssuer();
+
+        var key = Environment.GetEnvironmentVariable(Constants.Morsley_UK_People_API_Security_JWT_KEY_Variable);
+        if (string.IsNullOrEmpty(key)) throw new InvalidOperationException($"Expected an environment variable called {Constants.Morsley_UK_People_API_Security_JWT_KEY_Variable}");
+        _key = key;
     }
-
-    [SetUp]
-    protected override void SetUp()
-    {
-        var factory = new WebApplicationFactory<TSecurityProgram>()
-            .WithWebHostBuilder(builder =>
-            {
-                builder.UseUrls($"https://localhost:{SecurityPort}");
-                builder.UseKestrel();
-                builder.ConfigureKestrel(options =>
-                    {
-                        options.ListenLocalhost(SecurityPort);
-                    }
-                );
-                builder.ConfigureAppConfiguration(configuration =>
-                {
-                    configuration.AddConfiguration(Configuration);
-                    //configuration.AddInMemoryCollection(GetInMemoryConfiguration());
-                });
-                //builder.ConfigureServices();
-            });
-        SecurityClient = factory.CreateClient(new WebApplicationFactoryClientOptions()
-        {
-            BaseAddress = new System.Uri($"https://localhost:{SecurityPort}")
-        });
-
-        base.SetUp();
-    }
-
-    [TearDown]
-    protected override void TearDown()
-    {
-        base.TearDown();
-        SecurityClient?.Dispose();
-    }
-
+    
     protected async Task AuthenticateAsync(string username, string password)
     {
         var token = await GetJwtTokenAsync(username, password);
         if (token == null) return;
         HttpClient!.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+    }
+
+    private static byte[] Base64UrlDecode(string input)
+    {
+        var output = input;
+        output = output.Replace('-', '+'); // 62nd char of encoding
+        output = output.Replace('_', '/'); // 63rd char of encoding
+        switch (output.Length % 4) // Pad with trailing '='s
+        {
+            case 0: break; // No pad chars in this case
+            case 2: output += "=="; break; // Two pad chars
+            case 3: output += "="; break; // One pad char
+            default: throw new Exception("Illegal base64url string!");
+        }
+        var converted = Convert.FromBase64String(output); // Standard base64 decoder
+        return converted;
+    }
+
+    protected static LoginResponse? DeserializeLoginResponse(string json)
+    {
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters =
+            {
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            }
+        };
+
+        return JsonSerializer.Deserialize<LoginResponse>(json, options);
+    }
+
+    private string GetAudience()
+    {
+        var builder = new ConfigurationBuilder();
+        builder.AddJsonFile("appsettings.json");
+        IConfiguration configuration = builder.Build();
+        var audience = configuration["Jwt:Audience"];
+        return audience;
+    }
+
+    private string GetIssuer()
+    {
+        var builder = new ConfigurationBuilder();
+        builder.AddJsonFile("appsettings.json");
+        IConfiguration configuration = builder.Build();
+        var issuer = configuration["Jwt:Issuer"];
+        return issuer;
     }
 
     //protected IConfiguration GetConfiguration(Dictionary<string, string>? additional = null)
@@ -74,14 +87,6 @@ public abstract class SecuredApplicationTestFixture<TProgram, TSecurityProgram> 
 
     //    IConfiguration configuration = builder.Build();
 
-    //    return configuration;
-    //}
-
-
-    //protected IConfiguration GetCurrentConfiguration()
-    //{
-    //    var additional = GetInMemoryConfiguration();
-    //    var configuration = GetConfiguration(additional);
     //    return configuration;
     //}
 
@@ -113,7 +118,7 @@ public abstract class SecuredApplicationTestFixture<TProgram, TSecurityProgram> 
         Log.Logger.Information("GetJwtTokenAsync");
 
         var request = new LoginRequest(username, password);
-        var result = await SecurityClient!.PostAsJsonAsync(LoginUrl, request);
+        var result = await HttpClient!.PostAsJsonAsync(LoginUrl, request);
         if (!result.IsSuccessStatusCode) return null;
         if (result.StatusCode != HttpStatusCode.OK) return null;
         var response = await result.Content.ReadFromJsonAsync<LoginResponse>();
@@ -121,17 +126,60 @@ public abstract class SecuredApplicationTestFixture<TProgram, TSecurityProgram> 
         return response.Token;
     }
 
-    protected int GetSecurityPort(IConfiguration configuration)
+    //protected int GetSecurityPort(IConfiguration configuration)
+    //{
+    //    var potentialPort = configuration["SecurityPort"];
+
+    //    if (string.IsNullOrEmpty(potentialPort)) throw new InvalidProgramException("Invalid configuration --> Port is missing!");
+
+    //    if (int.TryParse(potentialPort, out var port)) return port;
+
+    //    throw new InvalidProgramException("Invalid configuration --> port is not a number!");
+    //}
+
+    protected void TokensShouldBeEquivalent(JwtSecurityToken originalToken, JwtSecurityToken validatedToken)
     {
-        var potentialPort = configuration["SecurityPort"];
-
-        if (string.IsNullOrEmpty(potentialPort)) throw new InvalidProgramException("Invalid configuration --> Port is missing!");
-
-        if (int.TryParse(potentialPort, out var port)) return port;
-
-        throw new InvalidProgramException("Invalid configuration --> port is not a number!");
+        originalToken.Should().BeEquivalentTo(validatedToken, config => config.Excluding(_ => _.SigningKey));
     }
 
-    //protected string LoginUrl => $"{SecurityUrl}/login";
-    protected string LoginUrl => "/login";
+    protected void VerifySignature(string header, string payload, string signature)
+    {
+        var decodedSignature = Convert.ToBase64String(Base64UrlDecode(signature));
+
+        var bytesToSign = Encoding.UTF8.GetBytes(string.Concat(header, ".", payload));
+        var keyBytes = Encoding.UTF8.GetBytes(_key);
+
+        var sha = new HMACSHA256(keyBytes);
+        var computedSignature = sha.ComputeHash(bytesToSign);
+        var decodedComputedSignature = Convert.ToBase64String(computedSignature);
+
+        decodedSignature.Should().Be(decodedComputedSignature);
+    }
+
+    protected bool VerifyToken(string token, out JwtSecurityToken? validatedToken)
+    {
+        var parameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            ValidateIssuer = false, // ToDo --> Before the version upgrade these two worked! :(
+            ValidateAudience = false, // ToDo --> Must revisit in the future.
+            ValidIssuer = _issuer,
+            ValidAudience = _audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key))
+        };
+        var handler = new JwtSecurityTokenHandler();
+
+        try
+        {
+            handler.ValidateToken(token, parameters, out var validated);
+            validatedToken = validated as JwtSecurityToken;
+        }
+        catch
+        {
+            validatedToken = null;
+            return false;
+        }
+
+        return true;
+    }
 }

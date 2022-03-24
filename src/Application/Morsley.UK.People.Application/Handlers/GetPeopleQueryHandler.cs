@@ -1,6 +1,4 @@
-﻿using Morsley.UK.People.Application.Models;
-
-namespace Morsley.UK.People.Application.Handlers
+﻿namespace Morsley.UK.People.Application.Handlers
 {
     public sealed class GetPageOfPeopleQueryHandler : IRequestHandler<GetPeopleQuery, IPagedList<Person>>
     {

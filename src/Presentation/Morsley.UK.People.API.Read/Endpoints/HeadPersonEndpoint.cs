@@ -12,18 +12,20 @@ public static class HeadPersonEndpoint
     public static void MapHeadPersonEndpoint(this WebApplication application)
     {
         application.MapMethods("/api/person/{id}", new[] { "HEAD" }, async(
-                    GetPersonRequest request,
+                    [FromRoute] Guid id,
+                    [FromQuery] string fields,
                     HttpResponse httpResponse,
                     IMapper mapper,
                     IMediator mediator,
                     ILogger logger)
                     =>
-                    await HeadPerson(request, httpResponse, mapper, mediator, logger))
-                   .Accepts<GetPersonRequest>("application/json")
+                    await HeadPerson(new GetPersonRequest { Id = id, Fields = fields }, httpResponse, mapper, mediator, logger))
+                   //.Accepts<GetPersonRequest>("application/json")
                    .Produces(StatusCodes.Status200OK)
                    .WithName("HeadPerson");
     }
 
+    //[HttpHead]
     private async static Task<IResult> HeadPerson(
         GetPersonRequest request,
         HttpResponse httpResponse,

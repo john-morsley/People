@@ -11,27 +11,30 @@ public static class LoginEndpoint
     /// <param name="application"></param>
     public static void MapLoginEndpoint(this WebApplication application)
     {
-        application.MapPost("/login", (
+        application.MapMethods("/login", new[] { "POST" }, async (
                     [FromBody] LoginRequest request,
-                    [FromServices]IAuthenticationService service,
-                    [FromServices]IConfiguration configuration, 
-                    [FromServices]ILogger logger)
-                    => Login(request, service, configuration, logger))
+                    [FromServices] IAuthenticationService service,
+                    [FromServices] IConfiguration configuration,
+                    [FromServices] ILogger logger)
+                    =>
+                    await Login(request, service, configuration, logger))
                    .AllowAnonymous()
                    .Accepts<LoginRequest>("application/json")
+                   .Produces(StatusCodes.Status401Unauthorized)
                    .Produces<LoginResponse>(StatusCodes.Status200OK, "application/json")
                    .WithName("Login");
     }
 
-    private static IResult Login(
-        LoginRequest request, 
-        IAuthenticationService service, 
+    [HttpPost]
+    private async static Task<IResult> Login(
+        LoginRequest request,
+        IAuthenticationService service,
         IConfiguration configuration,
         ILogger logger)
     {
         logger.Information("Login endpoint...");
 
-        var user = service.Login(request.Username, request.Password);
+        var user = await service.Login(request.Username, request.Password);
 
         if (user == null)
         {

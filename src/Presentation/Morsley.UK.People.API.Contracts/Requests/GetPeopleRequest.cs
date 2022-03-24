@@ -8,6 +8,27 @@ public record GetPeopleRequest
     private int _pageNumber = Defaults.DefaultPageNumber;
     private int _pageSize = Defaults.DefaultPageSize;
 
+    public GetPeopleRequest()
+    {
+        
+    }
+
+    public GetPeopleRequest(
+        int? pageNumber, 
+        int? pageSize, 
+        string? fields, 
+        string? filter, 
+        string? search, 
+        string? sort)
+    {
+        if (pageNumber is not null) PageNumber = pageNumber.Value;
+        if (pageSize is not null) PageSize = pageSize.Value;
+        Fields = fields;
+        Filter = filter;
+        Search = search;
+        if (sort is not null) Sort = sort;
+    }
+
     /// <summary>
     /// The page number to be requested.
     /// </summary>
@@ -27,8 +48,7 @@ public record GetPeopleRequest
     public int PageSize
     {
         get => _pageSize;
-        set  
-        { 
+        set {
             _pageSize = value;
             if (_pageSize < 0) _pageSize = 1;
             if (_pageSize > Defaults.MaximumPageSize) _pageSize = Defaults.MaximumPageSize;
@@ -57,8 +77,8 @@ public record GetPeopleRequest
 
     public static ValueTask<GetPeopleRequest?> BindAsync(HttpContext httpContext, ParameterInfo parameter)
     {
-        int.TryParse(httpContext.Request.Query["pageNumber"], out var pageNumber);
-        int.TryParse(httpContext.Request.Query["pageSize"], out var pageSize);
+        int.TryParse(httpContext.Request.Query["pagenumber"], out var pageNumber);
+        int.TryParse(httpContext.Request.Query["pagesize"], out var pageSize);
         var fields = httpContext.Request.Query["fields"];
         var filter = httpContext.Request.Query["filter"];
         var search = httpContext.Request.Query["search"];
@@ -77,8 +97,9 @@ public record GetPeopleRequest
         return ValueTask.FromResult<GetPeopleRequest?>(request);
     }
 
-    public static bool TryParse(string value)
+    public static bool TryParse(string value, out GetPeopleRequest request)
     {
+        request = new GetPeopleRequest();
         return true;
     }
 

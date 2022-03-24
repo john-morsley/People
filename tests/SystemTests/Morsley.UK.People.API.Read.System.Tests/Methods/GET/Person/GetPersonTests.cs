@@ -1,6 +1,6 @@
 namespace Morsley.UK.People.API.Read.System.Tests.Methods.GET.Person;
 
-public class GetPersonTests : SecuredApplicationTestFixture<ReadProgram, SecurityProgram>
+public class GetPersonTests : SecuredApplicationTestFixture<ReadProgram>
 {
     [SetUp]
     protected override void SetUp()
@@ -64,8 +64,8 @@ public class GetPersonTests : SecuredApplicationTestFixture<ReadProgram, Securit
         await AuthenticateAsync(Username, Password);
 
         // Act...
-        //var result = await HttpClient!.GetAsync(url);
-        var result = await HttpClient!.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
+        var result = await HttpClient!.GetAsync(url);
+        //var result = await HttpClient!.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
 
         // Assert...
         NumberOfPeopleInDatabase().Should().Be(0);
@@ -98,6 +98,6 @@ public class GetPersonTests : SecuredApplicationTestFixture<ReadProgram, Securit
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
         var content = await result.Content.ReadAsStringAsync();
-        content.Length.Should().Be(0);
+        content.Length.Should().BeGreaterThan(0);
     }
 }
