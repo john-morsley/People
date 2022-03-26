@@ -1,16 +1,15 @@
-﻿namespace Morsley.UK.People.API.Read.AutoMapper
+﻿namespace Morsley.UK.People.API.Read.AutoMapper;
+
+/// <summary>
+/// 
+/// </summary>
+public class GetPersonRequestToGetPersonQuery : Profile
 {
     /// <summary>
     /// 
     /// </summary>
-    public class GetPersonRequestToGetPersonQuery : Profile
+    public GetPersonRequestToGetPersonQuery()
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        public GetPersonRequestToGetPersonQuery()
-        {
-            CreateMap<GetPersonRequest, GetPersonQuery>();
-        }
+        CreateMap<GetPersonRequest, GetPersonQuery>();
     }
 }

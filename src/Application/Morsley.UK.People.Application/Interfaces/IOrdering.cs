@@ -1,9 +1,8 @@
-﻿namespace Morsley.UK.People.Application.Interfaces
-{
-    public interface IOrdering
-    {
-        string Key { get; }
+﻿namespace Morsley.UK.People.Application.Interfaces;
 
-        SortOrder Order { get; }
-    }
+public interface IOrdering
+{
+    string Key { get; }
+
+    SortOrder Order { get; }
 }

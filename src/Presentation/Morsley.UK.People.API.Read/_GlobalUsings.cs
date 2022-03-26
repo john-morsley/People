@@ -24,6 +24,7 @@ global using Morsley.UK.People.Application.IoC;
 global using Morsley.UK.People.Application.Queries;
 global using Morsley.UK.People.Common;
 global using Morsley.UK.People.Domain.Models;
+global using Morsley.UK.People.Messaging.IoC;
 global using Morsley.UK.People.Persistence.IoC;
 global using Serilog;
 global using Serilog.Events;

@@ -1,9 +1,8 @@
-﻿namespace Morsley.UK.People.API.Contracts.Shared
+﻿namespace Morsley.UK.People.API.Contracts.Shared;
+
+public enum ResourceUriType
 {
-    public enum ResourceUriType
-    {
-        PreviousPage,
-        Current,
-        NextPage
-    }
+    PreviousPage,
+    Current,
+    NextPage
 }

@@ -1,19 +1,18 @@
-﻿namespace Morsley.UK.People.Application.Handlers
+﻿namespace Morsley.UK.People.Application.Handlers;
+
+public sealed class PersonExistsQueryHandler : IRequestHandler<PersonExistsQuery, bool>
 {
-    public sealed class PersonExistsQueryHandler : IRequestHandler<PersonExistsQuery, bool>
+    private readonly IPersonRepository _personRepository;
+
+    public PersonExistsQueryHandler(IPersonRepository personRepository)
     {
-        private readonly IPersonRepository _personRepository;
+        _personRepository = personRepository;
+    }
 
-        public PersonExistsQueryHandler(IPersonRepository personRepository)
-        {
-            _personRepository = personRepository;
-        }
+    public async Task<bool> Handle(PersonExistsQuery query, CancellationToken ct)
+    {
+        if (query == null) throw new ArgumentNullException(nameof(query));
 
-        public async Task<bool> Handle(PersonExistsQuery query, CancellationToken ct)
-        {
-            if (query == null) throw new ArgumentNullException(nameof(query));
-
-            return await _personRepository.ExistsAsync(query.Id);
-        }
+        return await _personRepository.ExistsAsync(query.Id);
     }
 }

@@ -3,6 +3,7 @@ global using MediatR;
 global using Microsoft.Extensions.DependencyInjection;
 global using Morsley.UK.People.Application.Commands;
 global using Morsley.UK.People.Application.Enumerations;
+global using Morsley.UK.People.Application.Events;
 global using Morsley.UK.People.Application.Interfaces;
 global using Morsley.UK.People.Application.Models;
 global using Morsley.UK.People.Application.Queries;

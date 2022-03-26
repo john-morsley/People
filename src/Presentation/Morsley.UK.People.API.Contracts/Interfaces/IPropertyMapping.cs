@@ -1,6 +1,5 @@
-﻿namespace Morsley.UK.People.API.Contracts.Interfaces
+﻿namespace Morsley.UK.People.API.Contracts.Interfaces;
+
+public interface IPropertyMapping
 {
-    public interface IPropertyMapping
-    {
-    }
 }

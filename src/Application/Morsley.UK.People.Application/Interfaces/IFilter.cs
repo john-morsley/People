@@ -1,9 +1,8 @@
-﻿namespace Morsley.UK.People.Application.Interfaces
-{
-    public interface IFilter
-    {
-        string Key { get; }
+﻿namespace Morsley.UK.People.Application.Interfaces;
 
-        string? Value { get; }
-    }
+public interface IFilter
+{
+    string Key { get; }
+
+    string? Value { get; }
 }

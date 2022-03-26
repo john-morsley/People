@@ -84,6 +84,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infrastructure", "infrastru
 		infrastructure\README = infrastructure\README
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Synchronizer", "src\Infrastructure\Morsley.UK.People.Synchronizer\Morsley.UK.People.Synchronizer.csproj", "{4822BFFE-E41D-437C-A84B-20A429992A99}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Messaging", "src\Infrastructure\Morsley.UK.People.Messaging\Morsley.UK.People.Messaging.csproj", "{2E338EDE-E3A7-4F96-BD1C-7C3354495C0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -162,6 +166,14 @@ Global
 		{3708597D-54B9-4BE9-9875-B95EF1E92C79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3708597D-54B9-4BE9-9875-B95EF1E92C79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3708597D-54B9-4BE9-9875-B95EF1E92C79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4822BFFE-E41D-437C-A84B-20A429992A99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4822BFFE-E41D-437C-A84B-20A429992A99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4822BFFE-E41D-437C-A84B-20A429992A99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4822BFFE-E41D-437C-A84B-20A429992A99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E338EDE-E3A7-4F96-BD1C-7C3354495C0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E338EDE-E3A7-4F96-BD1C-7C3354495C0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E338EDE-E3A7-4F96-BD1C-7C3354495C0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E338EDE-E3A7-4F96-BD1C-7C3354495C0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -195,6 +207,8 @@ Global
 		{F7E1F7A2-53A2-477C-B330-7C221CE66CB1} = {4648FC1E-B1CC-4789-BFA5-1512EEA5670A}
 		{146EF275-F8C3-4199-AE19-C067C005D5D0} = {BAE0EF75-0041-4E24-A6D9-C64955712598}
 		{3708597D-54B9-4BE9-9875-B95EF1E92C79} = {146EF275-F8C3-4199-AE19-C067C005D5D0}
+		{4822BFFE-E41D-437C-A84B-20A429992A99} = {B4DD37EA-6C56-4B47-8C37-390299A8DED7}
+		{2E338EDE-E3A7-4F96-BD1C-7C3354495C0C} = {B4DD37EA-6C56-4B47-8C37-390299A8DED7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2D352126-3CF8-48AE-9A26-7AD7B94FCCB5}

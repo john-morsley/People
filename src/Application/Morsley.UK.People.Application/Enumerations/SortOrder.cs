@@ -1,8 +1,7 @@
-﻿namespace Morsley.UK.People.Application.Enumerations
+﻿namespace Morsley.UK.People.Application.Enumerations;
+
+public enum SortOrder
 {
-    public enum SortOrder
-    {
-        Ascending,
-        Descending
-    }
+    Ascending,
+    Descending
 }

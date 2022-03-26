@@ -1,7 +1,6 @@
-﻿namespace Morsley.UK.People.Domain.Exceptions
+﻿namespace Morsley.UK.People.Domain.Exceptions;
+
+public class DomainModelIdException : Exception
 {
-    public class DomainModelIdException : Exception
-    {
-        public DomainModelIdException(string message) : base(message) { }
-    }
+    public DomainModelIdException(string message) : base(message) { }
 }

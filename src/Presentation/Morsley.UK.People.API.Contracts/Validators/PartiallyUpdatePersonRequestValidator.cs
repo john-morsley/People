@@ -1,9 +1,9 @@
-﻿namespace Morsley.UK.People.API.Contracts.Validators
+﻿namespace Morsley.UK.People.API.Contracts.Validators;
+
+public class PartiallyUpdatePersonRequestValidator : AbstractValidator<UpdatePersonRequest>
 {
-    public class PartiallyUpdatePersonRequestValidator : AbstractValidator<UpdatePersonRequest>
+    public PartiallyUpdatePersonRequestValidator()
     {
-        public PartiallyUpdatePersonRequestValidator()
-        {
 //            //var blacklistedCharacters = configuration["BlacklistedCharacters"];
 
 //            //RuleFor(x => x.Title)
@@ -19,6 +19,5 @@
 
 //            //RuleFor(x => x.Sex)
 //            //    .IsEnumName(typeof(Sex), caseSensitive: false);
-        }
     }
 }

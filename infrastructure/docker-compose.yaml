@@ -1,28 +1,124 @@
-version: '3'
+networks: 
+
+    morsley_uk_network:
+      driver: bridge
 
 services:
 
-  morsley_uk_people_users:
-    image: mongo
+  #morsley_uk_people_database:
+  #  image: mongo
+  #  container_name: morsley_uk_people_database
+  #  ports:
+  #  - 27017:27017
+  #  environment:
+  #  - MONGO_INITDB_ROOT_USERNAME=root
+  #  - MONGO_INITDB_ROOT_PASSWORD=password
+  #  restart: unless-stopped
+  #  networks:
+  #  - morsley_uk_network
+
+  # Database for users (authentication and authorization): : mongodb://root:password@localhost:27000
+  morsley_uk_people_database_users:
+    image: mongo:latest
+    container_name: morsley_uk_people_database_users
     ports:
     - 27000:27017
     environment:
     - MONGO_INITDB_ROOT_USERNAME=root
     - MONGO_INITDB_ROOT_PASSWORD=password
+    restart: unless-stopped
+    networks:
+    - morsley_uk_network
 
-  morsley_uk_people_read:
-    image: mongo
+  # Database for the reads: mongodb://root:password@localhost:27001
+  morsley_uk_people_database_read:
+    image: mongo:latest
+    container_name: morsley_uk_people_database_read
     ports:
     - 27001:27017
     environment:
     - MONGO_INITDB_ROOT_USERNAME=root
     - MONGO_INITDB_ROOT_PASSWORD=password
+    restart: unless-stopped
+    networks:
+    - morsley_uk_network
 
-  morsley_uk_people_write:
-    image: mongo
+  # Database for the writes: mongodb://root:password@localhost:27002
+  morsley_uk_people_database_write:
+    image: mongo:latest
+    container_name: morsley_uk_people_database_write
     ports:
     - 27002:27017
     environment:
     - MONGO_INITDB_ROOT_USERNAME=root
     - MONGO_INITDB_ROOT_PASSWORD=password
+    restart: unless-stopped
+    networks:
+    - morsley_uk_network
 
+  # Queue (Rabbit MQ, with a management GUI): amqp://root:password@localhost:5672
+  morsley_uk_people_queue:
+    image: rabbitmq:3-management
+    container_name: morsley_uk_people_queue
+    ports: 
+    - 5672:5672
+    - 8082:15672
+    environment:
+    - AMQP_URL=amqp://localhost?connection+attempts=5&retry_delay=5
+    - RABBITMQ_DEFAULT_USER=root
+    - RABBITMQ_DEFAULT_PASS=password
+    restart: unless-stopped
+    networks:
+    - morsley_uk_network
+
+  # Cache (Redis)...
+  morsley_uk_people_cache:
+    image: redis
+    container_name: morsley_uk_people_cache
+    ports: 
+    - 6379:6379
+    #command: redis-server --save 60 1 
+    restart: unless-stopped
+    networks:
+    - morsley_uk_network
+
+  ## Database GUI...
+  #morsley_uk_people_database_gui:
+  #  image: mongo-express
+  #  container_name: morsley_uk_people_database_gui
+  #  ports:
+  #  - 8080:8081
+  #  environment:
+  #  - ME_CONFIG_OPTIONS_EDITORTHEME=ambiance
+  #  - ME_CONFIG_BASICAUTH_USERNAME=
+  #  - ME_CONFIG_BASICAUTH_PASSWORD=
+  #  #- ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+  #  #- ME_CONFIG_MONGODB_ADMINUSERNAME=root
+  #  #- ME_CONFIG_MONGODB_ADMINPASSWORD=password
+  #  - ME_CONFIG_MONGODB_SERVER=morsley_uk_people_database
+  #  - ME_CONFIG_MONGODB_PORT=27017
+  #  #- ME_CONFIG_MONGODB_URL=mongodb://root:password@localhost:27017
+  #  restart: unless-stopped
+  #  networks:
+  #  - morsley_uk_network
+  #  depends_on:
+  #  - morsley_uk_people_database
+  #  #- morsley_uk_people_database_users
+  #  #- morsley_uk_people_database_read
+  #  #- morsley_uk_people_database_write
+  #  #links:
+  #  #- morsley_uk_people_database:morsley_uk_people_database
+
+  # Cache GUI...
+  morsley_uk_people_cache_gui:
+    image: rediscommander/redis-commander
+    container_name: morsley_uk_people_cache_gui
+    ports: 
+    - 8081:8081
+    environment:
+    - REDIS_HOSTS=local:morsley_uk_people_cache:6379
+    restart: unless-stopped
+    networks:
+    - morsley_uk_network
+    depends_on:
+    - morsley_uk_people_cache

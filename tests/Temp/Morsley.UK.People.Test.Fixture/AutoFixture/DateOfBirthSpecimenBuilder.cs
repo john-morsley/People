@@ -1,26 +1,25 @@
-﻿namespace Morsley.UK.People.Test.Fixture.AutoFixture
+﻿namespace Morsley.UK.People.Test.Fixture.AutoFixture;
+
+public class DateOfBirthSpecimenBuilder : ISpecimenBuilder
 {
-    public class DateOfBirthSpecimenBuilder : ISpecimenBuilder
+    public object Create(object request, ISpecimenContext context)
     {
-        public object Create(object request, ISpecimenContext context)
-        {
-            var seededRequest = request as SeededRequest;
+        var seededRequest = request as SeededRequest;
 
-            if (seededRequest == null) return new NoSpecimen();
+        if (seededRequest == null) return new NoSpecimen();
 
-            var type = seededRequest.Request as Type;
+        var type = seededRequest.Request as Type;
 
-            if (type == null) return new NoSpecimen();
+        if (type == null) return new NoSpecimen();
 
-            if (type != typeof(DateOnly)) return new NoSpecimen();
+        if (type != typeof(DateOnly)) return new NoSpecimen();
 
-            return GenerateRandomDateOfBirth();
-        }
+        return GenerateRandomDateOfBirth();
+    }
 
-        private DateOnly GenerateRandomDateOfBirth()
-        {
-            var dob = RandomGeneratorHelper.GenerateRandomDateOfBirth();
-            return new DateOnly(dob.Year, dob.Month, dob.Day);
-        }
+    private DateOnly GenerateRandomDateOfBirth()
+    {
+        var dob = RandomGeneratorHelper.GenerateRandomDateOfBirth();
+        return new DateOnly(dob.Year, dob.Month, dob.Day);
     }
 }

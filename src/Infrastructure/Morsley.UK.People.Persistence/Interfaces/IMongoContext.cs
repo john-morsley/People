@@ -1,7 +1,6 @@
-﻿namespace Morsley.UK.People.Persistence.Interfaces
+﻿namespace Morsley.UK.People.Persistence.Interfaces;
+
+public interface IMongoContext : IDisposable
 {
-    public interface IMongoContext : IDisposable
-    {
-        IMongoCollection<T> GetCollection<T>(string name);
-    }
+    IMongoCollection<T> GetCollection<T>(string name);
 }

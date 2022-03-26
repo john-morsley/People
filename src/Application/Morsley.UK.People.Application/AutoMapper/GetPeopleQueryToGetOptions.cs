@@ -1,10 +1,9 @@
-﻿namespace Morsley.UK.People.Application.AutoMapper
+﻿namespace Morsley.UK.People.Application.AutoMapper;
+
+public class GetPeopleQueryToGetOptions : Profile
 {
-    public class GetPeopleQueryToGetOptions : Profile
+    public GetPeopleQueryToGetOptions()
     {
-        public GetPeopleQueryToGetOptions()
-        {
-            CreateMap<GetPeopleQuery, GetOptions>().ConvertUsing(new GetPeopleQueryToGetOptionsConverter());
-        }
+        CreateMap<GetPeopleQuery, GetOptions>().ConvertUsing(new GetPeopleQueryToGetOptionsConverter());
     }
 }

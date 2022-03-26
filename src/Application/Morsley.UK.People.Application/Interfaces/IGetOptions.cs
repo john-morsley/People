@@ -1,15 +1,14 @@
-﻿namespace Morsley.UK.People.Application.Interfaces
+﻿namespace Morsley.UK.People.Application.Interfaces;
+
+public interface IGetOptions
 {
-    public interface IGetOptions
-    {
-        uint PageSize { get; }
+    uint PageSize { get; }
 
-        uint PageNumber { get; }
+    uint PageNumber { get; }
 
-        string? Search { get; }
+    string? Search { get; }
 
-        IEnumerable<IFilter> Filters { get; }
+    IEnumerable<IFilter> Filters { get; }
 
-        IEnumerable<IOrdering> Orderings { get; }
-    }
+    IEnumerable<IOrdering> Orderings { get; }
 }

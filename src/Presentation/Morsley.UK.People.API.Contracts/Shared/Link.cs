@@ -1,18 +1,17 @@
-﻿namespace Morsley.UK.People.API.Contracts.Shared
+﻿namespace Morsley.UK.People.API.Contracts.Shared;
+
+public class Link
 {
-    public class Link
+    public string HypertextReference { get; }
+
+    public string Relationship { get; }
+
+    public string Method { get; }
+
+    public Link(string hypertextReference, string relationship, string method)
     {
-        public string HypertextReference { get; }
-
-        public string Relationship { get; }
-
-        public string Method { get; }
-
-        public Link(string hypertextReference, string relationship, string method)
-        {
-            HypertextReference = hypertextReference;
-            Relationship = relationship;
-            Method = method;
-        }
+        HypertextReference = hypertextReference;
+        Relationship = relationship;
+        Method = method;
     }
 }

@@ -31,6 +31,7 @@ try
         options.JsonSerializerOptions.Converters.Add(new PersonResourceConverter());
     });
 
+    builder.Services.AddMessaging(configuration);
     builder.Services.AddPersistence(configuration);
     builder.Services.AddApplication();
     builder.Services.AddContracts();

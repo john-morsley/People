@@ -1,25 +1,30 @@
-﻿namespace Morsley.UK.People.Application.Handlers
+﻿namespace Morsley.UK.People.Application.Handlers;
+
+public sealed class AddPersonCommandHandler : IRequestHandler<AddPersonCommand, Person>
 {
-    public sealed class AddPersonCommandHandler : IRequestHandler<AddPersonCommand, Person>
+    private readonly IPersonRepository _personRepository;
+    private readonly IMapper _mapper;
+    private readonly IEventBus _bus;
+
+    public AddPersonCommandHandler(IPersonRepository personRepository, IMapper mapper, IEventBus bus)
     {
-        private readonly IPersonRepository _personRepository;
-        private readonly IMapper _mapper;
+        _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _bus = bus;
+    }
 
-        public AddPersonCommandHandler(IPersonRepository personRepository, IMapper mapper)
-        {
-            _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        }
+    public async Task<Person> Handle(AddPersonCommand command, CancellationToken ct)
+    {
+        if (command == null) throw new ArgumentNullException(nameof(command));
 
-        public async Task<Person> Handle(AddPersonCommand command, CancellationToken ct)
-        {
-            if (command == null) throw new ArgumentNullException(nameof(command));
+        var person = _mapper.Map<Person>(command);
 
-            var person = _mapper.Map<Person>(command);
+        await _personRepository.AddAsync(person);
 
-            await _personRepository.AddAsync(person);
+        var @event = new PersonAddedEvent();
 
-            return person;
-        }
+        _bus.Publish(@event);
+
+        return person;
     }
 }

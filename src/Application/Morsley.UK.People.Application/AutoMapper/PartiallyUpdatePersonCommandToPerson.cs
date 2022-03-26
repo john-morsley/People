@@ -1,10 +1,9 @@
-﻿namespace Morsley.UK.People.Application.AutoMapper
+﻿namespace Morsley.UK.People.Application.AutoMapper;
+
+public class PartiallyUpdatePersonCommandToPerson : Profile
 {
-    public class PartiallyUpdatePersonCommandToPerson : Profile
+    public PartiallyUpdatePersonCommandToPerson()
     {
-        public PartiallyUpdatePersonCommandToPerson()
-        {
-            CreateMap<PartiallyUpdatePersonCommand, Person>();
-        }
+        CreateMap<PartiallyUpdatePersonCommand, Person>();
     }
 }

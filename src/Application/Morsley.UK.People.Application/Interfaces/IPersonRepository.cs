@@ -1,6 +1,5 @@
-﻿namespace Morsley.UK.People.Application.Interfaces
+﻿namespace Morsley.UK.People.Application.Interfaces;
+
+public interface IPersonRepository : IRepository<Person>
 {
-    public interface IPersonRepository : IRepository<Person>
-    {
-    }
 }

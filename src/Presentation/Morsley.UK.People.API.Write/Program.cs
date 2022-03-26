@@ -24,7 +24,6 @@ try
     builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
     builder.Services.AddSingleton<IAuthorizationService, AuthorizationService>();
 
-
     var configuration = builder.Configuration;
 
     builder.Services.ConfigureSwaggerWithAuthentication();
@@ -35,6 +34,7 @@ try
         options.JsonSerializerOptions.Converters.Add(new PersonResourceConverter());
     });
 
+    builder.Services.AddMessaging(configuration);
     builder.Services.AddPersistence(configuration);
     builder.Services.AddApplication();
     builder.Services.AddContracts();
