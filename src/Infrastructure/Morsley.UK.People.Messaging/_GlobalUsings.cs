@@ -1,8 +1,11 @@
-﻿global using System;
-global using System.Text;
-global using RabbitMQ.Client;
+﻿global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
 global using Morsley.UK.People.Application.Events;
 global using Morsley.UK.People.Application.Interfaces;
-global using Microsoft.Extensions.Configuration;
-global using Microsoft.Extensions.DependencyInjection;
-global using Morsley.UK.People.Application.Interfaces;
+global using Morsley.UK.People.Messaging.Configuration;
+global using Newtonsoft.Json;
+global using RabbitMQ.Client;
+global using RabbitMQ.Client.Events;
+global using Serilog;
+global using System;
+global using System.Text;

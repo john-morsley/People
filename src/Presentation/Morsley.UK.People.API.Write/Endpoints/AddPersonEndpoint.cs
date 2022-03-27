@@ -58,9 +58,6 @@ public static class AddPersonEndpoint
         try
         {
             var person = await PersonHelper.AddPerson(request, mapper, mediator, logger);
-            //var addPersonCommand = mapper.Map<AddPersonCommand>(request);
-            //var person = await mediator.Send(addPersonCommand);
-            //var personResponse = mapper.Map<PersonResponse>(person);
             var response = PersonResponseHelper.From(person, mapper);
             return response;
         }

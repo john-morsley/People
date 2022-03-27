@@ -1,3 +1,5 @@
+using Morsley.UK.People.Messaging;
+
 Log.Logger = new LoggerConfiguration()
    .MinimumLevel.Verbose()
    .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)

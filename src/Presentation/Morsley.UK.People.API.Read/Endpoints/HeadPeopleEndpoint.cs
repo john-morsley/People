@@ -19,11 +19,13 @@ public static class HeadPeopleEndpoint
                     [FromQuery] string? search,
                     [FromQuery] string? sort,
                     HttpResponse httpResponse,
+                    IValidator<GetPeopleRequest> validator,
                     [FromServices] IMapper mapper,
                     [FromServices] IMediator mediator,
                     [FromServices] ILogger logger)
                     => 
-                    await HeadPeople(new GetPeopleRequest(pageNumber, pageSize, fields, filter, search, sort) , httpResponse,mapper, mediator, logger))
+                   //.Accepts<GetPeopleRequest>("application/json")
+                    await HeadPeople(new GetPeopleRequest(pageNumber, pageSize, fields, filter, search, sort), httpResponse, validator, mapper, mediator, logger))
                    //.Accepts<GetPeopleRequest>("application/json")
                    .Produces<IPagedList<PersonResponse>>(StatusCodes.Status200OK, "application/json")
                    .WithName("HeadPeople");
@@ -32,10 +34,13 @@ public static class HeadPeopleEndpoint
     private async static Task<IResult> HeadPeople(
         GetPeopleRequest request,
         HttpResponse httpResponse,
+        IValidator<GetPeopleRequest> validator,
         IMapper mapper,
         IMediator mediator,
         ILogger logger)
     {
+        if (!ValidatorHelper.IsRequestValid(request, validator, out var problemDetails)) return Results.UnprocessableEntity(problemDetails);
+
         var pageOfPersonResponses = await PeopleService.TryGetPeople(request, mapper, mediator, logger);
 
         if (pageOfPersonResponses.Count == 0) return Results.NoContent();

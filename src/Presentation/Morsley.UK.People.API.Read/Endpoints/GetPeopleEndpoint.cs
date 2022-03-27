@@ -12,18 +12,23 @@ public static class GetPeopleEndpoint
     public static void MapGetPeopleEndpoint(this WebApplication application)
     {
         application.MapMethods("/api/people", new[] { "GET" }, async (
-                    GetPeopleRequest request,
+                    [FromQuery] int? pageNumber,
+                    [FromQuery] int? pageSize,
+                    [FromQuery] string? fields,
+                    [FromQuery] string? filter,
+                    [FromQuery] string? search,
+                    [FromQuery] string? sort,
                     IValidator<GetPeopleRequest> validator,
                     IMapper mapper,
                     IMediator mediator,
                     ILogger logger)
                     =>
-                    await GetPeople(request, validator, mapper, mediator, logger))
-                   .Accepts<GetPeopleRequest>("application/json")
+                    await GetPeople(new GetPeopleRequest(pageNumber, pageSize, fields, filter, search, sort), validator, mapper, mediator, logger))
+                   //.Accepts<GetPeopleRequest>("application/json")
                    .Produces<IPagedList<PersonResponse>>(StatusCodes.Status200OK, "application/json")
                    .Produces(StatusCodes.Status422UnprocessableEntity)
                    .Produces(StatusCodes.Status500InternalServerError)
-                   .WithName("GetPeople").AllowAnonymous();
+                   .WithName("GetPeople");
     }
 
     private async static Task<IResult> GetPeople(

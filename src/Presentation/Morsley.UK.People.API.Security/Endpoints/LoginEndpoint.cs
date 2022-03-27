@@ -21,7 +21,7 @@ public static class LoginEndpoint
                    .AllowAnonymous()
                    .Accepts<LoginRequest>("application/json")
                    .Produces(StatusCodes.Status401Unauthorized)
-                   .Produces<LoginResponse>(StatusCodes.Status200OK, "application/json")
+                   .Produces<string>(StatusCodes.Status200OK, "application/json")
                    .WithName("Login");
     }
 
@@ -48,7 +48,7 @@ public static class LoginEndpoint
 
         var response = new LoginResponse(token);
 
-        return Results.Ok(response);
+        return Results.Ok(response.Token);
     }
 
     private static string GenerateToken(User user, IConfiguration configuration, ILogger logger)

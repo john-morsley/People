@@ -1,5 +1,3 @@
-using Morsley.UK.People.Messaging;
-
 Log.Logger = new LoggerConfiguration()
    .MinimumLevel.Verbose()
    .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
@@ -14,9 +12,9 @@ try
     var builder = Host.CreateDefaultBuilder(args);
 
     builder.UseSerilog((context, services, configuration) => configuration
-        .ReadFrom.Configuration(context.Configuration)
-        .ReadFrom.Services(services)
-        .Enrich.FromLogContext());
+           .ReadFrom.Configuration(context.Configuration)
+           .ReadFrom.Services(services)
+           .Enrich.FromLogContext());
 
     builder.ConfigureServices(services =>
         {
@@ -27,6 +25,7 @@ try
     var host = builder.Build();
 
     var bus = host.Services.GetService<IEventBus>();
+    if (bus == null) throw new InvalidOperationException("Could not get a handle on the queue!");
 
     bus.Subscribe<PersonAddedEvent, PersonAddedEventHandler>();
 
@@ -34,6 +33,6 @@ try
 }
 catch (Exception e)
 {
-    Console.WriteLine(e);
-    throw;
+    Log.Error("An unexpected error occurred!");
+    Console.WriteLine("The SYNCHRONIZER application has exited because on an unexpected error!");
 }
