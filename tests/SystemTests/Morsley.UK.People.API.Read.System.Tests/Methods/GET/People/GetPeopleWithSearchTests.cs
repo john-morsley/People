@@ -21,10 +21,10 @@ public class GetPeopleWithSearchTests : SecuredApplicationTestFixture<ReadProgra
         const int pageNumber = 1;
         const int pageSize = 10;
 
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
         var numberOfExpectedUsers = UserDataForSearch.Split('|').Length;
-        var users = AddTestPeopleToDatabase(usersData);
-        NumberOfPeopleInDatabase().Should().Be(numberOfExpectedUsers);
+        var users = DatabaseTestFixture.AddTestPeopleToDatabase(usersData);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(numberOfExpectedUsers);
 
         await AuthenticateAsync(Username, Password);
 
@@ -33,7 +33,7 @@ public class GetPeopleWithSearchTests : SecuredApplicationTestFixture<ReadProgra
         var response = await HttpClient!.GetAsync(url);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(numberOfExpectedUsers);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(numberOfExpectedUsers);
 
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);

@@ -19,7 +19,7 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
     public async Task Given_User_Exists___When_Replace_Patch_Partial_Update_User___Then_200_OK_And_User_Partially_Updated()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         var billGates = new Person
         {
@@ -29,13 +29,13 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
             Gender = Gender.Cisgender,
             DateOfBirth = new DateTime(1955, 10, 28, 0, 0, 0, DateTimeKind.Utc)
         };
-        AddPersonToDatabase(billGates);
+        DatabaseTestFixture.AddPersonToDatabase(billGates);
 
-        NumberOfPeopleInDatabase().Should().Be(1);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
 
         var replacementFirstName = "William";
 
-        NumberOfPeopleInDatabase().Should().Be(1);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
 
         await AuthenticateAsync(Username, Password);
 
@@ -49,7 +49,7 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
         var httpResponse = await HttpClient!.PatchAsync(url, payload);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(1);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
 
         httpResponse.IsSuccessStatusCode.Should().BeTrue();
         httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -57,7 +57,7 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
         var content = await httpResponse.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var actualUser = GetPersonFromDatabase(billGates.Id);
+        var actualUser = DatabaseTestFixture.GetPersonFromDatabase(billGates.Id);
         actualUser.Should().NotBeNull();
         actualUser.FirstName.Should().Be(replacementFirstName);
 
@@ -82,13 +82,13 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
     public async Task Given_User_Exists___When_Remove_Patch_Partial_Update_User___Then_200_OK_And_User_Partially_Updated()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
-        var personToBeUpdated = GenerateTestPerson();
+        var personToBeUpdated = DatabaseTestFixture.GenerateTestPerson();
         personToBeUpdated.Sex = Sex.Male;
-        AddPersonToDatabase(personToBeUpdated);
+        DatabaseTestFixture.AddPersonToDatabase(personToBeUpdated);
 
-        NumberOfPeopleInDatabase().Should().Be(1);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
 
         await AuthenticateAsync(Username, Password);
 
@@ -104,14 +104,14 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
         var httpResponse = await HttpClient!.PatchAsync(url, payload);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(1);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
         httpResponse.IsSuccessStatusCode.Should().BeTrue();
         httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await httpResponse.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var actualUser = GetPersonFromDatabase(personToBeUpdated.Id);
+        var actualUser = DatabaseTestFixture.GetPersonFromDatabase(personToBeUpdated.Id);
         actualUser.Should().NotBeNull();
         actualUser.Gender.Should().BeNull();
         actualUser.Sex.Should().BeNull();
@@ -145,12 +145,12 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
     public async Task Given_User_Exists___When_Add_Patch_Partial_Update_User___Then_200_OK_And_User_Partially_Updated()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         var alanTuring = new Person { FirstName = "Alan", LastName = "Turing" };
-        AddPersonToDatabase(alanTuring);
+        DatabaseTestFixture.AddPersonToDatabase(alanTuring);
 
-        NumberOfPeopleInDatabase().Should().Be(1);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
 
         await AuthenticateAsync(Username, Password);
 
@@ -166,14 +166,14 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
         var httpResponse = await HttpClient!.PatchAsync(url, payload);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(1);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
 
         httpResponse.IsSuccessStatusCode.Should().BeTrue();
         httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await httpResponse.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
-        var actualUser = GetPersonFromDatabase(alanTuring.Id);
+        var actualUser = DatabaseTestFixture.GetPersonFromDatabase(alanTuring.Id);
         actualUser.Should().NotBeNull();
         actualUser.Gender.Should().Be(Gender.Bigender);
         actualUser.Sex.Should().Be(Sex.Male);
@@ -210,12 +210,12 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
     public async Task Given_User_Exists___When_Copy_Patch_Partial_Update_User___Then_200_OK_And_User_Partially_Updated()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
-        var personToBeUpdated = GenerateTestPerson();
-        AddPersonToDatabase(personToBeUpdated);
+        var personToBeUpdated = DatabaseTestFixture.GenerateTestPerson();
+        DatabaseTestFixture.AddPersonToDatabase(personToBeUpdated);
 
-        NumberOfPeopleInDatabase().Should().Be(1);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
 
         await AuthenticateAsync(Username, Password);
 
@@ -229,7 +229,7 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
         var httpResponse = await HttpClient!.PatchAsync(url, payload);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(1);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
 
         httpResponse.IsSuccessStatusCode.Should().BeTrue();
         httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -237,7 +237,7 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
         var content = await httpResponse.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var actualUser = GetPersonFromDatabase(personToBeUpdated.Id);
+        var actualUser = DatabaseTestFixture.GetPersonFromDatabase(personToBeUpdated.Id);
         actualUser.Should().NotBeNull();
         actualUser.LastName.Should().Be(personToBeUpdated.FirstName);
 
@@ -263,7 +263,7 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
     public async Task Given_Person_Does_Not_Exist___When_Patch_Partial_Update_Person___Then_201_Created_And_Person_Added()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -279,7 +279,7 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
         var result = await HttpClient!.PatchAsync(url, payload);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(1);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -309,7 +309,7 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
         result.Headers.Location.Should().Be($"https://localhost/api/person/{userId}");
 
         // - Database
-        var actualUser = GetPersonFromDatabase(userId);
+        var actualUser = DatabaseTestFixture.GetPersonFromDatabase(userId);
         actualUser.Should().NotBeNull();
         ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualUser, "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
 
@@ -337,7 +337,7 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
     {
         // Arrange...
         var userId = Guid.NewGuid();
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -354,7 +354,7 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
         var httpResponse = await HttpClient!.PatchAsync(url, payload);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         httpResponse.IsSuccessStatusCode.Should().BeFalse();
         httpResponse.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
@@ -375,12 +375,12 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
     public async Task Given_Person_Exists___When_Partial_Update_For_Property_That_Does_Not_Exist___Then_422_UnprocessableEntity_Problem_Details()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
-        var personToBeUpdated = GenerateTestPerson();
-        AddPersonToDatabase(personToBeUpdated);
+        var personToBeUpdated = DatabaseTestFixture.GenerateTestPerson();
+        DatabaseTestFixture.AddPersonToDatabase(personToBeUpdated);
 
-        NumberOfPeopleInDatabase().Should().Be(1);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
 
         await AuthenticateAsync(Username, Password);
 
@@ -397,7 +397,7 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
         var httpResponse = await HttpClient!.PatchAsync(url, payload);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(1);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
 
         httpResponse.IsSuccessStatusCode.Should().BeFalse();
         httpResponse.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
@@ -418,7 +418,7 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
     {
         // Arrange...
         var userId = Guid.NewGuid();
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
         var url = $"/api/person/{userId}";
         var payload = new StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
 
@@ -426,7 +426,7 @@ public class PATCH_PartiallyUpdatePerson : SecuredApplicationTestFixture<WritePr
         var httpResponse = await HttpClient!.PatchAsync(url, payload);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         httpResponse.IsSuccessStatusCode.Should().BeFalse();
         httpResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);

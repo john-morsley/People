@@ -1,14 +1,14 @@
 ﻿namespace Morsley.UK.People.Test.Fixture;
 
-public class MongoDBInDocker : InDocker
+public class RabbitMQInDocker : InDocker
 {
-    public const string MONGODB_IMAGE = "mongo";
-    public const string MONGODB_IMAGE_TAG = "5";
-    public const string MONGODB_CONTAINER_NAME = "IntegrationTesting_MongoDB";
-    public const string MONGODB_AUTHENTICATION_MECHANISM = "SCRAM-SHA-1";
-    //public const int MONGODB_PORT = 27017;
+    public const string RABBITMQ_IMAGE = "rabbitmq";
+    public const string RABBITMQ_IMAGE_TAG = "3";
+    public const string RABBITMQ_CONTAINER_NAME = "IntegrationTesting_RabbitMQ";
+    //public const string RABBITMQ_AUTHENTICATION_MECHANISM = "SCRAM-SHA-1";
+    //public const int RABBITMQ_PORT = 5672;
 
-    public MongoDBInDocker(string username, string password, int port) : base(username, password, port) { }
+    public RabbitMQInDocker(string username, string password, int port) : base(username, password, port) { }
 
     public async override Task<(string containerId, int port)> EnsureDockerStartedAndGetContainerIdAndPortAsync()
     {
@@ -18,19 +18,19 @@ public class MongoDBInDocker : InDocker
         var freePort = GetFreePort();
 
         // This call ensures that the latest Docker image is pulled
-        var imagesCreateParameters = new ImagesCreateParameters { FromImage = $"{MONGODB_IMAGE}:{MONGODB_IMAGE_TAG}" };
+        var imagesCreateParameters = new ImagesCreateParameters { FromImage = $"{RABBITMQ_IMAGE}:{RABBITMQ_IMAGE_TAG}" };
         await dockerClient.Images.CreateImageAsync(imagesCreateParameters, null, new Progress<JSONMessage>());
 
         var container = await dockerClient
             .Containers
             .CreateContainerAsync(new CreateContainerParameters
             {
-                Name = MONGODB_CONTAINER_NAME,
-                Image = $"{MONGODB_IMAGE}:{MONGODB_IMAGE_TAG}",
+                Name = RABBITMQ_CONTAINER_NAME,
+                Image = $"{RABBITMQ_IMAGE}:{RABBITMQ_IMAGE_TAG}",
                 Env = new List<string>
                 {
-                    $"MONGO_INITDB_ROOT_USERNAME={Username}",
-                    $"MONGO_INITDB_ROOT_PASSWORD={Password}"
+                    $"RABBITMQ_DEFAULT_USER={Username}",
+                    $"RABBITMQ_DEFAULT_PASS={Password}"
                 },
                 HostConfig = new HostConfig
                 {
@@ -51,7 +51,7 @@ public class MongoDBInDocker : InDocker
             });
 
         await dockerClient.Containers.StartContainerAsync(container.ID, new ContainerStartParameters());
-        //await WaitUntilDatabaseAvailableAsync(Username, Password, freePort);
+        //await WaitUntilBusAvailableAsync(Username, Password, freePort);
 
         return (container.ID, freePort);
     }
@@ -60,7 +60,7 @@ public class MongoDBInDocker : InDocker
     //{
     //    var dockerClient = GetDockerClient();
     //    var containers = await dockerClient.Containers.ListContainersAsync(new ContainersListParameters() { All = true });
-    //    //var existingContainer = await containers.Where(c => c.Names.Any(n => n.Contains(MONGODB_CONTAINER_NAME))).FirstOrDefault;
+    //    //var existingContainer = await containers.Where(c => c.Names.Any(n => n.Contains(RABBITMQ_CONTAINER_NAME))).FirstOrDefault;
     //    //return existingContainer.Port;
 
     //    throw new NotImplementedException();
@@ -83,7 +83,7 @@ public class MongoDBInDocker : InDocker
 
         var runningContainers = await dockerClient.Containers.ListContainersAsync(new ContainersListParameters() { All = true });
 
-        foreach (var runningContainer in runningContainers.Where(cont => cont.Names.Any(n => n.Contains(MONGODB_CONTAINER_NAME))))
+        foreach (var runningContainer in runningContainers.Where(cont => cont.Names.Any(n => n.Contains(RABBITMQ_CONTAINER_NAME))))
         {
             try
             {
@@ -109,7 +109,7 @@ public class MongoDBInDocker : InDocker
         await dockerClient.Volumes.RemoveAsync(volumeName);
     }
 
-    private async static Task WaitUntilDatabaseAvailableAsync(string username, string password, int databasePort)
+    private async static Task WaitUntilBusAvailableAsync(string username, string password, int busPort)
     {
         var start = DateTime.UtcNow;
         const int maxWaitTimeSeconds = 60;
@@ -118,18 +118,29 @@ public class MongoDBInDocker : InDocker
         {
             try
             {
-                var internalIdentity = new MongoInternalIdentity("admin", username);
-                var passwordEvidence = new PasswordEvidence(password);
-                var mongoCredential = new MongoCredential(MONGODB_AUTHENTICATION_MECHANISM, internalIdentity, passwordEvidence);
+                //var internalIdentity = new MongoInternalIdentity("admin", username);
+    //            var passwordEvidence = new PasswordEvidence(password);
+    //            //var mongoCredential = new MongoCredential(MONGODB_AUTHENTICATION_MECHANISM, internalIdentity, passwordEvidence);
 
-                var mongoClientSettings = new MongoClientSettings
-                {
-                    Credential = mongoCredential,
-                    Server = new MongoServerAddress("localhost", databasePort)
-                };
+    //            var mongoClientSettings = new MongoClientSettings
+    //            {
+    //                Credential = mongoCredential,
+    //                Server = new MongoServerAddress("localhost", databasePort)
+    //            };
 
-                var client = new MongoClient(mongoClientSettings);
-                var instance = client.GetDatabase(MONGODB_CONTAINER_NAME);
+    //            var client = new MongoClient(mongoClientSettings);
+    //            var instance = client.GetDatabase(MONGODB_CONTAINER_NAME);
+
+                var factory = new ConnectionFactory();
+
+                factory.UserName = username;
+                factory.Password = password;
+                factory.HostName = "localhost";
+                factory.Port = busPort;
+
+                var connection = factory.CreateConnection();
+
+                
 
                 connectionEstablished = true;
             }
@@ -159,6 +170,6 @@ public class MongoDBInDocker : InDocker
 
     public string ConnectionString()
     {
-        return $"mongodb://{Username}:{Password}@localhost:{Port}";
+        return $"amqp://{Username}:{Password}@localhost:{Port}";
     }
 }

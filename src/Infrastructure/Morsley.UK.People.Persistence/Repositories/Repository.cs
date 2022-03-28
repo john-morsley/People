@@ -17,7 +17,9 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
     {
         try
         {
-            return await entitycollection.Find<TEntity>(entity => entity.Id == id).AnyAsync();
+            
+            var entity = await entitycollection.Find(entity => entity.Id == id).AnyAsync();
+            return entity;
         }
         catch (Exception e)
         {
@@ -30,7 +32,8 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
     {
         try
         {
-            return await entitycollection.Find<TEntity>(entity => entity.Id == id).SingleOrDefaultAsync();
+            var entity = await entitycollection.Find(entity => entity.Id == id).SingleOrDefaultAsync();
+            return entity;
         }
         catch (Exception e)
         {

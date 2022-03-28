@@ -34,6 +34,8 @@ public static class AddPersonEndpoint
         IMediator mediator, 
         ILogger logger)
     {
+        logger.Debug("AddPerson");
+
         if (!ValidatorHelper.IsRequestValid(request, validator, out var problemDetails)) return Results.UnprocessableEntity(problemDetails);
 
         var personResponse = await TryAddPerson(request, mapper, mediator, logger);

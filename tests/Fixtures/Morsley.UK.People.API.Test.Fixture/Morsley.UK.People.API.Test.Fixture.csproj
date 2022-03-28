@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\..\src\Common\Morsley.UK.People.Common\Morsley.UK.People.Common.csproj" />
     <ProjectReference Include="..\..\..\src\Infrastructure\Morsley.UK.People.Persistence\Morsley.UK.People.Persistence.csproj" />
     <ProjectReference Include="..\..\..\src\Presentation\Morsley.UK.People.API.Contracts\Morsley.UK.People.API.Contracts.csproj" />
+    <ProjectReference Include="..\..\Common\Morsley.UK.People.Tests.Common\Morsley.UK.People.Tests.Common.csproj" />
     <ProjectReference Include="..\..\Temp\Morsley.UK.People.Test.Fixture\Morsley.UK.People.Test.Fixture.csproj" />
   </ItemGroup>
 

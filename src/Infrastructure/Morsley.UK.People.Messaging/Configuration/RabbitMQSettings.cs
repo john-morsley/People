@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.Messaging.Configuration;
 
-internal class RabbitMQSettings
+public class RabbitMQSettings
 {
     public string? Host { get; set; }
 

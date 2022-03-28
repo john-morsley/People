@@ -2,26 +2,35 @@
 
 public class EventBus : IEventBus
 {
+    private readonly IConfiguration _configuration;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger _logger;
 
-    private RabbitMQSettings? _rabbitMQSettings;
+    //private RabbitMQSettings? _rabbitMQSettings;
 
     private readonly Dictionary<string, List<Type>> _eventHandlers;
     private readonly List<Type> _eventTypes;
 
     public EventBus(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, ILogger logger)
     {
+        _configuration = configuration;
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
 
-        var section = configuration.GetSection(nameof(RabbitMQSettings));
-        _rabbitMQSettings = section.Get<RabbitMQSettings>();
+        //var section = configuration.GetSection(nameof(RabbitMQSettings));
+        //_rabbitMQSettings = section.Get<RabbitMQSettings>();
 
         // ToDo --> Are the above settings valid?
 
         _eventTypes = new List<Type>();
         _eventHandlers = new Dictionary<string, List<Type>>();
+    }
+
+    private RabbitMQSettings GetRabbitMQSettings()
+    {
+        var section = _configuration.GetSection(nameof(RabbitMQSettings));
+        var rabbitMQSettings = section.Get<RabbitMQSettings>();
+        return rabbitMQSettings;
     }
 
     /// <summary>
@@ -34,11 +43,12 @@ public class EventBus : IEventBus
     {
         var factory = GetConnectionFactory<T>();
 
+        var settings = GetRabbitMQSettings();
         using var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();
-        channel.QueueBind(_rabbitMQSettings!.QueueName, _rabbitMQSettings!.QueueName, null);
+        //channel.QueueBind(settings!.QueueName, settings!.QueueName, null);
         var eventName = @event.GetType().Name;
-        channel.QueueDeclare(_rabbitMQSettings!.QueueName, false, false, false, null);
+        channel.QueueDeclare(settings!.QueueName, false, false, false, null);
         var message = JsonConvert.SerializeObject(@event);
         var body = Encoding.UTF8.GetBytes(message);
         channel.BasicPublish("", eventName, null, body);
@@ -77,27 +87,31 @@ public class EventBus : IEventBus
 
     private void StartBasicConsumer<T>()
     {
+        var settings = GetRabbitMQSettings();
+
         var factory = GetConnectionFactory<T>();
 
         var connection = factory.CreateConnection();
         var channel = connection.CreateModel();
 
         var eventName = typeof(T).Name;
-        channel.QueueDeclare(_rabbitMQSettings!.QueueName, false, false, false, null);
+        channel.QueueDeclare(settings!.QueueName, false, false, false, null);
 
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.Received += ConsumerReceived;
 
-        channel.BasicConsume(_rabbitMQSettings!.QueueName, false, consumer);
+        channel.BasicConsume(settings!.QueueName, false, consumer);
     }
 
     private ConnectionFactory GetConnectionFactory<T>()
     {
-        var factory = new ConnectionFactory()
+        var settings = GetRabbitMQSettings();
+        var factory = new ConnectionFactory
         {
-            HostName = _rabbitMQSettings!.Host,
-            UserName = _rabbitMQSettings!.Username,
-            Password = _rabbitMQSettings!.Password,
+            HostName = settings!.Host,
+            Port = int.Parse(settings!.Port),
+            UserName = settings!.Username,
+            Password = settings!.Password,
             DispatchConsumersAsync = true
         };
         return factory;
@@ -137,7 +151,6 @@ public class EventBus : IEventBus
                     var concreteType = typeof(IEventHandler<>).MakeGenericType(eventType);
 
                     await ((Task)concreteType.GetMethod("Handle").Invoke(handler, new object[] { @event }));
-
                 }
             }
         }

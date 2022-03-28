@@ -1,29 +1,71 @@
 ﻿namespace Morsley.UK.People.API.Test.Fixture;
 
-public abstract class ApplicationTestFixture<TProgram> : PeopleTestFixture
-    where TProgram : class
+public abstract class ApplicationTestFixture<TProgram> where TProgram : class
 {
+    protected bool HasBus = false;
+    protected bool HasDatabase = false;
+    
+    // Test Fixture for the People Bus...
+    protected BusTestFixture? BusTestFixture;
+
+    // Test Fixture for the People Database...
+    protected DatabaseTestFixture? DatabaseTestFixture;
+
+    // The HttpClient to hit the application under test...
     protected HttpClient? HttpClient;
-    protected MongoContext? MongoContext;
 
     private int _applicationPort;
+
+    protected global::AutoFixture.Fixture? AutoFixture;
 
     protected int ApplicationPort
     {
         get
         {
-            if (_applicationPort == 0) _applicationPort = GetApplicationPort(Configuration);
+            if (_applicationPort == 0) _applicationPort = GetApplicationPort(DatabaseTestFixture.Configuration);
             return _applicationPort;
         }
     }
 
-    [SetUp]
-    protected override void SetUp()
+    public ApplicationTestFixture()
     {
-        MongoContext = new MongoContext(Configuration);
-        MongoContext.IsHealthy().Should().BeTrue();
+        var name = typeof(TProgram).Name;
+        if (name.Contains("Read"))
+        {
+            HasDatabase = true;
+        }
+        else if (name.Contains("Write"))
+        {
+            HasBus = true;
+            HasDatabase = true;
+        }
 
-        NumberOfPeopleInDatabase().Should().Be(0);
+        AutoFixture = new global::AutoFixture.Fixture();
+        AutoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
+        AutoFixture.Customizations.Add(new AddPersonRequestSpecimenBuilder());
+    }
+
+    [OneTimeSetUp]
+    protected async virtual Task OneTimeSetUp()
+    {
+        if (HasBus)
+        {
+            BusTestFixture = new BusTestFixture();
+            await BusTestFixture.OneTimeSetUp();
+        }
+
+        if (HasDatabase)
+        {
+            DatabaseTestFixture = new DatabaseTestFixture();
+            await DatabaseTestFixture.OneTimeSetUp();
+        }
+    }
+
+    [SetUp]
+    protected virtual void SetUp()
+    {
+        if(HasBus) BusTestFixture!.SetUp();
+        if(HasDatabase) DatabaseTestFixture!.SetUp();
 
         var factory = new WebApplicationFactory<TProgram>()
             .WithWebHostBuilder(builder =>
@@ -37,34 +79,42 @@ public abstract class ApplicationTestFixture<TProgram> : PeopleTestFixture
                 );
                 builder.ConfigureAppConfiguration(configuration =>
                 {
-                    configuration.AddConfiguration(Configuration);
+                    configuration.AddConfiguration(GetConfiguration());
                 });
             });
         HttpClient = factory.CreateClient(new WebApplicationFactoryClientOptions
         {
             BaseAddress = new System.Uri($"https://localhost:{ApplicationPort}")
         });
-
-        base.SetUp();
     }
 
-    protected int GetApplicationPort(IConfiguration configuration)
+    public IConfiguration GetConfiguration()
     {
-        var potentialPort = configuration["ApplicationPort"];
+        var builder = new ConfigurationBuilder();
 
-        if (string.IsNullOrEmpty(potentialPort)) throw new InvalidProgramException("Invalid configuration --> Port is missing!");
+        var additional = GetInMemoryConfiguration();
 
-        if (int.TryParse(potentialPort, out var port)) return port;
+        if (additional.Count > 0) builder.AddInMemoryCollection(additional);
 
-        throw new InvalidProgramException("Invalid configuration --> port is not a number!");
+        IConfiguration configuration = builder.Build();
+
+        return configuration;
     }
 
     [TearDown]
-    protected override void TearDown()
+    protected virtual void TearDown()
     {
-        base.TearDown();
+        BusTestFixture?.TearDown();
+        DatabaseTestFixture?.TearDown();
 
         HttpClient?.Dispose();
+    }
+
+    [OneTimeTearDown]
+    protected async virtual Task OneTimeTearDown()
+    {
+        if(HasBus) await BusTestFixture!.OneTimeTearDown();
+        if(HasDatabase) await DatabaseTestFixture!.OneTimeTearDown();
     }
 
     protected static string AddToFieldsIfMissing(string toAdd, string fields)
@@ -175,19 +225,51 @@ public abstract class ApplicationTestFixture<TProgram> : PeopleTestFixture
         return request;
     }
 
-    protected UpdatePersonRequest GenerateTestUpdatePersonRequest(Guid personId, Sex? sex = null, Gender? gender = null, string? dateOfBirth = null)
+    protected UpdatePersonRequest GenerateTestUpdatePersonRequest(
+        Guid personId, 
+        Sex? sex = null, 
+        Gender? gender = null, 
+        string? dateOfBirth = null)
     {
         var testUpdatePerson = AutoFixture.Create<UpdatePersonRequest>();
         testUpdatePerson.Id = personId;
-        if (testUpdatePerson.Sex == sex) testUpdatePerson.Sex = GenerateDifferentSex(sex);
-        if (testUpdatePerson.Gender == gender) testUpdatePerson.Gender = GenerateDifferentGender(gender);
-        testUpdatePerson.DateOfBirth = GenerateDifferentDateOfBirth(dateOfBirth);
+        if (testUpdatePerson.Sex == sex) testUpdatePerson.Sex = sex.GenerateDifferentSex();
+        if (testUpdatePerson.Gender == gender) testUpdatePerson.Gender = gender.GenerateDifferentGender();
+        testUpdatePerson.DateOfBirth = dateOfBirth.GenerateDifferentDate();
         return testUpdatePerson;
     }
 
-    protected override Dictionary<string, string> GetInMemoryConfiguration()
+    protected int GetApplicationPort(IConfiguration configuration)
     {
-        var additional = base.GetInMemoryConfiguration();
+        var potentialPort = configuration["ApplicationPort"];
+
+        if (string.IsNullOrEmpty(potentialPort)) throw new InvalidProgramException("Invalid configuration --> Port is missing!");
+
+        if (int.TryParse(potentialPort, out var port)) return port;
+
+        throw new InvalidProgramException("Invalid configuration --> port is not a number!");
+    }
+
+    protected virtual Dictionary<string, string> GetInMemoryConfiguration()
+    {
+        var additional = new Dictionary<string, string>();
+
+        if (HasBus)
+        {
+            foreach (var additionalBusConfiguration in BusTestFixture!.GetInMemoryConfiguration())
+            {
+                additional.Add(additionalBusConfiguration.Key, additionalBusConfiguration.Value);
+            }
+        }
+
+        if (HasDatabase)
+        {
+            foreach (var additionalDatabaseConfiguration in DatabaseTestFixture!.GetInMemoryConfiguration())
+            {
+                additional.Add(additionalDatabaseConfiguration.Key, additionalDatabaseConfiguration.Value);
+            }
+        }
+
         return additional;
     }
 

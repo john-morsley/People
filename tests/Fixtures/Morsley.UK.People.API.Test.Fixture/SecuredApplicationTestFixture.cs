@@ -1,7 +1,6 @@
 ﻿namespace Morsley.UK.People.API.Test.Fixture;
 
-public abstract class SecuredApplicationTestFixture<TProgram> : ApplicationTestFixture<TProgram>
-    where TProgram : class
+public abstract class SecuredApplicationTestFixture<TProgram> : ApplicationTestFixture<TProgram> where TProgram : class
 {
     protected const string Username = "johnmorsley";
     protected const string Password = "P@$$w0rd!";
@@ -90,17 +89,17 @@ public abstract class SecuredApplicationTestFixture<TProgram> : ApplicationTestF
     //    return configuration;
     //}
 
-    protected override Dictionary<string, string> GetInMemoryConfiguration()
-    {
-        var additional = base.GetInMemoryConfiguration();
-        additional.Add("Jwt:Key", GetJwtKey());
-        additional.Add("Jwt:Audience", GetJwtAudience());
-        return additional;
-    }
+    //protected override Dictionary<string, string> GetInMemoryConfiguration()
+    //{
+    //    var additional = base.GetInMemoryConfiguration();
+    //    additional.Add("Jwt:Key", GetJwtKey());
+    //    additional.Add("Jwt:Audience", GetJwtAudience());
+    //    return additional;
+    //}
 
     protected string GetJwtAudience()
     {
-        var port = GetApplicationPort(Configuration);
+        var port = GetApplicationPort(DatabaseTestFixture.Configuration);
         var key = $"https://localhost:{port}";
         if (string.IsNullOrWhiteSpace(key)) throw new InvalidOperationException($"Missing environment variable: {Constants.Morsley_UK_People_API_Security_JWT_KEY_Variable}");
         return key;

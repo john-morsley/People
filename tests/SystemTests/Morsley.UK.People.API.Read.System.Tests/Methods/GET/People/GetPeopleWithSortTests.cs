@@ -42,9 +42,9 @@ public class GetPeopleWithSortTests : SecuredApplicationTestFixture<ReadProgram>
         const int pageNumber = 1;
         const int pageSize = 10;
 
-        NumberOfPeopleInDatabase().Should().Be(0);
-        var users = AddTestPeopleToDatabase(testUsersData);
-        NumberOfPeopleInDatabase().Should().Be(users.Count);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
+        var users = DatabaseTestFixture.AddTestPeopleToDatabase(testUsersData);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(users.Count);
 
         await AuthenticateAsync(Username, Password);
 
@@ -53,7 +53,7 @@ public class GetPeopleWithSortTests : SecuredApplicationTestFixture<ReadProgram>
         var response = await HttpClient!.GetAsync(url);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(users.Count);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(users.Count);
 
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -107,7 +107,7 @@ public class GetPeopleWithSortTests : SecuredApplicationTestFixture<ReadProgram>
         string invalidSort)
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         var url = $"/api/people?sort={invalidSort}";
 
@@ -117,7 +117,7 @@ public class GetPeopleWithSortTests : SecuredApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);

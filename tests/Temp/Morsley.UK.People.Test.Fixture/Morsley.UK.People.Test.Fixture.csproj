@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Domain\Morsley.UK.People.Domain\Morsley.UK.People.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\Infrastructure\Morsley.UK.People.Messaging\Morsley.UK.People.Messaging.csproj" />
     <ProjectReference Include="..\..\..\src\Infrastructure\Morsley.UK.People.Persistence\Morsley.UK.People.Persistence.csproj" />
     <ProjectReference Include="..\..\..\src\Presentation\Morsley.UK.People.API.Contracts\Morsley.UK.People.API.Contracts.csproj" />
   </ItemGroup>

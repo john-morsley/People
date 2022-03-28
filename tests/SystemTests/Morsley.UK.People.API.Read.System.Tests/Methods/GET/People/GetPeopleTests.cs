@@ -10,7 +10,7 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
         const int pageNumber = 1;
         const int pageSize = 10;
 
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -19,7 +19,7 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -42,9 +42,9 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
         bool hasAfterLink)
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
-        var expectedUsers = AddPeopleToDatabase(numberOfUsers);
-        NumberOfPeopleInDatabase().Should().Be(numberOfUsers);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
+        var expectedUsers = DatabaseTestFixture.AddPeopleToDatabase(numberOfUsers);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(numberOfUsers);
 
         await AuthenticateAsync(Username, Password);
 
@@ -53,7 +53,7 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(numberOfUsers);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(numberOfUsers);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -92,9 +92,9 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
         int pageSize)
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
-        AddPeopleToDatabase(numberOfUsers);
-        NumberOfPeopleInDatabase().Should().Be(numberOfUsers);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.AddPeopleToDatabase(numberOfUsers);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(numberOfUsers);
 
         var url = $"/api/people?pageNumber={pageNumber}&pageSize={pageSize}";
 
@@ -105,7 +105,7 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(numberOfUsers);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(numberOfUsers);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -135,19 +135,23 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
     /// </summary>
     /// <param name="pageNumber"></param>
     /// <param name="pageSize"></param>
+    /// <param name="errorKey"></param>
+    /// <param name="errorValue"></param>
     /// <notes>
     /// ToDo --> Fix this, so it validates the input and returns a problem details object
     /// </notes>
     [Test]
     [Category("Unhappy")]
-    [TestCase(0, 1)]
-    [TestCase(1, 0)]
+    [TestCase(0, 1, "PageNumber", "The pageNumber value is invalid. It must be greater than zero.")]
+    [TestCase(1, 0, "PageSize", "The pageSize value is invalid. It must be greater than zero.")]
     public async Task When_A_Page_Of_Users_Is_Requested_With_Invalid_Page_Parameters___Then_400_BadRequest(
         int pageNumber,
-        int pageSize)
+        int pageSize,
+        string errorKey,
+        string errorValue)
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -156,20 +160,19 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
-        //result.IsSuccessStatusCode.Should().BeFalse();
-        //result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
 
-        result.IsSuccessStatusCode.Should().BeTrue();
-        result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        //result.IsSuccessStatusCode.Should().BeTrue();
+        //result.StatusCode.Should().Be(HttpStatusCode.NoContent);
         
         var content = await result.Content.ReadAsStringAsync();
+        content.Length.Should().BeGreaterThan(0);
 
-        // ToDo --> Should contain problem details object
-        //content.Length.Should().BeGreaterThan(0);
-
-        content.Length.Should().Be(0);
+        var validationErrors = new Dictionary<string, string> {{ errorKey, errorValue }};
+        ProblemDetailsShouldContainValidationIssues(content, validationErrors);
     }
 
     //[Test]
@@ -180,10 +183,10 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
     //    const int pageNumber = 1;
     //    const int pageSize = 10;
 
-    //    NumberOfPeopleInDatabase().Should().Be(0);
+    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
     //    var expectedUser = GeneratedTestPerson();
     //    AddPersonToDatabase(expectedUser);
-    //    NumberOfPeopleInDatabase().Should().Be(1);
+    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
 
     //    var url = $"/api/v1/users?pageNumber={pageNumber}&PageSize={pageSize}";
 
@@ -191,7 +194,7 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
     //    var result = await HttpClient.GetAsync(url);
 
     //    // Assert...
-    //    NumberOfPeopleInDatabase().Should().Be(1);
+    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
 
     //    result.IsSuccessStatusCode.Should().BeTrue();
     //    result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -224,9 +227,9 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
         const int pageNumber = 1;
         const int pageSize = 10;
 
-        NumberOfPeopleInDatabase().Should().Be(0);
-        var expectedUsers = AddPeopleToDatabase(15);
-        NumberOfPeopleInDatabase().Should().Be(15);
+        DatabaseTestFixture!.NumberOfPeopleInDatabase().Should().Be(0);
+        var expectedUsers = DatabaseTestFixture.AddPeopleToDatabase(15);
+        DatabaseTestFixture!.NumberOfPeopleInDatabase().Should().Be(15);
 
         var url = $"/api/people?pageNumber={pageNumber}&PageSize={pageSize}";
 
@@ -236,7 +239,7 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(15);
+        DatabaseTestFixture!.NumberOfPeopleInDatabase().Should().Be(15);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -268,9 +271,9 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
     //    const int pageNumber = 1;
     //    const int pageSize = 10;
 
-    //    NumberOfPeopleInDatabase().Should().Be(0);
+    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
     //    var expectedUsers = AddPeopleToDatabase(15);
-    //    NumberOfPeopleInDatabase().Should().Be(15);
+    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(15);
 
     //    var url = $"/api/v1/users?pageNumber={pageNumber}&PageSize={pageSize}";
 
@@ -278,7 +281,7 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
     //    var result = await HttpClient.GetAsync(url);
 
     //    // Assert...
-    //    NumberOfPeopleInDatabase().Should().Be(15);
+    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(15);
 
     //    result.IsSuccessStatusCode.Should().BeTrue();
     //    result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -307,9 +310,9 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
     //public async Task Given_Multiple_Users_Exist___When_A_Page_Of_Users_Is_Requested_Without_Parameters___Then_200_OK_And_Page_Of_Users_Returned_Using_Default_Values()
     //{
     //    // Arrange...
-    //    NumberOfPeopleInDatabase().Should().Be(0);
+    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
     //    var expectedUsers = AddPeopleToDatabase(5);
-    //    NumberOfPeopleInDatabase().Should().Be(5);
+    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(5);
 
     //    const string url = "/api/v1/users";
 
@@ -317,7 +320,7 @@ public class GetPeopleTests : SecuredApplicationTestFixture<ReadProgram>
     //    var result = await HttpClient.GetAsync(url);
 
     //    // Assert...
-    //    NumberOfPeopleInDatabase().Should().Be(5);
+    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(5);
 
     //    result.IsSuccessStatusCode.Should().BeTrue();
     //    result.StatusCode.Should().Be(HttpStatusCode.OK);

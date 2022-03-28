@@ -13,19 +13,20 @@ public class POST_AddPerson : SecuredApplicationTestFixture<WriteProgram>
     public async Task Given_Person_Does_Not_Exist___When_Post_Add_Person___Then_200_OK_And_Person_Should_Be_Added()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
-        // Act...
         const string url = "/api/person";
         var addPersonRequest = GenerateAddPersonRequest();
         var addPersonRequestJson = System.Text.Json.JsonSerializer.Serialize(addPersonRequest);
         var payload = new StringContent(addPersonRequestJson, System.Text.Encoding.UTF8, "application/json");
+
+        // Act...
         var result = await HttpClient!.PostAsync(url, payload);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(1);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.Created);        
@@ -52,7 +53,7 @@ public class POST_AddPerson : SecuredApplicationTestFixture<WriteProgram>
         result.Headers.Location.Should().Be($"http://localhost/api/person/{personResource.Data.Id}");
 
         // - Database
-        var actualPerson = GetPersonFromDatabase(personResource.Data.Id);
+        var actualPerson = DatabaseTestFixture.GetPersonFromDatabase(personResource.Data.Id);
         ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualPerson, "Id", "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
     }
 
@@ -61,7 +62,7 @@ public class POST_AddPerson : SecuredApplicationTestFixture<WriteProgram>
     public async Task When_Post_Invalid_Data___Then_400_BadRequest_And_Errors_Object_Should_Detail_Issues()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -72,7 +73,7 @@ public class POST_AddPerson : SecuredApplicationTestFixture<WriteProgram>
         var result = await HttpClient.PostAsync(url, payload);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
@@ -91,7 +92,7 @@ public class POST_AddPerson : SecuredApplicationTestFixture<WriteProgram>
     public async Task When_Post_Invalid_Add_User___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -103,7 +104,7 @@ public class POST_AddPerson : SecuredApplicationTestFixture<WriteProgram>
         var result = await HttpClient!.PostAsync(url, payload);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
@@ -122,7 +123,7 @@ public class POST_AddPerson : SecuredApplicationTestFixture<WriteProgram>
     //public async Task When_An_Unsupported_Method_Is_Called___Then_405_MethodNotAllowed()
     //{
     //    // Arrange...
-    //    NumberOfPeopleInDatabase().Should().Be(0);
+    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
 
     //    await AuthenticateAsync(Username, Password);
 

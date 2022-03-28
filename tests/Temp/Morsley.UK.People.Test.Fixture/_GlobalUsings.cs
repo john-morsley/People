@@ -16,3 +16,7 @@ global using System.Globalization;
 global using System.Net;
 global using System.Net.Sockets;
 global using Morsley.UK.People.Test.Fixture.AutoFixture;
+global using Morsley.UK.People.Messaging.Configuration;
+global using Morsley.UK.People.Test.Fixture.Abstract;
+global using RabbitMQ.Client;
+

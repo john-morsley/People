@@ -1,41 +1,29 @@
-﻿using Morsley.UK.People.Test.Infrastructure;
+﻿namespace Morsley.UK.People.Test.Fixture;
 
-namespace Morsley.UK.People.Test.Fixture;
-
-public class DockerTestFixture
+public class DockerTestFixture<T> where T : InDocker
 {
-    private string? _dockerContainerId;
-    private int _dockerContainerPort;
+    public readonly InDocker InDocker;
 
-    private readonly string _username;
-    private readonly string _password;
-
-    public DockerTestFixture(string username, string password)
+    public DockerTestFixture(string username, string password, int port)
     {
-        _username = username;
-        _password = password;
+        InDocker = (T)Activator.CreateInstance(typeof(T), username, password, port);
     }
 
     public async Task RunBeforeTests()
     {
-        (_dockerContainerId, var dockerContainerPort) = 
-            await MongoDBInDocker.EnsureDockerStartedAndGetContainerIdAndPortAsync(_username, _password);
+        (string dockerContainerId, int dockerContainerPort) = await InDocker.EnsureDockerStartedAndGetContainerIdAndPortAsync();
 
-        _dockerContainerPort = Convert.ToInt32(dockerContainerPort);
+        InDocker.Port = Convert.ToInt32(dockerContainerPort);
+        InDocker.ContainerId = dockerContainerId;
     }
 
     public async Task RunAfterTests()
     {
-        await MongoDBInDocker.EnsureDockerContainersStoppedAndRemovedAsync(_dockerContainerId);
+        await InDocker.EnsureDockerContainersStoppedAndRemovedAsync(InDocker.ContainerId);
     }
 
     public int GetContainerPort()
     {
-        return _dockerContainerPort;
-    }
-
-    public string MongoDBConnectionString
-    {
-        get { return MongoDBInDocker.ConnectionString(_username, _password, _dockerContainerPort); }
+        return InDocker.Port;
     }
 }

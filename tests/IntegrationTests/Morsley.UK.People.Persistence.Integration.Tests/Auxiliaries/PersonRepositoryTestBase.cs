@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.Persistence.Integration.Tests.Auxiliaries;
 
-internal class PersonRepositoryTests : PeopleTestFixture
+internal class PersonRepositoryTests : DatabaseTestFixture
 {
     protected MongoContext? MongoContext;
 

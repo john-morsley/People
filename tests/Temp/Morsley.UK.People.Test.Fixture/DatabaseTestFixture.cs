@@ -1,43 +1,35 @@
 ﻿namespace Morsley.UK.People.Test.Fixture;
 
 [TestFixture]
-public class PeopleTestFixture
+public class DatabaseTestFixture
 {
-    //private const string TestPersonData = "FirstName:Charles,LastName:Babbage,Sex:Male|" +
-    //                                    "FirstName:George,LastName:Boole,Sex:Male|" +
-    //                                    "FirstName:John,LastName:Cleese,Sex:Male|" +
-    //                                    "FirstName:Jane,LastName:Doe,Sex:Female|" +
-    //                                    "FirstName:John,LastName:Doe,Sex:Male|" +
-    //                                    "FirstName:Tommy,LastName:Flowers,Sex:Male|" +
-    //                                    "FirstName:Jane,LastName:Goodall,Sex:Female|" +
-    //                                    "FirstName:Ada,LastName:Lovelace,Sex:Female|" +
-    //                                    "FirstName:Linus,LastName:Torvalds,Sex:Male|" +
-    //                                    "FirstName:Alan,LastName:Turing,Sex:Male";
-
-    protected DockerTestFixture? DockerTestFixture;
+    protected DockerTestFixture<MongoDBInDocker>? DockerTestFixture;
     protected global::AutoFixture.Fixture? AutoFixture;
 
-    protected IConfiguration? Configuration;
+    public IConfiguration? Configuration;
 
-    protected void LoadInitialConfiguration()
+    public DatabaseTestFixture()
     {
-        Configuration = GetConfiguration();
+        AutoFixture = new global::AutoFixture.Fixture();
+        AutoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
+        //AutoFixture.Customizations.Add(new AddPersonRequestSpecimenBuilder());
+        AutoFixture.Customizations.Add(new PersonSpecimenBuilder());
     }
 
     [OneTimeSetUp]
-    protected async Task OneTimeSetUp()
+    public async Task OneTimeSetUp()
     {
         LoadInitialConfiguration();
 
         var section = Configuration!.GetSection(nameof(MongoSettings));
         var settings = section.Get<MongoSettings>();
 
-        DockerTestFixture = new DockerTestFixture(settings.Username, settings.Password);
+        if (!int.TryParse(settings.Port, out var port))
+        {
+            throw new NotImplementedException("Port was not a number!");
+        }
 
-        AutoFixture = new global::AutoFixture.Fixture();
-        AutoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
-        AutoFixture.Customizations.Add(new AddPersonRequestSpecimenBuilder());
-        AutoFixture.Customizations.Add(new PersonSpecimenBuilder());
+        DockerTestFixture = new DockerTestFixture<MongoDBInDocker>(settings.Username, settings.Password, port);
 
         try
         {
@@ -49,30 +41,26 @@ public class PeopleTestFixture
         }
 
         LoadAdditionalConfiguration();
-    }
 
-    private void LoadAdditionalConfiguration()
-    {
-        var additionalConfiguration = GetInMemoryConfiguration();
-        Configuration = GetConfiguration(additionalConfiguration);
+        if (Configuration == null) Assert.Fail("Configuration should not be null!");
     }
 
     [SetUp]
-    protected virtual void SetUp()
+    public virtual void SetUp()
     {
         DeleteAllPeopleFromDatabase();
     }
 
     [TearDown]
-    protected virtual void TearDown()
+    public virtual void TearDown()
     {
         DeleteAllPeopleFromDatabase();
     }
 
     [OneTimeTearDown]
-    protected async Task OneTimeTearDown()
+    public async Task OneTimeTearDown()
     {
-        await DockerTestFixture!.RunAfterTests();
+        await DockerTestFixture?.RunAfterTests();
     }
 
     protected int ContainerPort
@@ -86,18 +74,23 @@ public class PeopleTestFixture
 
     private void DeleteAllPeopleFromDatabase()
     {
-        //var additional = GetInMemoryConfiguration();
-        //var configuration = GetConfiguration(additional);
-        var section = Configuration.GetSection(nameof(MongoSettings));
+        var section = Configuration!.GetSection(nameof(MongoSettings));
         var settings = section.Get<MongoSettings>();
-        var connectionString = DockerTestFixture!.MongoDBConnectionString;
+        var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
         var peopleTable = database.GetCollection<Person>(settings.TableName);
         peopleTable.DeleteMany("{}");
     }
 
-    protected virtual Dictionary<string, string> GetInMemoryConfiguration()
+    private string GetConnectionString()
+    {
+        var mongoDbInDocker = DockerTestFixture!.InDocker as MongoDBInDocker;
+
+        return mongoDbInDocker!.ConnectionString();
+    }
+
+    public Dictionary<string, string> GetInMemoryConfiguration()
     {
         var additional = new Dictionary<string, string>();
         if (DockerTestFixture != null) additional.Add("MongoSettings:Port", ContainerPort.ToString());
@@ -124,7 +117,7 @@ public class PeopleTestFixture
     //return configuration;
     //}
 
-    protected IList<Person> AddTestPeopleToDatabase(string personData)
+    public IList<Person> AddTestPeopleToDatabase(string personData)
     {
         var people = new List<Person>();
 
@@ -155,28 +148,24 @@ public class PeopleTestFixture
         return people;
     }
 
-    protected void AddPersonToDatabase(Person person)
+    public void AddPersonToDatabase(Person person)
     {
-        //var additional = GetInMemoryConfiguration();
-        //var configuration = GetConfiguration(additional);
-        var section = Configuration.GetSection(nameof(MongoSettings));
+        var section = Configuration!.GetSection(nameof(MongoSettings));
         var settings = section.Get<MongoSettings>();
-        var connectionString = DockerTestFixture!.MongoDBConnectionString;
+        var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
         var peopleTable = database.GetCollection<Person>(settings.TableName);
         peopleTable.InsertOne(person);
     }
 
-    protected IList<Person> AddPeopleToDatabase(int numberOfPeopleToAdd)
+    public IList<Person> AddPeopleToDatabase(int numberOfPeopleToAdd)
     {
         if (numberOfPeopleToAdd <= 0) return new List<Person>();
 
-        //var additional = GetInMemoryConfiguration();
-        //var configuration = GetConfiguration(additional);
-        var section = Configuration.GetSection(nameof(MongoSettings));
+        var section = Configuration!.GetSection(nameof(MongoSettings));
         var settings = section.Get<MongoSettings>();
-        var connectionString = DockerTestFixture!.MongoDBConnectionString;
+        var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
         var peopleTable = database.GetCollection<Person>(settings.TableName);
@@ -190,47 +179,15 @@ public class PeopleTestFixture
         return people;
     }
 
-    protected string GetTestString(string prepend = "")
-    {
-        return prepend + AutoFixture.Create<string>();
-    }
+    //protected string GetTestString(string prepend = "")
+    //{
+    //    return prepend + AutoFixture.Create<string>();
+    //}
 
-    protected string? GenerateDifferentDateOfBirth(string? dateOfBirth)
-    {
-        if (dateOfBirth == null ||
-            !DateTime.TryParseExact(dateOfBirth, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var dt))
-        {
-            return "2001-02-03";
-        }
-        return dt.ToString("yyyy-MM-dd");
-    }
-
-    protected Gender? GenerateDifferentGender(Gender? gender)
-    {
-        Gender? differentGender;
-        do
-        {
-            differentGender = AutoFixture.Create<Gender?>();
-        } while (differentGender == gender);
-
-        return differentGender;
-    }
-
-    protected Sex? GenerateDifferentSex(Sex? sex)
-    {
-        Sex? differentSex;
-        do
-        {
-            differentSex = AutoFixture.Create<Sex?>();
-        } while (differentSex == sex);
-
-        return differentSex;
-    }
-
-    protected Person GenerateTestPerson()
+    public Person GenerateTestPerson()
     {
         var person = AutoFixture.Create<Person>();
-        person.Created = new DateTime(2001, 01, 01);
+        person.Created = DateTime.UtcNow;
         person.Updated = null;
         return person;
     }
@@ -249,20 +206,18 @@ public class PeopleTestFixture
     //        return Person;
     //    }
 
-    protected Person GetPersonFromDatabase(Guid PersonId)
+    public Person GetPersonFromDatabase(Guid personId)
     {
-        //var additional = GetInMemoryConfiguration();
-        //var configuration = GetConfiguration(additional);
-        var section = Configuration.GetSection(nameof(MongoSettings));
+        var section = Configuration!.GetSection(nameof(MongoSettings));
         var settings = section.Get<MongoSettings>();
-        var connectionString = DockerTestFixture!.MongoDBConnectionString;
+        var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
         var mongoCollectionSettings = new MongoCollectionSettings();
         var peopleTable = database.GetCollection<Person>(settings.TableName, mongoCollectionSettings);
         var options = new FindOptions();
-        var Person = peopleTable.Find<Person>(Person => Person.Id == PersonId, options).SingleOrDefault();
-        return Person;
+        var person = peopleTable.Find<Person>(Person => Person.Id == personId, options).SingleOrDefault();
+        return person;
     }
 
     //    protected IQueryable<Person> GetPeopleFromDatabase()
@@ -278,13 +233,22 @@ public class PeopleTestFixture
     //        return peopleTable.AsQueryable();
     //    }
 
-    protected long NumberOfPeopleInDatabase()
+    private void LoadAdditionalConfiguration()
     {
-        //var additional = GetInMemoryConfiguration();
-        //var configuration = GetConfiguration(additional);
-        var section = Configuration.GetSection(nameof(MongoSettings));
+        var additionalConfiguration = GetInMemoryConfiguration();
+        Configuration = GetConfiguration(additionalConfiguration);
+    }
+
+    protected void LoadInitialConfiguration()
+    {
+        Configuration = GetConfiguration();
+    }
+
+    public long NumberOfPeopleInDatabase()
+    {
+        var section = Configuration!.GetSection(nameof(MongoSettings));
         var settings = section.Get<MongoSettings>();
-        var connectionString = DockerTestFixture!.MongoDBConnectionString;
+        var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(settings.DatabaseName);
         var peopleTable = database.GetCollection<Person>(settings.TableName);
