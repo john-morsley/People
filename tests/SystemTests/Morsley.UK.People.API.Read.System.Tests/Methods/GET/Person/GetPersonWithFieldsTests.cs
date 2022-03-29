@@ -2,7 +2,7 @@ using Morsley.UK.People.API.Contracts.Responses;
 
 namespace Morsley.UK.People.API.Read.System.Tests.Methods.GET.Person;
 
-public class GetPersonWithFieldsTests : SecuredApplicationTestFixture<ReadProgram>
+public class GetPersonWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
 {
     [Category("Happy")]
     [Test]    

@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.API.Read.System.Tests.Methods.POST;
 
-public class PostLoginTests : SecuredApplicationTestFixture<ReadProgram>
+public class PostLoginTests : ReadApplicationTestFixture<ReadProgram>
 {
     [Test]
     public async Task Trying_To_Authenticate___With_Invalid_Credentials___Should_Result_In_401_Unauthorized()

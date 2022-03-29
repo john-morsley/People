@@ -1,4 +1,15 @@
-﻿using System.Diagnostics;
+﻿//using Microsoft.Extensions.Hosting;
+
+//using Microsoft.Extensions.Hosting;
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Morsley.UK.People.Application.Events;
+using Morsley.UK.People.Application.Handlers;
+using Morsley.UK.People.Application.Interfaces;
+using Morsley.UK.People.Messaging;
+using Morsley.UK.People.Persistence.IoC;
+using Morsley.UK.People.Persistence.Repositories;
 
 namespace Morsley.UK.People.Test.Fixture;
 
@@ -10,12 +21,16 @@ public class BusTestFixture
 
     public IConfiguration? Configuration;
 
+    private IEventBus? _eventBus;
+
     public BusTestFixture()
     {
         //AutoFixture = new global::AutoFixture.Fixture();
         //AutoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
         //AutoFixture.Customizations.Add(new AddPersonRequestSpecimenBuilder());
         //AutoFixture.Customizations.Add(new PersonSpecimenBuilder());
+
+        //_eventBus = new EventBus();
     }
 
     [OneTimeSetUp]
@@ -49,6 +64,22 @@ public class BusTestFixture
         }
 
         LoadAdditionalConfiguration();
+
+        var builder = Host.CreateDefaultBuilder();
+
+        builder.ConfigureServices(services =>
+        {
+            services.AddSingleton<IEventBus, EventBus>();
+            services.AddScoped<PersonAddedEventHandler>();
+            services.AddScoped<IPersonRepository, PersonRepository>();
+            services.AddPersistence(Configuration);
+        });
+
+        var host = builder.Build();
+
+        var factory = host.Services.GetService<IServiceScopeFactory>();
+        
+        _eventBus = new EventBus(Configuration, factory!, null);
     }
 
     [SetUp]
@@ -67,6 +98,13 @@ public class BusTestFixture
     public async Task OneTimeTearDown()
     {
         await DockerTestFixture?.RunAfterTests();
+    }
+
+    public void Subscribe<T, TH>() where T : Event where TH : IEventHandler<T>
+    {
+        //var eventName = typeof(T).Name;
+        //var handlerType = typeof(TH);
+        _eventBus!.Subscribe<T, TH>();
     }
 
     protected int ContainerPort

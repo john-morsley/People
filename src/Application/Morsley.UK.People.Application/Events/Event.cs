@@ -2,4 +2,5 @@
 
 public abstract class Event
 {
+    public string TypeName => this.GetType().Name;
 }

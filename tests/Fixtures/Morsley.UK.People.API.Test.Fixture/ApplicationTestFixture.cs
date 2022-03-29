@@ -1,15 +1,17 @@
 ﻿namespace Morsley.UK.People.API.Test.Fixture;
 
-public abstract class ApplicationTestFixture<TProgram> where TProgram : class
+public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
 {
-    protected bool HasBus = false;
-    protected bool HasDatabase = false;
-    
-    // Test Fixture for the People Bus...
-    protected BusTestFixture? BusTestFixture;
+    //protected bool HasBus = false;
+    //protected bool HasDatabase = false;
 
-    // Test Fixture for the People Database...
-    protected DatabaseTestFixture? DatabaseTestFixture;
+    // Test Fixture for the People Bus...
+    //protected BusTestFixture? BusTestFixture;
+
+    // Test Fixture for the People Databases...
+    //protected DatabaseTestFixture? DatabaseTestFixture;
+    //protected DatabaseTestFixture? WriteDatabaseTestFixture;
+    //protected DatabaseTestFixture? DatabaseTestFixture;
 
     // The HttpClient to hit the application under test...
     protected HttpClient? HttpClient;
@@ -22,23 +24,24 @@ public abstract class ApplicationTestFixture<TProgram> where TProgram : class
     {
         get
         {
-            if (_applicationPort == 0) _applicationPort = GetApplicationPort(DatabaseTestFixture.Configuration);
+            //if (_applicationPort == 0) _applicationPort = GetApplicationPort(DatabaseTestFixture.Configuration);
+            if (_applicationPort == 0) _applicationPort = GetApplicationPort(GetConfiguration());
             return _applicationPort;
         }
     }
 
     public ApplicationTestFixture()
     {
-        var name = typeof(TProgram).Name;
-        if (name.Contains("Read"))
-        {
-            HasDatabase = true;
-        }
-        else if (name.Contains("Write"))
-        {
-            HasBus = true;
-            HasDatabase = true;
-        }
+        //var name = typeof(TProgram).Name;
+        //if (name.Contains("Read"))
+        //{
+        //    HasDatabase = true;
+        //}
+        //else if (name.Contains("Write"))
+        //{
+        //    //HasBus = true;
+        //    HasDatabase = true;
+        //}
 
         AutoFixture = new global::AutoFixture.Fixture();
         AutoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
@@ -48,24 +51,31 @@ public abstract class ApplicationTestFixture<TProgram> where TProgram : class
     [OneTimeSetUp]
     protected async virtual Task OneTimeSetUp()
     {
-        if (HasBus)
-        {
-            BusTestFixture = new BusTestFixture();
-            await BusTestFixture.OneTimeSetUp();
-        }
+        //if (HasBus)
+        //{
+        //    BusTestFixture = new BusTestFixture();
+        //    await BusTestFixture.OneTimeSetUp();
+        //}
 
-        if (HasDatabase)
-        {
-            DatabaseTestFixture = new DatabaseTestFixture();
-            await DatabaseTestFixture.OneTimeSetUp();
-        }
+        //if (HasDatabase)
+        //{
+        //    DatabaseTestFixture = new DatabaseTestFixture();
+        //    await DatabaseTestFixture.OneTimeSetUp();
+        //}
+
+        //if (HasWriteDatabase)
+        //{
+        //    WriteDatabaseTestFixture = new DatabaseTestFixture();
+        //    await WriteDatabaseTestFixture.OneTimeSetUp();
+        //}
     }
 
     [SetUp]
     protected virtual void SetUp()
     {
-        if(HasBus) BusTestFixture!.SetUp();
-        if(HasDatabase) DatabaseTestFixture!.SetUp();
+        //if (HasBus) BusTestFixture!.SetUp();
+        //if (HasDatabase)
+        //DatabaseTestFixture!.SetUp();
 
         var factory = new WebApplicationFactory<TProgram>()
             .WithWebHostBuilder(builder =>
@@ -88,24 +98,12 @@ public abstract class ApplicationTestFixture<TProgram> where TProgram : class
         });
     }
 
-    public IConfiguration GetConfiguration()
-    {
-        var builder = new ConfigurationBuilder();
-
-        var additional = GetInMemoryConfiguration();
-
-        if (additional.Count > 0) builder.AddInMemoryCollection(additional);
-
-        IConfiguration configuration = builder.Build();
-
-        return configuration;
-    }
-
     [TearDown]
     protected virtual void TearDown()
     {
-        BusTestFixture?.TearDown();
-        DatabaseTestFixture?.TearDown();
+        //BusTestFixture?.TearDown();
+        //DatabaseTestFixture?.TearDown();
+        //WriteDatabaseTestFixture?.TearDown();
 
         HttpClient?.Dispose();
     }
@@ -113,8 +111,8 @@ public abstract class ApplicationTestFixture<TProgram> where TProgram : class
     [OneTimeTearDown]
     protected async virtual Task OneTimeTearDown()
     {
-        if(HasBus) await BusTestFixture!.OneTimeTearDown();
-        if(HasDatabase) await DatabaseTestFixture!.OneTimeTearDown();
+        //if(HasBus) await BusTestFixture!.OneTimeTearDown();
+        //if(HasDatabase) await DatabaseTestFixture!.OneTimeTearDown();
     }
 
     protected static string AddToFieldsIfMissing(string toAdd, string fields)
@@ -250,25 +248,40 @@ public abstract class ApplicationTestFixture<TProgram> where TProgram : class
         throw new InvalidProgramException("Invalid configuration --> port is not a number!");
     }
 
+    public IConfiguration GetConfiguration()
+    {
+        var builder = new ConfigurationBuilder();
+
+        builder.AddJsonFile("appsettings.json");
+
+        var additional = GetInMemoryConfiguration();
+
+        if (additional.Count > 0) builder.AddInMemoryCollection(additional);
+
+        IConfiguration configuration = builder.Build();
+
+        return configuration;
+    }
+
     protected virtual Dictionary<string, string> GetInMemoryConfiguration()
     {
         var additional = new Dictionary<string, string>();
 
-        if (HasBus)
-        {
-            foreach (var additionalBusConfiguration in BusTestFixture!.GetInMemoryConfiguration())
-            {
-                additional.Add(additionalBusConfiguration.Key, additionalBusConfiguration.Value);
-            }
-        }
+        //if (HasBus)
+        //{
+        //    foreach (var additionalBusConfiguration in BusTestFixture!.GetInMemoryConfiguration())
+        //    {
+        //        additional.Add(additionalBusConfiguration.Key, additionalBusConfiguration.Value);
+        //    }
+        //}
 
-        if (HasDatabase)
-        {
-            foreach (var additionalDatabaseConfiguration in DatabaseTestFixture!.GetInMemoryConfiguration())
-            {
-                additional.Add(additionalDatabaseConfiguration.Key, additionalDatabaseConfiguration.Value);
-            }
-        }
+        //if (HasDatabase)
+        //{
+        //    foreach (var additionalDatabaseConfiguration in DatabaseTestFixture!.GetInMemoryConfiguration())
+        //    {
+        //        additional.Add(additionalDatabaseConfiguration.Key, additionalDatabaseConfiguration.Value);
+        //    }
+        //}
 
         return additional;
     }

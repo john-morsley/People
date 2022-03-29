@@ -20,6 +20,7 @@ try
         {
             services.AddHostedService<Worker>();
             services.AddSingleton<IEventBus, EventBus>();
+            services.AddScoped<PersonAddedEventHandler>();
         });
 
     var host = builder.Build();
@@ -33,6 +34,6 @@ try
 }
 catch (Exception e)
 {
-    Log.Error("An unexpected error occurred!");
+    Log.Error(e, "An unexpected error occurred!");
     Console.WriteLine("The SYNCHRONIZER application has exited because on an unexpected error!");
 }

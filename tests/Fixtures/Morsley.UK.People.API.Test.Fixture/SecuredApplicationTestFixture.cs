@@ -99,7 +99,8 @@ public abstract class SecuredApplicationTestFixture<TProgram> : ApplicationTestF
 
     protected string GetJwtAudience()
     {
-        var port = GetApplicationPort(DatabaseTestFixture.Configuration);
+        //var port = GetApplicationPort(DatabaseTestFixture.Configuration);
+        var port = GetApplicationPort(GetConfiguration());
         var key = $"https://localhost:{port}";
         if (string.IsNullOrWhiteSpace(key)) throw new InvalidOperationException($"Missing environment variable: {Constants.Morsley_UK_People_API_Security_JWT_KEY_Variable}");
         return key;

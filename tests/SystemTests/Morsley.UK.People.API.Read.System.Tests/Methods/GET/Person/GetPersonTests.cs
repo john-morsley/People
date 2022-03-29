@@ -1,6 +1,6 @@
 namespace Morsley.UK.People.API.Read.System.Tests.Methods.GET.Person;
 
-public class GetPersonTests : SecuredApplicationTestFixture<ReadProgram>
+public class GetPersonTests : ReadApplicationTestFixture<ReadProgram>
 {
     [SetUp]
     protected override void SetUp()

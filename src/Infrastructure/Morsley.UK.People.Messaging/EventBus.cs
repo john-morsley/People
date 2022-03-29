@@ -2,6 +2,9 @@
 
 public class EventBus : IEventBus
 {
+    private const string ExchangeName = "direct_people";
+    private const string RoutingKey = "people_only";
+
     private readonly IConfiguration _configuration;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger _logger;
@@ -42,16 +45,15 @@ public class EventBus : IEventBus
     public void Publish<T>(T @event) where T : Event
     {
         var factory = GetConnectionFactory<T>();
-
-        var settings = GetRabbitMQSettings();
         using var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();
-        //channel.QueueBind(settings!.QueueName, settings!.QueueName, null);
+        channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
+        var queueName = channel.QueueDeclare().QueueName;
+        channel.QueueBind(queueName, ExchangeName, RoutingKey);
         var eventName = @event.GetType().Name;
-        channel.QueueDeclare(settings!.QueueName, false, false, false, null);
         var message = JsonConvert.SerializeObject(@event);
         var body = Encoding.UTF8.GetBytes(message);
-        channel.BasicPublish("", eventName, null, body);
+        channel.BasicPublish(ExchangeName, RoutingKey, null, body);
     }
 
     /// <summary>
@@ -64,11 +66,14 @@ public class EventBus : IEventBus
         var eventName = typeof(T).Name;
         var handlerType = typeof(TH);
 
-        if (!_eventTypes.Contains(typeof(T)))
-        {
-            _eventTypes.Add(typeof(T));
-        }
+        AddEventType<T, TH>();
+        AddEventHandler<T, TH>(eventName, handlerType);
 
+        StartBasicConsumer<T>();
+    }
+
+    private void AddEventHandler<T, TH>(string eventName, Type handlerType) where T : Event where TH : IEventHandler<T>
+    {
         if (!_eventHandlers.ContainsKey(eventName))
         {
             _eventHandlers.Add(eventName, new List<Type>());
@@ -81,26 +86,27 @@ public class EventBus : IEventBus
         }
 
         _eventHandlers[eventName].Add(handlerType);
+    }
 
-        StartBasicConsumer<T>();
+    private void AddEventType<T, TH>() where T : Event where TH : IEventHandler<T>
+    {
+        if (!_eventTypes.Contains(typeof(T)))
+        {
+            _eventTypes.Add(typeof(T));
+        }
     }
 
     private void StartBasicConsumer<T>()
     {
-        var settings = GetRabbitMQSettings();
-
         var factory = GetConnectionFactory<T>();
-
         var connection = factory.CreateConnection();
         var channel = connection.CreateModel();
-
-        var eventName = typeof(T).Name;
-        channel.QueueDeclare(settings!.QueueName, false, false, false, null);
-
+        channel.ExchangeDeclare("direct_people", ExchangeType.Direct);
+        var queueName = channel.QueueDeclare().QueueName;
+        channel.QueueBind(queueName, ExchangeName, RoutingKey);
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.Received += ConsumerReceived;
-
-        channel.BasicConsume(settings!.QueueName, false, consumer);
+        channel.BasicConsume(queueName, autoAck: true, consumer);
     }
 
     private ConnectionFactory GetConnectionFactory<T>()
@@ -119,21 +125,32 @@ public class EventBus : IEventBus
 
     private async Task ConsumerReceived(object sender, BasicDeliverEventArgs args)
     {
-        var eventName = args.RoutingKey;
+        var exchangeName = args.Exchange;
+        //var routingKey = args.RoutingKey;
         var message = Encoding.UTF8.GetString(args.Body.Span);
+        var eventName = EventName(message);
 
         try
         {
-            await ProcessEvent(eventName, message).ConfigureAwait(false);
+            
+            await ProcessEvent(exchangeName, eventName, message).ConfigureAwait(false);
             ((AsyncDefaultBasicConsumer)sender).Model.BasicAck(deliveryTag: args.DeliveryTag, multiple: false);
         }
         catch (Exception e)
         {
-            _logger.Error(e, "Something went wrong with Consumer_Received!");
+            _logger.Error(e, "Something went wrong with ConsumerReceived!");
         }
     }
 
-    private async Task ProcessEvent(string eventName, string message)
+    private string EventName(string json)
+    {
+        var data = (JObject)JsonConvert.DeserializeObject(json);
+        var typeName = data["TypeName"].Value<string>();
+        return typeName;
+        //return null;
+    }
+
+    private async Task ProcessEvent(string exchangeName, string eventName, string message)
     {
         if (_eventHandlers.ContainsKey(eventName))
         {

@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.API.Read.System.Tests.Methods.HEAD.People;
 
-public class HeadPeopleTests : SecuredApplicationTestFixture<ReadProgram>
+public class HeadPeopleTests : ReadApplicationTestFixture<ReadProgram>
 {
     [Test]
     [Category("Happy")]

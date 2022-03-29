@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.API.Write.Tests.Methods;
 
-public class POST_Login : SecuredApplicationTestFixture<WriteProgram>
+public class POST_Login : WriteApplicationTestFixture<WriteProgram>
 {
     [Test]
     public async Task Trying_To_Authenticate___With_Invalid_Credentials___Should_Result_In_401_Unauthorized()

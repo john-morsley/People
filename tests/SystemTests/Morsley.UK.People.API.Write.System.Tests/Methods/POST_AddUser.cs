@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.API.Write.Tests.Methods;
 
-public class POST_AddPerson : SecuredApplicationTestFixture<WriteProgram>
+public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
 {
     [SetUp]
     protected override void SetUp()
@@ -13,7 +13,9 @@ public class POST_AddPerson : SecuredApplicationTestFixture<WriteProgram>
     public async Task Given_Person_Does_Not_Exist___When_Post_Add_Person___Then_200_OK_And_Person_Should_Be_Added()
     {
         // Arrange...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
+        DatabaseTestFixture!.NumberOfPeopleInDatabase().Should().Be(0);
+
+        //BusTestFixture!.Subscribe<PersonAddedEvent, PersonAddedEventHandler>();
 
         await AuthenticateAsync(Username, Password);
 
@@ -26,7 +28,7 @@ public class POST_AddPerson : SecuredApplicationTestFixture<WriteProgram>
         var result = await HttpClient!.PostAsync(url, payload);
 
         // Assert...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
+        DatabaseTestFixture!.NumberOfPeopleInDatabase().Should().Be(1);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.Created);        

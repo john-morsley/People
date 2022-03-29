@@ -4,6 +4,7 @@ global using Morsley.UK.People.Application.Events;
 global using Morsley.UK.People.Application.Interfaces;
 global using Morsley.UK.People.Messaging.Configuration;
 global using Newtonsoft.Json;
+global using Newtonsoft.Json.Linq;
 global using RabbitMQ.Client;
 global using RabbitMQ.Client.Events;
 global using Serilog;

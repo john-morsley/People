@@ -1,6 +1,6 @@
 namespace Morsley.UK.People.API.Read.System.Tests.Methods.GET.People;
 
-public class GetPeopleWithSortTests : SecuredApplicationTestFixture<ReadProgram>
+public class GetPeopleWithSortTests : ReadApplicationTestFixture<ReadProgram>
 {
     private const string TestUserData = "Mark Pink|" +
                                         "George Boole,Sex:Male,DateOfBirth:1815-11-02|" +

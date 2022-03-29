@@ -1,6 +1,6 @@
 namespace Morsley.UK.People.API.Read.System.Tests.Methods.GET.People;
 
-public class GetPeopleWithFilterTests : SecuredApplicationTestFixture<ReadProgram>
+public class GetPeopleWithFilterTests : ReadApplicationTestFixture<ReadProgram>
 {
     private const string UserDataForFilter = "Mark Pink|" +
                                              "John Green|" +
