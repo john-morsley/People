@@ -16,12 +16,12 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
         const int pageNumber = 1;
         const int pageSize = 10;
 
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
 
-        var user = DatabaseTestFixture.GenerateTestPerson();
-        DatabaseTestFixture.AddPersonToDatabase(user);
+        var user = ApplicationDatabase.GenerateTestPerson();
+        ApplicationDatabase.AddPersonToDatabase(user);
         var users = new List<Domain.Models.Person> { user };
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(1);
 
         var url = $"/api/people?fields={validFields}";
 
@@ -31,7 +31,7 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(1);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -66,7 +66,7 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
     public async Task When_A_Page_Of_Users_Is_Requested_With_Invalid_Fields___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
     {
         // Arrange...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
 
         const string url = "/api/people?fields=fielddoesnotexist";
 
@@ -76,7 +76,7 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);

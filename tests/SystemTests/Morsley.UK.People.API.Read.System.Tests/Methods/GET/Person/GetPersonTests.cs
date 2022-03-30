@@ -13,12 +13,12 @@ public class GetPersonTests : ReadApplicationTestFixture<ReadProgram>
     public async Task Given_Person_Exists___When_That_Person_Is_Requested___Then_200_OK_And_Person_Returned()
     {
         // Arrange...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
 
-        var expected = DatabaseTestFixture.GenerateTestPerson();
-        DatabaseTestFixture.AddPersonToDatabase(expected);
+        var expected = ApplicationDatabase.GenerateTestPerson();
+        ApplicationDatabase.AddPersonToDatabase(expected);
 
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(1);
 
         var url = $"/api/person/{expected.Id}";
 
@@ -28,7 +28,7 @@ public class GetPersonTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(1);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -56,7 +56,7 @@ public class GetPersonTests : ReadApplicationTestFixture<ReadProgram>
     public async Task Given_Person_Does_Not_Exist___When_That_Person_Is_Requested___Then_204_NoContent()
     {
         // Arrange...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
 
         var userId = Guid.NewGuid();
         var url = $"/api/person/{userId}";
@@ -68,7 +68,7 @@ public class GetPersonTests : ReadApplicationTestFixture<ReadProgram>
         //var result = await HttpClient!.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
 
         // Assert...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -82,7 +82,7 @@ public class GetPersonTests : ReadApplicationTestFixture<ReadProgram>
     public async Task When_User_Is_Requested_With_Invalid_Id___Then_404_NotFound()
     {
         // Arrange...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
 
         const string url = "/api/person/invalid-user-id";
 
@@ -92,7 +92,7 @@ public class GetPersonTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);

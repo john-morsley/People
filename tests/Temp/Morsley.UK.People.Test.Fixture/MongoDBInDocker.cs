@@ -4,11 +4,20 @@ public class MongoDBInDocker : InDocker
 {
     public const string MONGODB_IMAGE = "mongo";
     public const string MONGODB_IMAGE_TAG = "5";
-    public const string MONGODB_CONTAINER_NAME = "IntegrationTesting_MongoDB";
+    //public const string MONGODB_CONTAINER_NAME = "IntegrationTesting_MongoDB";
     public const string MONGODB_AUTHENTICATION_MECHANISM = "SCRAM-SHA-1";
     //public const int MONGODB_PORT = 27017;
 
-    public MongoDBInDocker(string username, string password, int port) : base(username, password, port) { }
+    public MongoDBInDocker(
+        string containerName, 
+        string username, 
+        string password, 
+        int port) : base(username, password, port)
+    {
+        _containerName =containerName;
+    }
+
+    private string _containerName;
 
     public async override Task<(string containerId, int port)> EnsureDockerStartedAndGetContainerIdAndPortAsync()
     {
@@ -25,7 +34,7 @@ public class MongoDBInDocker : InDocker
             .Containers
             .CreateContainerAsync(new CreateContainerParameters
             {
-                Name = MONGODB_CONTAINER_NAME,
+                Name = _containerName,
                 Image = $"{MONGODB_IMAGE}:{MONGODB_IMAGE_TAG}",
                 Env = new List<string>
                 {
@@ -83,7 +92,7 @@ public class MongoDBInDocker : InDocker
 
         var runningContainers = await dockerClient.Containers.ListContainersAsync(new ContainersListParameters() { All = true });
 
-        foreach (var runningContainer in runningContainers.Where(cont => cont.Names.Any(n => n.Contains(MONGODB_CONTAINER_NAME))))
+        foreach (var runningContainer in runningContainers.Where(cont => cont.Names.Any(n => n.Contains(_containerName))))
         {
             try
             {
@@ -109,7 +118,7 @@ public class MongoDBInDocker : InDocker
         await dockerClient.Volumes.RemoveAsync(volumeName);
     }
 
-    private async static Task WaitUntilDatabaseAvailableAsync(string username, string password, int databasePort)
+    private async static Task WaitUntilDatabaseAvailableAsync(string containerName, string username, string password, int databasePort)
     {
         var start = DateTime.UtcNow;
         const int maxWaitTimeSeconds = 60;
@@ -129,7 +138,7 @@ public class MongoDBInDocker : InDocker
                 };
 
                 var client = new MongoClient(mongoClientSettings);
-                var instance = client.GetDatabase(MONGODB_CONTAINER_NAME);
+                var instance = client.GetDatabase(containerName);
 
                 connectionEstablished = true;
             }

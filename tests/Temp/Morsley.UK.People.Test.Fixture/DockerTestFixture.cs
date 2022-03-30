@@ -4,9 +4,9 @@ public class DockerTestFixture<T> where T : InDocker
 {
     public readonly InDocker InDocker;
 
-    public DockerTestFixture(string username, string password, int port)
+    public DockerTestFixture(string name, string username, string password, int port)
     {
-        InDocker = (T)Activator.CreateInstance(typeof(T), username, password, port);
+        InDocker = (T)Activator.CreateInstance(typeof(T), name, username, password, port);
     }
 
     public async Task RunBeforeTests()

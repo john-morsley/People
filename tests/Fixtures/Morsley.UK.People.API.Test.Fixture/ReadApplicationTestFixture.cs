@@ -5,7 +5,7 @@
 // 2. Creating a Docker MongoDB instance for the SUT
 public class ReadApplicationTestFixture<TProgram> : SecuredApplicationTestFixture<TProgram> where TProgram : class
 {
-    public DatabaseTestFixture DatabaseTestFixture => _databaseTestFixture!;
+    public DatabaseTestFixture ApplicationDatabase => _databaseTestFixture!;
 
     protected DatabaseTestFixture? _databaseTestFixture;
 
@@ -17,7 +17,7 @@ public class ReadApplicationTestFixture<TProgram> : SecuredApplicationTestFixtur
     [OneTimeSetUp]
     protected async override Task OneTimeSetUp()
     {
-        _databaseTestFixture = new DatabaseTestFixture();
+        _databaseTestFixture = new DatabaseTestFixture("Read_Database_Test");
         await _databaseTestFixture.OneTimeSetUp();
     }
 

@@ -8,12 +8,16 @@ public class DatabaseTestFixture
 
     public IConfiguration? Configuration;
 
-    public DatabaseTestFixture()
+    private string _name;
+
+    public DatabaseTestFixture(string name)
     {
         AutoFixture = new global::AutoFixture.Fixture();
         AutoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
         //AutoFixture.Customizations.Add(new AddPersonRequestSpecimenBuilder());
         AutoFixture.Customizations.Add(new PersonSpecimenBuilder());
+
+        _name = name;
     }
 
     [OneTimeSetUp]
@@ -29,7 +33,7 @@ public class DatabaseTestFixture
             throw new NotImplementedException("Port was not a number!");
         }
 
-        DockerTestFixture = new DockerTestFixture<MongoDBInDocker>(settings.Username, settings.Password, port);
+        DockerTestFixture = new DockerTestFixture<MongoDBInDocker>(_name, settings.Username!, settings.Password!, port);
 
         try
         {
@@ -60,7 +64,7 @@ public class DatabaseTestFixture
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
-        await DockerTestFixture?.RunAfterTests();
+        await DockerTestFixture!.RunAfterTests();
     }
 
     protected int ContainerPort

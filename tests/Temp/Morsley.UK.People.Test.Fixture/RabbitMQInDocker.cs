@@ -4,11 +4,20 @@ public class RabbitMQInDocker : InDocker
 {
     public const string RABBITMQ_IMAGE = "rabbitmq";
     public const string RABBITMQ_IMAGE_TAG = "3";
-    public const string RABBITMQ_CONTAINER_NAME = "IntegrationTesting_RabbitMQ";
+    //public const string RABBITMQ_CONTAINER_NAME = "IntegrationTesting_RabbitMQ";
     //public const string RABBITMQ_AUTHENTICATION_MECHANISM = "SCRAM-SHA-1";
     //public const int RABBITMQ_PORT = 5672;
 
-    public RabbitMQInDocker(string username, string password, int port) : base(username, password, port) { }
+    public RabbitMQInDocker(
+        string containerName,
+        string username,
+        string password,
+        int port) : base(username, password, port)
+    {
+        _containerName = containerName;
+    }
+
+    private string _containerName;
 
     public async override Task<(string containerId, int port)> EnsureDockerStartedAndGetContainerIdAndPortAsync()
     {
@@ -25,7 +34,7 @@ public class RabbitMQInDocker : InDocker
             .Containers
             .CreateContainerAsync(new CreateContainerParameters
             {
-                Name = RABBITMQ_CONTAINER_NAME,
+                Name = _containerName,
                 Image = $"{RABBITMQ_IMAGE}:{RABBITMQ_IMAGE_TAG}",
                 Env = new List<string>
                 {
@@ -83,7 +92,7 @@ public class RabbitMQInDocker : InDocker
 
         var runningContainers = await dockerClient.Containers.ListContainersAsync(new ContainersListParameters() { All = true });
 
-        foreach (var runningContainer in runningContainers.Where(cont => cont.Names.Any(n => n.Contains(RABBITMQ_CONTAINER_NAME))))
+        foreach (var runningContainer in runningContainers.Where(cont => cont.Names.Any(n => n.Contains(_containerName))))
         {
             try
             {

@@ -2,6 +2,8 @@
 
 internal class Get : PersonRepositoryTests
 {
+    public Get() : base("Get_Test") { }
+
     [Test]
     public async Task Getting_A_Person_Should_Result_In_That_Person_Being_Returned()
     {

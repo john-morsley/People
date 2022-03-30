@@ -8,10 +8,14 @@
 public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixture<TProgram> where TProgram : class
 {
     public BusTestFixture BusTestFixture => _busTestFixture!;
-    public DatabaseTestFixture DatabaseTestFixture => _databaseTestFixture!;
+
+    public DatabaseTestFixture ApplicationDatabase => _applicationDatabaseTestFixture!;
 
     protected BusTestFixture? _busTestFixture;
-    protected DatabaseTestFixture? _databaseTestFixture;
+
+    protected DatabaseTestFixture? _applicationDatabaseTestFixture;
+
+    protected DatabaseTestFixture? _busDatabaseTestFixture;
 
     public WriteApplicationTestFixture()
     {
@@ -21,32 +25,38 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
     [OneTimeSetUp]
     protected async override Task OneTimeSetUp()
     {
-        _busTestFixture = new BusTestFixture();
+        _busTestFixture = new BusTestFixture("Bus_Test");
         await _busTestFixture.OneTimeSetUp();
 
-        _databaseTestFixture = new DatabaseTestFixture();
-        await _databaseTestFixture.OneTimeSetUp();
+        _busDatabaseTestFixture = new DatabaseTestFixture("Read_Database_Test");
+        await _busDatabaseTestFixture.OneTimeSetUp();
+
+        _applicationDatabaseTestFixture = new DatabaseTestFixture("Write_Database_Test");
+        await _applicationDatabaseTestFixture.OneTimeSetUp();
     }
 
     [SetUp]
     protected virtual void SetUp()
     {
         _busTestFixture!.SetUp();
-        _databaseTestFixture!.SetUp();
+        _busDatabaseTestFixture!.SetUp();
+        _applicationDatabaseTestFixture!.SetUp();
     }
 
     [TearDown]
     protected virtual void TearDown()
     {
         _busTestFixture?.TearDown();
-        _databaseTestFixture?.TearDown();
+        _busDatabaseTestFixture?.TearDown();
+        _applicationDatabaseTestFixture?.TearDown();
     }
 
     [OneTimeTearDown]
     protected async virtual Task OneTimeTearDown()
     {
         await _busTestFixture!.OneTimeTearDown();
-        await _databaseTestFixture!.OneTimeTearDown();
+        await _busDatabaseTestFixture!.OneTimeTearDown();
+        await _applicationDatabaseTestFixture!.OneTimeTearDown();
     }
 
     protected override Dictionary<string, string> GetInMemoryConfiguration()
@@ -58,12 +68,11 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
             additional.Add(additionalBusConfiguration.Key, additionalBusConfiguration.Value);
         }
 
-        foreach (var additionalDatabaseConfiguration in _databaseTestFixture!.GetInMemoryConfiguration())
+        foreach (var additionalDatabaseConfiguration in _applicationDatabaseTestFixture!.GetInMemoryConfiguration())
         {
             additional.Add(additionalDatabaseConfiguration.Key, additionalDatabaseConfiguration.Value);
         }
 
         return additional;
     }
-
 }

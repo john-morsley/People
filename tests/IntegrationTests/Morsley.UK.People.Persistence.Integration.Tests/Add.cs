@@ -2,6 +2,8 @@ namespace Morsley.UK.People.Persistence.Integration.Tests;
 
 internal class Add : PersonRepositoryTests
 {
+    public Add() : base ("Add_Test") { }
+
     [Test]
     public async Task Adding_A_Person_Should_Result_In_That_Person_Being_Added()
     {

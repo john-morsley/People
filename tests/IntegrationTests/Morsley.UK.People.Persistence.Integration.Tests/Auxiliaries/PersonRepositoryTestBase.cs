@@ -4,6 +4,8 @@ internal class PersonRepositoryTests : DatabaseTestFixture
 {
     protected MongoContext? MongoContext;
 
+    public PersonRepositoryTests(string name) : base(name) { }
+
     [SetUp]
     public void PersonRepositoryTestsSetUp()
     {

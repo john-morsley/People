@@ -2,6 +2,8 @@
 
 internal class Update : PersonRepositoryTests
 {
+    public Update() : base("Update_Test") { }
+
     [Test]
     public async Task Updating_A_Person_Should_Result_In_That_Person_Being_Updated()
     {

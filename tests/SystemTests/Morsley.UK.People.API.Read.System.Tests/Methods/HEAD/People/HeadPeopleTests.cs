@@ -7,7 +7,7 @@ public class HeadPeopleTests : ReadApplicationTestFixture<ReadProgram>
     public async Task Given_No_People_Exist___When_People_Are_Requested___Then_204_NoContent()
     {
         // Arrange...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
 
         const string url = "/api/people?pagenumber=1&pagesize=10";
 
@@ -18,7 +18,7 @@ public class HeadPeopleTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.SendAsync(request);
 
         // Assert...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -33,10 +33,10 @@ public class HeadPeopleTests : ReadApplicationTestFixture<ReadProgram>
     public async Task Given_People_Exists___When_People_Are_Requested___Then_200_OK_And_Content_Length_Returned()
     {
         // Arrange...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
-        var user = DatabaseTestFixture.GenerateTestPerson();
-        DatabaseTestFixture.AddPersonToDatabase(user);
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        var user = ApplicationDatabase.GenerateTestPerson();
+        ApplicationDatabase.AddPersonToDatabase(user);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(1);
 
         const string url = "/api/people?PageNumber=1&PageSize=10";
 
@@ -49,7 +49,7 @@ public class HeadPeopleTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.SendAsync(request);
 
         // Assert...
-        DatabaseTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
+        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(1);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);

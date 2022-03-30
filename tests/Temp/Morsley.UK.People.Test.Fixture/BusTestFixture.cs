@@ -23,7 +23,9 @@ public class BusTestFixture
 
     private IEventBus? _eventBus;
 
-    public BusTestFixture()
+    private string _name;
+
+    public BusTestFixture(string name)
     {
         //AutoFixture = new global::AutoFixture.Fixture();
         //AutoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
@@ -31,6 +33,8 @@ public class BusTestFixture
         //AutoFixture.Customizations.Add(new PersonSpecimenBuilder());
 
         //_eventBus = new EventBus();
+
+        _name = name;
     }
 
     [OneTimeSetUp]
@@ -52,7 +56,7 @@ public class BusTestFixture
             throw new NotImplementedException("Port was not a number!");
         }
 
-        DockerTestFixture = new DockerTestFixture<RabbitMQInDocker>(settings.Username, settings.Password, port);
+        DockerTestFixture = new DockerTestFixture<RabbitMQInDocker>(_name, settings.Username!, settings.Password!, port);
 
         try
         {

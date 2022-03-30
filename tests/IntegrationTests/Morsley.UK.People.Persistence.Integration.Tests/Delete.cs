@@ -2,6 +2,8 @@
 
 internal class Delete : PersonRepositoryTests
 {
+    public Delete() : base("Delete_Test") { }
+
     [Test]
     public async Task Deleting_A_Person_Should_Result_In_That_Person_Being_Deleted()
     {
