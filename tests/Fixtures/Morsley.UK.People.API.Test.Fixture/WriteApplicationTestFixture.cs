@@ -9,7 +9,9 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
 {
     public BusTestFixture BusTestFixture => _busTestFixture!;
 
-    public DatabaseTestFixture ApplicationDatabase => _writeDatabaseTestFixture!;
+    public DatabaseTestFixture ReadDatabase => _readDatabaseTestFixture!;
+
+    public DatabaseTestFixture WriteDatabase => _writeDatabaseTestFixture!;
 
     protected BusTestFixture? _busTestFixture;
 
@@ -27,20 +29,24 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
     [OneTimeSetUp]
     protected async override Task OneTimeSetUp()
     {
-        var busConfiguration = GetBusConfiguration();
-        _busTestFixture = new BusTestFixture("Bus_Test", busConfiguration, "ReadMongoDBSettings");
-        await _busTestFixture.CreateBus();
-
         var readDatabaseConfiguration = GetReadDatabaseConfiguration();
         _readDatabaseTestFixture = new DatabaseTestFixture("Read_Database_Test", readDatabaseConfiguration, "ReadMongoDBSettings");
         await _readDatabaseTestFixture.CreateDatabase();
+        readDatabaseConfiguration = _readDatabaseTestFixture.Configuration;
 
         var writeDatabaseConfiguration = GetWriteDatabaseConfiguration();
         _writeDatabaseTestFixture = new DatabaseTestFixture("Write_Database_Test", writeDatabaseConfiguration, "WriteMongoDBSettings");
         await _writeDatabaseTestFixture.CreateDatabase();
+        //writeDatabaseConfiguration = _writeDatabaseTestFixture.Configuration;
 
-        var workerConfiguration = GetWorkerConfiguration(busConfiguration, readDatabaseConfiguration);
-        _synchronizerTestFixture = new WorkerTestFixture<SynchronizerProgram>(workerConfiguration, "ReadMongoDBSettings");
+        var busConfiguration = GetBusConfiguration();
+        var combinedConfiguration = GetCombinedConfiguration(busConfiguration, readDatabaseConfiguration);
+        _busTestFixture = new BusTestFixture("Bus_Test", combinedConfiguration, "ReadMongoDBSettings");
+        await _busTestFixture.CreateBus();
+        //busConfiguration = _busTestFixture.Configuration;
+
+        //var workerConfiguration = GetWorkerConfiguration(busConfiguration, readDatabaseConfiguration);
+        //_synchronizerTestFixture = new WorkerTestFixture<SynchronizerProgram>(workerConfiguration, "ReadMongoDBSettings");
     }
 
     private IConfiguration GetConfiguration()
@@ -130,17 +136,17 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
         return GetConfiguration();
     }
 
-    private IConfiguration GetWorkerConfiguration(IConfiguration busConfiguration, IConfiguration  readDatabaseConfiguration)
+    private IConfiguration GetCombinedConfiguration(IConfiguration busConfiguration, IConfiguration  readDatabaseConfiguration)
     {
         var builder = new ConfigurationBuilder()
             .AddConfiguration(busConfiguration)
             .AddConfiguration(readDatabaseConfiguration);
 
-        var busInMemoryConfiguration = _busTestFixture!.GetInMemoryConfiguration();
-        var readDatabaseInMemoryConfiguration = _readDatabaseTestFixture!.GetInMemoryConfiguration();
+        //var busInMemoryConfiguration = _busTestFixture!.GetInMemoryConfiguration();
+        //var readDatabaseInMemoryConfiguration = _readDatabaseTestFixture!.GetInMemoryConfiguration();
 
-        builder.AddInMemoryCollection(busInMemoryConfiguration);
-        builder.AddInMemoryCollection(readDatabaseInMemoryConfiguration);
+        //builder.AddInMemoryCollection(busInMemoryConfiguration);
+        //builder.AddInMemoryCollection(readDatabaseInMemoryConfiguration);
 
         var configuration = builder.Build();
 

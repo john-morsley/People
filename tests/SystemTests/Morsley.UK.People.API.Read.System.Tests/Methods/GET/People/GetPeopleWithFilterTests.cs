@@ -54,9 +54,9 @@ public class GetPeopleWithFilterTests : ReadApplicationTestFixture<ReadProgram>
         const int pageNumber = 1;
         const int pageSize = 10;
 
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
         var users = ApplicationReadDatabase.AddTestPeopleToDatabase(testUsersData);
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(users.Count);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(users.Count);
 
         var url = $"/api/people?filter={validFilter}";
 
@@ -66,7 +66,7 @@ public class GetPeopleWithFilterTests : ReadApplicationTestFixture<ReadProgram>
         var response = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(users.Count);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(users.Count);
 
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -151,7 +151,7 @@ public class GetPeopleWithFilterTests : ReadApplicationTestFixture<ReadProgram>
     public async Task When_A_Page_Of_Users_Is_Requested_With_Invalid_Filter___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues(string invalidFilter)
     {
         // Arrange...
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
 
         var url = $"/api/people?filter={invalidFilter}";
 
@@ -161,7 +161,7 @@ public class GetPeopleWithFilterTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);

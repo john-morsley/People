@@ -21,9 +21,11 @@ public sealed class AddPersonCommandHandler : IRequestHandler<AddPersonCommand, 
 
         await _personRepository.AddAsync(person);
 
-        var @event = new PersonAddedEvent();
+        var personAddedEvent = _mapper.Map<PersonAddedEvent>(person!);
 
-        _bus.Publish(@event);
+        //var personAddedEvent = new PersonAddedEvent();
+
+        _bus.Publish(personAddedEvent);
 
         return person;
     }

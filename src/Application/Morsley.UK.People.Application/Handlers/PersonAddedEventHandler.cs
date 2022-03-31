@@ -11,14 +11,19 @@ public class PersonAddedEventHandler : IEventHandler<PersonAddedEvent>
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task Handle(PersonAddedEvent @event)
+    public async Task Handle(PersonAddedEvent personAddedEvent)
     {
-        if (@event == null) throw new ArgumentNullException(nameof(@event));
+        if (personAddedEvent == null) throw new ArgumentNullException(nameof(personAddedEvent));
 
-        var command = new AddPersonCommand();
-
-        var person = _mapper.Map<Person>(command);
-
-        await _personRepository.AddAsync(person);
+        try
+        {
+            var person = _mapper.Map<Person>(personAddedEvent);
+            await _personRepository.AddAsync(person);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }

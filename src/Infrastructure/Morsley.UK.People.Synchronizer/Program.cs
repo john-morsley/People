@@ -16,10 +16,13 @@ try
            .ReadFrom.Services(services)
            .Enrich.FromLogContext());
 
-    builder.ConfigureServices(services =>
+    builder.ConfigureServices((hostContext, services) =>
         {
+            var configuration = hostContext.Configuration;
             services.AddHostedService<Worker>();
             services.AddSingleton<IEventBus, EventBus>();
+            services.AddPersistence(configuration, "ReadMongoDBSettings");
+            services.AddApplication();
             services.AddScoped<PersonAddedEventHandler>();
         });
 

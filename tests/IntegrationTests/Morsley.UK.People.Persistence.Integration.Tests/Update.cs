@@ -8,12 +8,12 @@ internal class Update : PersonRepositoryTests
     public async Task Updating_A_Person_Should_Result_In_That_Person_Being_Updated()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        NumberOfPeople().Should().Be(0);
 
         var existing = GenerateTestPerson();
         AddPersonToDatabase(existing);
 
-        NumberOfPeopleInDatabase().Should().Be(1);
+        NumberOfPeople().Should().Be(1);
 
         var sut = new PersonRepository(MongoContext!);
 
@@ -23,7 +23,7 @@ internal class Update : PersonRepositoryTests
         await sut.UpdateAsync(existing);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(1);
+        NumberOfPeople().Should().Be(1);
 
         var updated = GetPersonFromDatabase(existing.Id);
         updated.Id.Should().Be(existing.Id);

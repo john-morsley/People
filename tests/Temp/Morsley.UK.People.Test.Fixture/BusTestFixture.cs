@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Morsley.UK.People.Application.Events;
 using Morsley.UK.People.Application.Handlers;
 using Morsley.UK.People.Application.Interfaces;
+using Morsley.UK.People.Application.IoC;
 using Morsley.UK.People.Messaging;
 using Morsley.UK.People.Persistence.IoC;
 using Morsley.UK.People.Persistence.Repositories;
@@ -20,6 +21,9 @@ public class BusTestFixture
     //protected global::AutoFixture.Fixture? AutoFixture;
 
     private IConfiguration? _configuration;
+
+    public IConfiguration? Configuration => _configuration;
+
     private readonly string _persistenceKey;
 
     private IEventBus? _eventBus;
@@ -51,7 +55,7 @@ public class BusTestFixture
         //var section = _configuration!.GetSection(nameof(RabbitMQSettings));
         //var settings = section.Get<RabbitMQSettings>();
 
-        var settings = _configuration["RabbitMQSettings"];
+        //var settings = _configuration["RabbitMQSettings"];
 
         var potentialPort = _configuration["RabbitMQSettings:Port"];
         var username = _configuration["RabbitMQSettings:Username"];
@@ -79,9 +83,10 @@ public class BusTestFixture
 
         builder.ConfigureServices(services =>
         {
-            services.AddSingleton<IEventBus, EventBus>();
+            //services.AddSingleton<IEventBus, EventBus>();
             services.AddScoped<PersonAddedEventHandler>();
-            services.AddScoped<IPersonRepository, PersonRepository>();
+            //services.AddScoped<IPersonRepository, PersonRepository>();
+            services.AddApplication();
             services.AddPersistence(_configuration, _persistenceKey);
         });
 

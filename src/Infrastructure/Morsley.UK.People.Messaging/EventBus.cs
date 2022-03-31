@@ -132,7 +132,6 @@ public class EventBus : IEventBus
 
         try
         {
-            
             await ProcessEvent(exchangeName, eventName, message).ConfigureAwait(false);
             ((AsyncDefaultBasicConsumer)sender).Model.BasicAck(deliveryTag: args.DeliveryTag, multiple: false);
         }
@@ -147,7 +146,6 @@ public class EventBus : IEventBus
         var data = (JObject)JsonConvert.DeserializeObject(json);
         var typeName = data["TypeName"].Value<string>();
         return typeName;
-        //return null;
     }
 
     private async Task ProcessEvent(string exchangeName, string eventName, string message)

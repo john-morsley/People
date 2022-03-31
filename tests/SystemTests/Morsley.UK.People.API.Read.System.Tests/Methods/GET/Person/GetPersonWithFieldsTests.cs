@@ -15,12 +15,12 @@ public class GetPersonWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
     public async Task Given_User_Exist___When_It_Is_Requested_With_Fields___Then_200_OK_And_User_Should_Be_Shaped(string validFields)
     {
         // Arrange...
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
 
         var user = ApplicationReadDatabase.GenerateTestPerson();
         ApplicationReadDatabase.AddPersonToDatabase(user);
 
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(1);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(1);
 
         var url = $"/api/person/{user.Id}?fields={validFields}";
 
@@ -30,7 +30,7 @@ public class GetPersonWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(1);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(1);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -71,7 +71,7 @@ public class GetPersonWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
     public async Task When_A_Person_Is_Requested_With_Invalid_Fields___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
     {
         // Arrange...
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
 
         var userId = Guid.NewGuid();
         var url = $"/api/person/{userId}?fields=fielddoesnotexist";
@@ -82,7 +82,7 @@ public class GetPersonWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);

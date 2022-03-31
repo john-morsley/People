@@ -8,8 +8,9 @@ public class DatabaseTestFixture
 
     protected IConfiguration? _configuration;
     protected readonly string _persistenceKey;
-
     private string _name;
+
+    public IConfiguration? Configuration => _configuration;
 
     public DatabaseTestFixture(string name , string persistenceKey)
     {
@@ -291,7 +292,7 @@ public class DatabaseTestFixture
     //    _configuration = GetConfiguration();
     //}
 
-    public long NumberOfPeopleInDatabase()
+    public long NumberOfPeople()
     {
         var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);

@@ -1,4 +1,7 @@
-﻿namespace Morsley.UK.People.API.Write.Tests.Methods;
+﻿using Morsley.UK.People.Application.Events;
+using Morsley.UK.People.Application.Handlers;
+
+namespace Morsley.UK.People.API.Write.Tests.Methods;
 
 public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
 {
@@ -13,9 +16,9 @@ public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
     public async Task Given_Person_Does_Not_Exist___When_Post_Add_Person___Then_200_OK_And_Person_Should_Be_Added()
     {
         // Arrange...
-        ApplicationDatabase!.NumberOfPeopleInDatabase().Should().Be(0);
-
-        //BusTestFixture!.Subscribe<PersonAddedEvent, PersonAddedEventHandler>();
+        ReadDatabase!.NumberOfPeople().Should().Be(0);
+        WriteDatabase!.NumberOfPeople().Should().Be(0);
+        BusTestFixture!.Subscribe<PersonAddedEvent, PersonAddedEventHandler>();
 
         await AuthenticateAsync(Username, Password);
 
@@ -28,7 +31,7 @@ public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
         var result = await HttpClient!.PostAsync(url, payload);
 
         // Assert...
-        ApplicationDatabase!.NumberOfPeopleInDatabase().Should().Be(1);
+        WriteDatabase!.NumberOfPeople().Should().Be(1);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.Created);        
@@ -54,9 +57,19 @@ public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
         // - Headers
         result.Headers.Location.Should().Be($"http://localhost/api/person/{personResource.Data.Id}");
 
-        // - Database
-        var actualPerson = ApplicationDatabase.GetPersonFromDatabase(personResource.Data.Id);
+        // - Databases
+        var actualPerson = WriteDatabase.GetPersonFromDatabase(personResource.Data.Id);
         ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualPerson, "Id", "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
+
+        var numberOfPeople = 0L;
+        for (var i = 0; i < 9999; i++)
+        {
+            await Task.Delay(50);
+            numberOfPeople = ReadDatabase!.NumberOfPeople();
+            if (numberOfPeople == 1) break;
+            Console.WriteLine(i);
+        }
+        numberOfPeople.Should().Be(1);
     }
 
     [Test]
@@ -64,7 +77,7 @@ public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
     public async Task When_Post_Invalid_Data___Then_400_BadRequest_And_Errors_Object_Should_Detail_Issues()
     {
         // Arrange...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -75,7 +88,7 @@ public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
         var result = await HttpClient.PostAsync(url, payload);
 
         // Assert...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
@@ -94,7 +107,7 @@ public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
     public async Task When_Post_Invalid_Add_User___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
     {
         // Arrange...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -106,7 +119,7 @@ public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
         var result = await HttpClient!.PostAsync(url, payload);
 
         // Assert...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);

@@ -8,12 +8,12 @@ internal class Get : PersonRepositoryTests
     public async Task Getting_A_Person_Should_Result_In_That_Person_Being_Returned()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        NumberOfPeople().Should().Be(0);
 
         var expected = GenerateTestPerson();
         AddPersonToDatabase(expected);
     
-        NumberOfPeopleInDatabase().Should().Be(1);
+        NumberOfPeople().Should().Be(1);
 
         var sut = new PersonRepository(MongoContext!);
 
@@ -21,7 +21,7 @@ internal class Get : PersonRepositoryTests
         var actual = await sut.GetByIdAsync(expected.Id);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(1);
+        NumberOfPeople().Should().Be(1);
 
         actual.Should().BeEquivalentTo(expected);
     }
@@ -30,11 +30,11 @@ internal class Get : PersonRepositoryTests
     public async Task Getting_A_Page_Of_People_With_No_Pagination_Options_Should_Result_In_A_Page_Of_All_People_Being_Returned()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        NumberOfPeople().Should().Be(0);
 
         var people = AddPeopleToDatabase(10);
 
-        NumberOfPeopleInDatabase().Should().Be(10);
+        NumberOfPeople().Should().Be(10);
 
         var sut = new PersonRepository(MongoContext!);
 
@@ -43,7 +43,7 @@ internal class Get : PersonRepositoryTests
         var pageOfPeople = await sut.GetPageAsync(getPeopleOptions);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(10);
+        NumberOfPeople().Should().Be(10);
 
         pageOfPeople.Count().Should().Be(10);
         pageOfPeople.CurrentPage.Should().Be(1);
@@ -59,11 +59,11 @@ internal class Get : PersonRepositoryTests
     public async Task Getting_A_Page_Of_People_With_Pagination_Options_Should_Result_In_A_Page_Of_People_Being_Returned()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        NumberOfPeople().Should().Be(0);
 
         var people = AddPeopleToDatabase(10);
 
-        NumberOfPeopleInDatabase().Should().Be(10);
+        NumberOfPeople().Should().Be(10);
 
         var sut = new PersonRepository(MongoContext!);
 
@@ -76,7 +76,7 @@ internal class Get : PersonRepositoryTests
         var pageOfPeople = await sut.GetPageAsync(getPeopleOptions);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(10);
+        NumberOfPeople().Should().Be(10);
 
         pageOfPeople.Count().Should().Be(1);
         pageOfPeople.CurrentPage.Should().Be(1);
@@ -92,7 +92,7 @@ internal class Get : PersonRepositoryTests
     public async Task Getting_A_Page_Of_People_With_Pagination_Options_Should_Result_In_The_Correct_Page_Of_People_Being_Returned()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        NumberOfPeople().Should().Be(0);
 
         AddPeopleToDatabase(10);
 
@@ -100,7 +100,7 @@ internal class Get : PersonRepositoryTests
 
         AddPeopleToDatabase(10);
 
-        NumberOfPeopleInDatabase().Should().Be(30);
+        NumberOfPeople().Should().Be(30);
 
         var sut = new PersonRepository(MongoContext!);
 
@@ -113,7 +113,7 @@ internal class Get : PersonRepositoryTests
         var pageOfPeople = await sut.GetPageAsync(getPeopleOptions);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(30);
+        NumberOfPeople().Should().Be(30);
 
         pageOfPeople.Count().Should().Be(10);
         pageOfPeople.CurrentPage.Should().Be(2);
@@ -129,7 +129,7 @@ internal class Get : PersonRepositoryTests
     public async Task Getting_A_Page_Of_People_With_Search_Criteria_Should_Result_In_A_Page_Of_People_That_Match_The_Search_Being_Returned()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        NumberOfPeople().Should().Be(0);
 
         AddPeopleToDatabase(5);
 
@@ -138,7 +138,7 @@ internal class Get : PersonRepositoryTests
 
         AddPeopleToDatabase(5);
 
-        NumberOfPeopleInDatabase().Should().Be(11);
+        NumberOfPeople().Should().Be(11);
 
         var sut = new PersonRepository(MongoContext!);
 
@@ -152,7 +152,7 @@ internal class Get : PersonRepositoryTests
         var pageOfPeople = await sut.GetPageAsync(getPeopleOptions);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(11);
+        NumberOfPeople().Should().Be(11);
 
         pageOfPeople.Count().Should().Be(1);
         pageOfPeople.CurrentPage.Should().Be(1);
@@ -168,7 +168,7 @@ internal class Get : PersonRepositoryTests
     public async Task Getting_A_Page_Of_People_With_Filter_Criteria_Should_Result_In_A_Page_Of_People_That_Match_The_Filter()
     {
         // Arrange...
-        NumberOfPeopleInDatabase().Should().Be(0);
+        NumberOfPeople().Should().Be(0);
 
         AddPeopleToDatabase(5);
 
@@ -180,7 +180,7 @@ internal class Get : PersonRepositoryTests
 
         AddPeopleToDatabase(5);
 
-        NumberOfPeopleInDatabase().Should().Be(12);
+        NumberOfPeople().Should().Be(12);
 
         var sut = new PersonRepository(MongoContext!);
 
@@ -194,7 +194,7 @@ internal class Get : PersonRepositoryTests
         var pageOfPeople = await sut.GetPageAsync(getPeopleOptions);
 
         // Assert...
-        NumberOfPeopleInDatabase().Should().Be(12);
+        NumberOfPeople().Should().Be(12);
 
         //pageOfPeople.Count().Should().Be(2);
         //var firstPersonOnPage = pageOfPeople.First();

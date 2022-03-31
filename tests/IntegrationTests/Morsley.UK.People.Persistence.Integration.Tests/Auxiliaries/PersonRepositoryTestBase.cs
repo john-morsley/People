@@ -17,7 +17,7 @@ internal class PersonRepositoryTests : DatabaseTestFixture
         MongoContext = new MongoContext(_configuration, "MongoDBSettings");
         MongoContext.IsHealthy().Should().BeTrue();
 
-        NumberOfPeopleInDatabase().Should().Be(0);
+        NumberOfPeople().Should().Be(0);
     }
 
     public IConfiguration GetConfiguration()

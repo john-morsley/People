@@ -60,7 +60,7 @@ public class RabbitMQInDocker : InDocker
             });
 
         await dockerClient.Containers.StartContainerAsync(container.ID, new ContainerStartParameters());
-        //await WaitUntilBusAvailableAsync(Username, Password, freePort);
+        await WaitUntilBusAvailableAsync(_containerName, Username, Password, freePort);
 
         return (container.ID, freePort);
     }
@@ -118,7 +118,7 @@ public class RabbitMQInDocker : InDocker
         await dockerClient.Volumes.RemoveAsync(volumeName);
     }
 
-    private async static Task WaitUntilBusAvailableAsync(string username, string password, int busPort)
+    private async static Task WaitUntilBusAvailableAsync(string containerName, string username, string password, int busPort)
     {
         var start = DateTime.UtcNow;
         const int maxWaitTimeSeconds = 60;
@@ -127,19 +127,6 @@ public class RabbitMQInDocker : InDocker
         {
             try
             {
-                //var internalIdentity = new MongoInternalIdentity("admin", username);
-    //            var passwordEvidence = new PasswordEvidence(password);
-    //            //var mongoCredential = new MongoCredential(MONGODB_AUTHENTICATION_MECHANISM, internalIdentity, passwordEvidence);
-
-    //            var mongoClientSettings = new MongoClientSettings
-    //            {
-    //                Credential = mongoCredential,
-    //                Server = new MongoServerAddress("localhost", databasePort)
-    //            };
-
-    //            var client = new MongoClient(mongoClientSettings);
-    //            var instance = client.GetDatabase(MONGODB_CONTAINER_NAME);
-
                 var factory = new ConnectionFactory();
 
                 factory.UserName = username;
@@ -147,9 +134,17 @@ public class RabbitMQInDocker : InDocker
                 factory.HostName = "localhost";
                 factory.Port = busPort;
 
-                var connection = factory.CreateConnection();
-
-                
+                try
+                {
+                    var connection = factory.CreateConnection();
+                    connection.Close();
+                    connection.Dispose();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
 
                 connectionEstablished = true;
             }
@@ -162,7 +157,7 @@ public class RabbitMQInDocker : InDocker
 
         if (!connectionEstablished)
         {
-            throw new Exception($"Connection to the SQL docker database could not be established within {maxWaitTimeSeconds} seconds.");
+            throw new Exception($"Connection to the RabbitMQ docker instance could not be established within {maxWaitTimeSeconds} seconds.");
         }
 
         return;

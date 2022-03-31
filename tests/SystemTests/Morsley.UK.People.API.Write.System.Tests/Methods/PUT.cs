@@ -9,12 +9,12 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
     public async Task Given_User_Exists___When_Put_Update_User___Then_200_OK_And_User_Updated()
     {
         // Arrange...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
 
-        var originalUser = ApplicationDatabase.GenerateTestPerson();
-        ApplicationDatabase.AddPersonToDatabase(originalUser);
+        var originalUser = WriteDatabase.GenerateTestPerson();
+        WriteDatabase.AddPersonToDatabase(originalUser);
 
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(1);
+        WriteDatabase.NumberOfPeople().Should().Be(1);
 
         await AuthenticateAsync(Username, Password);
 
@@ -26,7 +26,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         var response = await HttpClient!.PutAsync(url, payload);
 
         // Assert...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(1);
+        WriteDatabase.NumberOfPeople().Should().Be(1);
 
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -39,7 +39,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
 
         // - Person
         userResource!.Data.Should().NotBeNull();
-        var actualUser = ApplicationDatabase.GetPersonFromDatabase(originalUser.Id);
+        var actualUser = WriteDatabase.GetPersonFromDatabase(originalUser.Id);
         
         // The result of upsert should 'equal' the requested upsert...
         ObjectComparer.PublicInstancePropertiesEqual(userResource.Data!, updateUserRequest).Should().BeTrue();
@@ -57,7 +57,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
     public async Task Given_User_Does_Not_Exist___When_Put_Update_User___Then_201_Created_And_User_Created()
     {
         // Arrange...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -70,7 +70,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         var result = await HttpClient!.PutAsync(url, payload);
 
         // Assert...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(1);
+        WriteDatabase.NumberOfPeople().Should().Be(1);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -97,7 +97,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         result.Headers.Location.Should().Be($"https://localhost/api/person/{userId}");
 
         // - Database
-        var actualUser = ApplicationDatabase.GetPersonFromDatabase(userId);
+        var actualUser = WriteDatabase.GetPersonFromDatabase(userId);
         actualUser.Should().NotBeNull();
         ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualUser, "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
     }
@@ -108,7 +108,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
     public async Task When_Put_Invalid_Data___Then_400_BadRequest_And_Errors_Object_Should_Detail_Issues()
     {
         // Arrange...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -138,7 +138,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
     public async Task When_Put_Invalid_Update_User___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
     {
         // Arrange...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -153,7 +153,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         var result = await HttpClient!.PutAsync(url, payload);
 
         // Assert...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);

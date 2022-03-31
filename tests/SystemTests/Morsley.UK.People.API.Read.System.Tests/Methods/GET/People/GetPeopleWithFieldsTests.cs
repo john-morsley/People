@@ -16,12 +16,12 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
         const int pageNumber = 1;
         const int pageSize = 10;
 
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
 
         var user = ApplicationReadDatabase.GenerateTestPerson();
         ApplicationReadDatabase.AddPersonToDatabase(user);
         var users = new List<Domain.Models.Person> { user };
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(1);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(1);
 
         var url = $"/api/people?fields={validFields}";
 
@@ -31,7 +31,7 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(1);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(1);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -66,7 +66,7 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
     public async Task When_A_Page_Of_Users_Is_Requested_With_Invalid_Fields___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
     {
         // Arrange...
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
 
         const string url = "/api/people?fields=fielddoesnotexist";
 
@@ -76,7 +76,7 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);

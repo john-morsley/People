@@ -60,7 +60,7 @@ public class MongoDBInDocker : InDocker
             });
 
         await dockerClient.Containers.StartContainerAsync(container.ID, new ContainerStartParameters());
-        //await WaitUntilDatabaseAvailableAsync(Username, Password, freePort);
+        await WaitUntilDatabaseAvailableAsync(_containerName, Username, Password, freePort);
 
         return (container.ID, freePort);
     }
@@ -151,7 +151,7 @@ public class MongoDBInDocker : InDocker
 
         if (!connectionEstablished)
         {
-            throw new Exception($"Connection to the SQL docker database could not be established within {maxWaitTimeSeconds} seconds.");
+            throw new Exception($"Connection to the MongoDB docker instance could not be established within {maxWaitTimeSeconds} seconds.");
         }
 
         return;

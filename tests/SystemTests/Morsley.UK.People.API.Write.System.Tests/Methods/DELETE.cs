@@ -7,11 +7,11 @@ public class DELETE : WriteApplicationTestFixture<WriteProgram>
     public async Task Given_User_Exists___When_Delete_Is_Attempted___Then_NoContent_And_User_Deleted()
     {
         // Arrange...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
-        var userToBeDeleted = ApplicationDatabase.GenerateTestPerson();
+        WriteDatabase.NumberOfPeople().Should().Be(0);
+        var userToBeDeleted = WriteDatabase.GenerateTestPerson();
         var userId = userToBeDeleted.Id;
-        ApplicationDatabase.AddPersonToDatabase(userToBeDeleted);
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(1);
+        WriteDatabase.AddPersonToDatabase(userToBeDeleted);
+        WriteDatabase.NumberOfPeople().Should().Be(1);
 
         await AuthenticateAsync(Username, Password);
 
@@ -20,7 +20,7 @@ public class DELETE : WriteApplicationTestFixture<WriteProgram>
         var result = await HttpClient!.DeleteAsync(url);
 
         // Assert...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);        
@@ -28,7 +28,7 @@ public class DELETE : WriteApplicationTestFixture<WriteProgram>
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().Be(0);
         
-        var shouldNotExistUser = ApplicationDatabase.GetPersonFromDatabase(userId);
+        var shouldNotExistUser = WriteDatabase.GetPersonFromDatabase(userId);
         shouldNotExistUser.Should().BeNull();
     }
 
@@ -38,14 +38,14 @@ public class DELETE : WriteApplicationTestFixture<WriteProgram>
     {
         // Arrange...
         var userId = Guid.NewGuid();
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
 
         // Act...
         var url = $"/api/person/{userId}";
         var result = await HttpClient!.DeleteAsync(url);
 
         // Assert...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -60,7 +60,7 @@ public class DELETE : WriteApplicationTestFixture<WriteProgram>
     {
         // Arrange...
         var userId = Guid.NewGuid();
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -69,7 +69,7 @@ public class DELETE : WriteApplicationTestFixture<WriteProgram>
         var result = await HttpClient!.DeleteAsync(url);
 
         // Assert...
-        ApplicationDatabase.NumberOfPeopleInDatabase().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.NotFound);
