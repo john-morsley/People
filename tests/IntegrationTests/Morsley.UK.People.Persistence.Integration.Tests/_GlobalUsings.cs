@@ -1,5 +1,6 @@
 ﻿global using AutoFixture;
 global using FluentAssertions;
+global using Microsoft.Extensions.Configuration;
 global using Morsley.UK.People.Application.Interfaces;
 global using Morsley.UK.People.Application.Models;
 global using Morsley.UK.People.Domain.Models;

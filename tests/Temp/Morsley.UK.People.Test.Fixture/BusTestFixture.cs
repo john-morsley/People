@@ -19,14 +19,19 @@ public class BusTestFixture
     protected DockerTestFixture<RabbitMQInDocker>? DockerTestFixture;
     //protected global::AutoFixture.Fixture? AutoFixture;
 
-    public IConfiguration? Configuration;
+    private IConfiguration? _configuration;
+    private readonly string _persistenceKey;
 
     private IEventBus? _eventBus;
 
     private string _name;
 
-    public BusTestFixture(string name)
+    public BusTestFixture(string name, IConfiguration configuration, string persistenceKey)
     {
+        if (name == null) throw new ArgumentNullException("name");
+        if (name.Length == 0) throw new ArgumentOutOfRangeException("name");
+        if (configuration == null) throw new ArgumentNullException("configuration");
+
         //AutoFixture = new global::AutoFixture.Fixture();
         //AutoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
         //AutoFixture.Customizations.Add(new AddPersonRequestSpecimenBuilder());
@@ -35,28 +40,29 @@ public class BusTestFixture
         //_eventBus = new EventBus();
 
         _name = name;
+        _configuration = configuration;
+        _persistenceKey = persistenceKey;
     }
 
-    [OneTimeSetUp]
-    public async Task OneTimeSetUp()
+    public async Task CreateBus()
     {
-        LoadInitialConfiguration();
+        //LoadInitialConfiguration();
 
-        var section = Configuration!.GetSection(nameof(RabbitMQSettings));
-        var settings = section.Get<RabbitMQSettings>();
+        //var section = _configuration!.GetSection(nameof(RabbitMQSettings));
+        //var settings = section.Get<RabbitMQSettings>();
 
-        if (settings == null)
-        {
-            Console.WriteLine("No configuration for RabbitMQ so exiting!");
-            return;
-        }
+        var settings = _configuration["RabbitMQSettings"];
 
-        if (!int.TryParse(settings.Port, out var port))
+        var potentialPort = _configuration["RabbitMQSettings:Port"];
+        var username = _configuration["RabbitMQSettings:Username"];
+        var password = _configuration["RabbitMQSettings:Password"];
+
+        if (!int.TryParse(potentialPort, out var port))
         {
             throw new NotImplementedException("Port was not a number!");
         }
 
-        DockerTestFixture = new DockerTestFixture<RabbitMQInDocker>(_name, settings.Username!, settings.Password!, port);
+        DockerTestFixture = new DockerTestFixture<RabbitMQInDocker>(_name, username!, password!, port);
 
         try
         {
@@ -67,7 +73,7 @@ public class BusTestFixture
             throw new Exception("This may be Docker related. Check Docker is running.", e);
         }
 
-        LoadAdditionalConfiguration();
+        UpdateConfiguration();
 
         var builder = Host.CreateDefaultBuilder();
 
@@ -76,14 +82,31 @@ public class BusTestFixture
             services.AddSingleton<IEventBus, EventBus>();
             services.AddScoped<PersonAddedEventHandler>();
             services.AddScoped<IPersonRepository, PersonRepository>();
-            services.AddPersistence(Configuration);
+            services.AddPersistence(_configuration, _persistenceKey);
         });
 
         var host = builder.Build();
 
         var factory = host.Services.GetService<IServiceScopeFactory>();
         
-        _eventBus = new EventBus(Configuration, factory!, null);
+        _eventBus = new EventBus(_configuration, factory!, null);
+    }
+
+    private void UpdateConfiguration()
+    {
+        var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
+        builder.AddInMemoryCollection(GetInMemoryConfiguration());
+        var configuration = builder.Build();
+        var potentialPort = configuration["RabbitMQSettings:Port"];
+        if (!int.TryParse(potentialPort, out var port))
+        {
+            throw new NotImplementedException("Port was not a number!");
+        }
+        if (port != DockerTestFixture!.InDocker.Port)
+        {
+            throw new NotImplementedException("Port has not been updated!");
+        }
+        _configuration = configuration;
     }
 
     [SetUp]
@@ -120,18 +143,18 @@ public class BusTestFixture
         }
     }
 
-    protected IConfiguration GetConfiguration(Dictionary<string, string>? additional = null)
-    {
-        var builder = new ConfigurationBuilder();
+    //protected IConfiguration GetConfiguration(Dictionary<string, string>? additional = null)
+    //{
+    //    var builder = new ConfigurationBuilder();
 
-        builder.AddJsonFile("appsettings.json");
+    //    builder.AddJsonFile("appsettings.json");
 
-        if (additional != null && additional.Count > 0) builder.AddInMemoryCollection(additional);
+    //    if (additional != null && additional.Count > 0) builder.AddInMemoryCollection(additional);
 
-        IConfiguration configuration = builder.Build();
+    //    IConfiguration configuration = builder.Build();
 
-        return configuration;
-    }
+    //    return configuration;
+    //}
 
     public Dictionary<string, string> GetInMemoryConfiguration()
     {
@@ -140,14 +163,20 @@ public class BusTestFixture
         return additional;
     }
 
-    private void LoadAdditionalConfiguration()
-    {
-        var additionalConfiguration = GetInMemoryConfiguration();
-        Configuration = GetConfiguration(additionalConfiguration);
-    }
+    //private void LoadAdditionalConfiguration()
+    //{
+        //var additionalConfiguration = GetInMemoryConfiguration();
+        //_configuration = GetConfiguration(additionalConfiguration);
+        //var builder = new ConfigurationBuilder();
+        //builder.
+        //builder.AddInMemoryCollection(additionalConfiguration);
+        //_configuration = builder.Build();
+        //var manager = new ConfigurationManager();
+        //manager.
+    //}
 
-    protected void LoadInitialConfiguration()
-    {
-        Configuration = GetConfiguration();
-    }
+    //protected void LoadInitialConfiguration()
+    //{
+    //    Configuration = GetConfiguration();
+    //}
 }

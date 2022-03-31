@@ -3,8 +3,9 @@
 public class MongoContext : IMongoContext
 {
     private readonly IConfiguration _configuration;
+    private readonly string _persistenceKey;
     private readonly List<Func<Task>> _commands;
-    private MongoSettings? _mongoSettings;
+    private MongoDBSettings? _mongoSettings;
 
     private IMongoDatabase? Database { get; set; }
 
@@ -12,9 +13,10 @@ public class MongoContext : IMongoContext
 
     public IClientSessionHandle? Session { get; set; }
 
-    public MongoContext(IConfiguration configuration)
+    public MongoContext(IConfiguration configuration, string persistenceKey)
     {
         _configuration = configuration;
+        _persistenceKey = persistenceKey;
         _commands = new List<Func<Task>>();
     }
 
@@ -42,12 +44,12 @@ public class MongoContext : IMongoContext
     {
         if (MongoClient != null) return;
         
-        var section = _configuration.GetSection(nameof(MongoSettings));
-        _mongoSettings = section.Get<MongoSettings>();
+        var section = _configuration.GetSection(_persistenceKey);
+        _mongoSettings = section.Get<MongoDBSettings>();
 
         var connectionString = GetConnectionString();
         MongoClient = new MongoClient(connectionString);
-        Database = MongoClient.GetDatabase(_configuration["MongoSettings:DatabaseName"]);
+        Database = MongoClient.GetDatabase(_mongoSettings.DatabaseName);
     }
 
     public bool IsHealthy()
@@ -73,8 +75,8 @@ public class MongoContext : IMongoContext
         return GetConnectionString(_mongoSettings);
     }
 
-    private string GetConnectionString(MongoSettings mongoSettings)
+    private string GetConnectionString(MongoDBSettings mongoDbSettings)
     {
-        return $"mongodb://{mongoSettings.Username}:{mongoSettings.Password}@{mongoSettings.Host}:{mongoSettings.Port}";
+        return $"mongodb://{mongoDbSettings.Username}:{mongoDbSettings.Password}@{mongoDbSettings.Host}:{mongoDbSettings.Port}";
     }
 }

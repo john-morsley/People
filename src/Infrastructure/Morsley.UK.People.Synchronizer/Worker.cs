@@ -1,5 +1,3 @@
-using Morsley.UK.People.Application.Interfaces;
-
 namespace Morsley.UK.People.Synchronizer;
 
 public class Worker : BackgroundService

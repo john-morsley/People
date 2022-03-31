@@ -37,3 +37,12 @@ catch (Exception e)
     Log.Error(e, "An unexpected error occurred!");
     Console.WriteLine("The SYNCHRONIZER application has exited because on an unexpected error!");
 }
+
+#region System Testing
+
+/// <summary>
+/// Required for System Testing only!
+/// </summary>
+public partial class SynchronizerProgram { }
+
+#endregion System Testing

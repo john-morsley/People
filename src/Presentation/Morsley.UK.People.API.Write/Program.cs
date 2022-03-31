@@ -35,7 +35,7 @@ try
     });
 
     builder.Services.AddMessaging();
-    builder.Services.AddPersistence(configuration);
+    builder.Services.AddPersistence(configuration, "WriteMongoDBSettings");
     builder.Services.AddApplication();
     builder.Services.AddContracts();
 

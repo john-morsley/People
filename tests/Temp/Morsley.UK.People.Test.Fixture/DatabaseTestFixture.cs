@@ -6,34 +6,54 @@ public class DatabaseTestFixture
     protected DockerTestFixture<MongoDBInDocker>? DockerTestFixture;
     protected global::AutoFixture.Fixture? AutoFixture;
 
-    public IConfiguration? Configuration;
+    protected IConfiguration? _configuration;
+    protected readonly string _persistenceKey;
 
     private string _name;
 
-    public DatabaseTestFixture(string name)
+    public DatabaseTestFixture(string name , string persistenceKey)
     {
+        if (name == null) throw new ArgumentNullException("name");
+        if (name.Length == 0) throw new ArgumentOutOfRangeException("name");
+
         AutoFixture = new global::AutoFixture.Fixture();
         AutoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
         //AutoFixture.Customizations.Add(new AddPersonRequestSpecimenBuilder());
         AutoFixture.Customizations.Add(new PersonSpecimenBuilder());
 
         _name = name;
+        _persistenceKey = persistenceKey;
+    }
+
+    public DatabaseTestFixture(string name, IConfiguration configuration, string persistenceKey)
+    {
+        if (name == null) throw new ArgumentNullException("name");
+        if (name.Length == 0) throw new ArgumentOutOfRangeException("name");
+        if (configuration == null) throw new ArgumentNullException("configuration");
+
+        AutoFixture = new global::AutoFixture.Fixture();
+        AutoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
+        //AutoFixture.Customizations.Add(new AddPersonRequestSpecimenBuilder());
+        AutoFixture.Customizations.Add(new PersonSpecimenBuilder());
+
+        _name = name;
+        _configuration = configuration;
+        _persistenceKey = persistenceKey;
     }
 
     [OneTimeSetUp]
-    public async Task OneTimeSetUp()
+    public async Task CreateDatabase()
     {
-        LoadInitialConfiguration();
+        var potentialPort = _configuration[$"{_persistenceKey}:Port"];
+        var username = _configuration[$"{_persistenceKey}:Username"];
+        var password = _configuration[$"{_persistenceKey}:Password"];
 
-        var section = Configuration!.GetSection(nameof(MongoSettings));
-        var settings = section.Get<MongoSettings>();
-
-        if (!int.TryParse(settings.Port, out var port))
+        if (!int.TryParse(potentialPort, out var port))
         {
             throw new NotImplementedException("Port was not a number!");
         }
 
-        DockerTestFixture = new DockerTestFixture<MongoDBInDocker>(_name, settings.Username!, settings.Password!, port);
+        DockerTestFixture = new DockerTestFixture<MongoDBInDocker>(_name, username, password, port);
 
         try
         {
@@ -44,9 +64,26 @@ public class DatabaseTestFixture
             throw new Exception("This may be Docker related. Check Docker is running.", e);
         }
 
-        LoadAdditionalConfiguration();
+        UpdateConfiguration();
 
-        if (Configuration == null) Assert.Fail("Configuration should not be null!");
+        if (_configuration == null) Assert.Fail("Configuration should not be null!");
+    }
+
+    private void UpdateConfiguration()
+    {
+        var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
+        builder.AddInMemoryCollection(GetInMemoryConfiguration());
+        var configuration = builder.Build();
+        var potentialPort = configuration[$"{_persistenceKey}:Port"];
+        if (!int.TryParse(potentialPort, out var port))
+        {
+            throw new NotImplementedException("Port was not a number!");
+        }
+        if (port != DockerTestFixture!.InDocker.Port)
+        {
+            throw new NotImplementedException("Port has not been updated!");
+        }
+        _configuration = configuration;
     }
 
     [SetUp]
@@ -64,7 +101,7 @@ public class DatabaseTestFixture
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
-        await DockerTestFixture!.RunAfterTests();
+        await DockerTestFixture?.RunAfterTests();
     }
 
     protected int ContainerPort
@@ -76,43 +113,52 @@ public class DatabaseTestFixture
         }
     }
 
+    private string GetDatabaseName()
+    {
+        var databaseName = _configuration[$"{_persistenceKey}:DatabaseName"];
+        return databaseName;
+    }
+
+    private string GetTableName()
+    {
+        var tableName = _configuration[$"{_persistenceKey}:TableName"];
+        return tableName;
+    }
+
     private void DeleteAllPeopleFromDatabase()
     {
-        var section = Configuration!.GetSection(nameof(MongoSettings));
-        var settings = section.Get<MongoSettings>();
         var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);
-        var database = mongoClient.GetDatabase(settings.DatabaseName);
-        var peopleTable = database.GetCollection<Person>(settings.TableName);
+        var database = mongoClient.GetDatabase(GetDatabaseName());
+        var peopleTable = database.GetCollection<Person>(GetTableName());
         peopleTable.DeleteMany("{}");
     }
 
     private string GetConnectionString()
     {
         var mongoDbInDocker = DockerTestFixture!.InDocker as MongoDBInDocker;
-
         return mongoDbInDocker!.ConnectionString();
     }
 
     public Dictionary<string, string> GetInMemoryConfiguration()
     {
         var additional = new Dictionary<string, string>();
-        if (DockerTestFixture != null) additional.Add("MongoSettings:Port", ContainerPort.ToString());
+        if (DockerTestFixture != null) additional.Add($"{_persistenceKey}:Port", ContainerPort.ToString());
         return additional;
     }
 
-    protected IConfiguration GetConfiguration(Dictionary<string, string>? additional = null)
-    {
-        var builder = new ConfigurationBuilder();
+    //protected IConfiguration GetConfiguration(Dictionary<string, string>? additional = null)
+    //{
+    //    var builder = new ConfigurationBuilder();
 
-        builder.AddJsonFile("appsettings.json");
+    //    builder.AddJsonFile("appsettings.json");
 
-        if (additional != null && additional.Count > 0) builder.AddInMemoryCollection(additional);
+    //    if (additional != null && additional.Count > 0) builder.AddInMemoryCollection(additional);
 
-        IConfiguration configuration = builder.Build();
+    //    IConfiguration configuration = builder.Build();
 
-        return configuration;
-    }
+    //    return configuration;
+    //}
 
     //protected IConfiguration GetCurrentConfiguration()
     //{
@@ -154,12 +200,10 @@ public class DatabaseTestFixture
 
     public void AddPersonToDatabase(Person person)
     {
-        var section = Configuration!.GetSection(nameof(MongoSettings));
-        var settings = section.Get<MongoSettings>();
         var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);
-        var database = mongoClient.GetDatabase(settings.DatabaseName);
-        var peopleTable = database.GetCollection<Person>(settings.TableName);
+        var database = mongoClient.GetDatabase(GetDatabaseName());
+        var peopleTable = database.GetCollection<Person>(GetTableName());
         peopleTable.InsertOne(person);
     }
 
@@ -167,12 +211,10 @@ public class DatabaseTestFixture
     {
         if (numberOfPeopleToAdd <= 0) return new List<Person>();
 
-        var section = Configuration!.GetSection(nameof(MongoSettings));
-        var settings = section.Get<MongoSettings>();
         var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);
-        var database = mongoClient.GetDatabase(settings.DatabaseName);
-        var peopleTable = database.GetCollection<Person>(settings.TableName);
+        var database = mongoClient.GetDatabase(GetDatabaseName());
+        var peopleTable = database.GetCollection<Person>(GetTableName());
         var people = new List<Person>();
         for (var i = 0; i < numberOfPeopleToAdd; i++)
         {
@@ -212,13 +254,11 @@ public class DatabaseTestFixture
 
     public Person GetPersonFromDatabase(Guid personId)
     {
-        var section = Configuration!.GetSection(nameof(MongoSettings));
-        var settings = section.Get<MongoSettings>();
         var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);
-        var database = mongoClient.GetDatabase(settings.DatabaseName);
+        var database = mongoClient.GetDatabase(GetDatabaseName());
         var mongoCollectionSettings = new MongoCollectionSettings();
-        var peopleTable = database.GetCollection<Person>(settings.TableName, mongoCollectionSettings);
+        var peopleTable = database.GetCollection<Person>(GetTableName(), mongoCollectionSettings);
         var options = new FindOptions();
         var person = peopleTable.Find<Person>(Person => Person.Id == personId, options).SingleOrDefault();
         return person;
@@ -237,25 +277,26 @@ public class DatabaseTestFixture
     //        return peopleTable.AsQueryable();
     //    }
 
-    private void LoadAdditionalConfiguration()
-    {
-        var additionalConfiguration = GetInMemoryConfiguration();
-        Configuration = GetConfiguration(additionalConfiguration);
-    }
+    //private void LoadAdditionalConfiguration()
+    //{
+    //    var additionalConfiguration = GetInMemoryConfiguration();
+    //    //_configuration = GetConfiguration(additionalConfiguration);
+    //    var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
+    //    builder.AddInMemoryCollection(additionalConfiguration);
+    //    _configuration = builder.Build();
+    //}
 
-    protected void LoadInitialConfiguration()
-    {
-        Configuration = GetConfiguration();
-    }
+    //protected void LoadInitialConfiguration()
+    //{
+    //    _configuration = GetConfiguration();
+    //}
 
     public long NumberOfPeopleInDatabase()
     {
-        var section = Configuration!.GetSection(nameof(MongoSettings));
-        var settings = section.Get<MongoSettings>();
         var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);
-        var database = mongoClient.GetDatabase(settings.DatabaseName);
-        var peopleTable = database.GetCollection<Person>(settings.TableName);
+        var database = mongoClient.GetDatabase(GetDatabaseName());
+        var peopleTable = database.GetCollection<Person>(GetTableName());
         var numberOfPeople = peopleTable.Find(_ => true).CountDocuments();
         return numberOfPeople;
     }

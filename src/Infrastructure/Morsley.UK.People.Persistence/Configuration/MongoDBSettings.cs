@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.Persistence.Configuration;
 
-public  class MongoSettings
+public  class MongoDBSettings
 {
     public string? Host { get; set; }
 

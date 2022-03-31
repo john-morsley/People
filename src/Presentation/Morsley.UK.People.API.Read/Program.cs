@@ -32,7 +32,7 @@ try
     });
 
     builder.Services.AddMessaging();
-    builder.Services.AddPersistence(configuration);
+    builder.Services.AddPersistence(configuration, "ReadMongoDBSettings");
     builder.Services.AddApplication();
     builder.Services.AddContracts();
 
