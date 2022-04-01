@@ -1,6 +1,3 @@
-using MongoDB.Driver;
-using Morsley.UK.People.Domain.Models;
-
 namespace Morsley.UK.People.Synchronizer;
 
 public class Worker : BackgroundService
@@ -16,6 +13,8 @@ public class Worker : BackgroundService
 
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        //var previousRead = 0L;
+        //var previousWrite = 0L;
         var readSettings = GetReadSettings();
         var writeSettings = GetWriteSettings();
 
@@ -23,7 +22,12 @@ public class Worker : BackgroundService
         {
             var read = NumberOfPeopleInDatabase(readSettings);
             var write = NumberOfPeopleInDatabase(writeSettings);
-            _logger.Information("Read: {read} | Write: {write}", read, write);
+            //if (read > previousRead || write > previousWrite)
+            //{
+                _logger.Debug("Read: {read} | Write: {write}", read, write);
+                //previousRead = read;
+                //previousWrite = write;
+            //}
             await Task.Delay(1000, stoppingToken);
         }
     }

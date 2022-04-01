@@ -45,8 +45,13 @@ public class EventBus : IEventBus
     public void Publish<T>(T @event) where T : Event
     {
         var factory = GetConnectionFactory<T>();
-        using var connection = factory.CreateConnection();
-        using var channel = connection.CreateModel();
+        var connection = factory.CreateConnection();
+        if (!connection.IsOpen)
+        {
+
+        }
+        var channel = connection.CreateModel();
+
         channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
         var queueName = channel.QueueDeclare().QueueName;
         channel.QueueBind(queueName, ExchangeName, RoutingKey);
@@ -100,27 +105,37 @@ public class EventBus : IEventBus
     {
         var factory = GetConnectionFactory<T>();
         var connection = factory.CreateConnection();
+        if (!connection.IsOpen)
+        {
+
+        }
         var channel = connection.CreateModel();
         channel.ExchangeDeclare("direct_people", ExchangeType.Direct);
         var queueName = channel.QueueDeclare().QueueName;
         channel.QueueBind(queueName, ExchangeName, RoutingKey);
+
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.Received += ConsumerReceived;
-        channel.BasicConsume(queueName, autoAck: true, consumer);
+        channel.BasicConsume(queueName, autoAck: false, consumer);
     }
+
+    private ConnectionFactory? _factory;
 
     private ConnectionFactory GetConnectionFactory<T>()
     {
-        var settings = GetRabbitMQSettings();
-        var factory = new ConnectionFactory
+        if (_factory is null)
         {
-            HostName = settings!.Host,
-            Port = int.Parse(settings!.Port),
-            UserName = settings!.Username,
-            Password = settings!.Password,
-            DispatchConsumersAsync = true
-        };
-        return factory;
+            var settings = GetRabbitMQSettings();
+            _factory = new ConnectionFactory {
+                HostName = settings!.Host,
+                Port = int.Parse(settings!.Port),
+                UserName = settings!.Username,
+                Password = settings!.Password,
+                DispatchConsumersAsync = true
+            };
+        }
+
+        return _factory;
     }
 
     private async Task ConsumerReceived(object sender, BasicDeliverEventArgs args)
@@ -152,21 +167,19 @@ public class EventBus : IEventBus
     {
         if (_eventHandlers.ContainsKey(eventName))
         {
-            using (var scope = _serviceScopeFactory.CreateScope())
+            using var scope = _serviceScopeFactory.CreateScope();
+            var subscriptions = _eventHandlers[eventName];
+            foreach (var subscription in subscriptions)
             {
-                var subscriptions = _eventHandlers[eventName];
-                foreach (var subscription in subscriptions)
-                {
-                    var handler = scope.ServiceProvider.GetService(subscription);
+                var handler = scope.ServiceProvider.GetService(subscription);
 
-                    if (handler == null) continue;
+                if (handler == null) continue;
 
-                    var eventType = _eventTypes.SingleOrDefault(t => t.Name == eventName);
-                    var @event = JsonConvert.DeserializeObject(message, eventType);
-                    var concreteType = typeof(IEventHandler<>).MakeGenericType(eventType);
+                var eventType = _eventTypes.SingleOrDefault(t => t.Name == eventName);
+                var @event = JsonConvert.DeserializeObject(message, eventType);
+                var concreteType = typeof(IEventHandler<>).MakeGenericType(eventType);
 
-                    await ((Task)concreteType.GetMethod("Handle").Invoke(handler, new object[] { @event }));
-                }
+                await ((Task)concreteType.GetMethod("Handle").Invoke(handler, new object[] { @event }));
             }
         }
     }

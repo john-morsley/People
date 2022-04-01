@@ -11,7 +11,7 @@ public static class LoginEndpoint
     /// <param name="application"></param>
     public static void MapLoginEndpoint(this WebApplication application)
     {
-        application.MapMethods("/login", new[] { "POST" }, async (
+        application.MapMethods("/api/login", new[] { "POST" }, async (
                     [FromBody] LoginRequest request,
                     [FromServices] IAuthenticationService service,
                     [FromServices] IConfiguration configuration,
