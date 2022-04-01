@@ -6,7 +6,8 @@ public static class PersistenceServiceCollectionExtensions
     {
         var mongoContext = new MongoContext(configuration, persistenceKey);
         services.AddSingleton<IMongoContext>(mongoContext);
-        services.AddScoped<IPersonRepository, PersonRepository>();
+        //services.AddScoped<IPersonRepository, PersonRepository>();
+        services.AddSingleton<IPersonRepository, PersonRepository>();
         return services;
     }
 }

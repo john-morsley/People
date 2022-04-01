@@ -36,6 +36,24 @@ public class EventBus : IEventBus
         return rabbitMQSettings;
     }
 
+    private IConnection _publishConnection;
+
+    private IConnection GetPublishConnection<T>()
+    {
+        if (_publishConnection is not null) return _publishConnection;
+
+        var factory = GetConnectionFactory<T>();
+        var connection = factory.CreateConnection();
+        if (!connection.IsOpen)
+        {
+            connection = GetPublishConnection<T>();
+        }
+        _publishConnection = connection;
+
+        return _publishConnection;
+    }
+
+
     /// <summary>
     /// Publish an Event to the Event Bus
     /// </summary>
@@ -44,22 +62,45 @@ public class EventBus : IEventBus
     /// <exception cref="NotImplementedException"></exception>
     public void Publish<T>(T @event) where T : Event
     {
-        var factory = GetConnectionFactory<T>();
-        var connection = factory.CreateConnection();
-        if (!connection.IsOpen)
-        {
+        //var factory = GetConnectionFactory<T>();
+        //var connection = factory.CreateConnection();
+        //if (!connection.IsOpen)
+        //{
 
-        }
+        //}
+
+        var connection = GetPublishConnection<T>();
+
         var channel = connection.CreateModel();
 
         channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
         var queueName = channel.QueueDeclare().QueueName;
         channel.QueueBind(queueName, ExchangeName, RoutingKey);
-        var eventName = @event.GetType().Name;
         var message = JsonConvert.SerializeObject(@event);
         var body = Encoding.UTF8.GetBytes(message);
         channel.BasicPublish(ExchangeName, RoutingKey, null, body);
+
+        //channel.Close();
+        //connection.Close();
     }
+
+    private IConnection _subscribeConnection;
+
+    private IConnection GetSubscribeConnection<T>()
+    {
+        if (_subscribeConnection is not null) return _subscribeConnection;
+
+        var factory = GetConnectionFactory<T>();
+        var connection = factory.CreateConnection();
+        if (!connection.IsOpen)
+        {
+            connection = GetSubscribeConnection<T>();
+        }
+        _subscribeConnection = connection;
+
+        return _subscribeConnection;
+    }
+
 
     /// <summary>
     /// Subscribe to an Event with an EventHandler
@@ -103,12 +144,15 @@ public class EventBus : IEventBus
 
     private void StartBasicConsumer<T>()
     {
-        var factory = GetConnectionFactory<T>();
-        var connection = factory.CreateConnection();
-        if (!connection.IsOpen)
-        {
+        //var factory = GetConnectionFactory<T>();
+        //var connection = factory.CreateConnection();
+        //if (!connection.IsOpen)
+        //{
 
-        }
+        //}
+
+        var connection = GetSubscribeConnection<T>();
+
         var channel = connection.CreateModel();
         channel.ExchangeDeclare("direct_people", ExchangeType.Direct);
         var queueName = channel.QueueDeclare().QueueName;
@@ -117,6 +161,9 @@ public class EventBus : IEventBus
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.Received += ConsumerReceived;
         channel.BasicConsume(queueName, autoAck: false, consumer);
+
+        //channel.Close();
+        //connection.Close();
     }
 
     private ConnectionFactory? _factory;

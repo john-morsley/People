@@ -1,15 +1,5 @@
-﻿using Morsley.UK.People.API.Contracts.Requests;
-using Morsley.UK.People.API.Contracts.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Http.Json;
+﻿namespace Morsley.UK.People.API.SampleConsumer;
 
-namespace Morsley.UK.People.API.SampleConsumer;
 public class Security
 {
     private const string LoginURL = "https://localhost:5002/api/login";
@@ -18,7 +8,7 @@ public class Security
     {
         Console.Write("Authenticating... ");
         var token = await GetJwtTokenAsync(client, username, password);
-        if (token == null)
+        if (token is null)
         {
             Console.WriteLine("Failed to Authenticate!");
             return false;
@@ -36,8 +26,7 @@ public class Security
         if (!result.IsSuccessStatusCode) return null;
         if (result.StatusCode != HttpStatusCode.OK) return null;
         var response = await result.Content.ReadFromJsonAsync<LoginResponse>();
-        if (response == null) return null;
+        if (response is null) return null;
         return response.Token;
     }
-
 }
