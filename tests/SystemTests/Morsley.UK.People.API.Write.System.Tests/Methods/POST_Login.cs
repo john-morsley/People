@@ -6,7 +6,7 @@ public class POST_Login : WriteApplicationTestFixture<WriteProgram>
     public async Task Trying_To_Authenticate___With_Invalid_Credentials___Should_Result_In_401_Unauthorized()
     {
         // Arrange...
-        const string url = "https://localhost/login";
+        const string url = "https://localhost/api/login";
 
         var request = new LoginRequest("invalid", "invalid");
 
@@ -26,7 +26,7 @@ public class POST_Login : WriteApplicationTestFixture<WriteProgram>
         const string password = "P@$$w0rd!";
         // ToDo --> Add 'John Morsley' to the IAM database.
 
-        const string url = "https://localhost/login";
+        const string url = "https://localhost/api/login";
 
         var request = new LoginRequest(username, password);
 

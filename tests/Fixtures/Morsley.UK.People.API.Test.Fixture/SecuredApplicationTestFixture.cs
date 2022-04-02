@@ -9,7 +9,7 @@ public abstract class SecuredApplicationTestFixture<TProgram> : ApplicationTestF
     private readonly string _issuer;
     private readonly string _audience;
 
-    protected string LoginUrl => "/login";
+    protected string LoginUrl => "/api/login";
 
     public SecuredApplicationTestFixture()
     {
