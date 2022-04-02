@@ -9,8 +9,6 @@ public class EventBus : IEventBus
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger _logger;
 
-    //private RabbitMQSettings? _rabbitMQSettings;
-
     private readonly Dictionary<string, List<Type>> _eventHandlers;
     private readonly List<Type> _eventTypes;
 
@@ -19,11 +17,6 @@ public class EventBus : IEventBus
         _configuration = configuration;
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
-
-        //var section = configuration.GetSection(nameof(RabbitMQSettings));
-        //_rabbitMQSettings = section.Get<RabbitMQSettings>();
-
-        // ToDo --> Are the above settings valid?
 
         _eventTypes = new List<Type>();
         _eventHandlers = new Dictionary<string, List<Type>>();
@@ -42,7 +35,7 @@ public class EventBus : IEventBus
     {
         if (_publishConnection is not null) return _publishConnection;
 
-        var factory = GetConnectionFactory<T>();
+        var factory = GetConnectionFactory();
         var connection = factory.CreateConnection();
         if (!connection.IsOpen)
         {
@@ -53,7 +46,6 @@ public class EventBus : IEventBus
         return _publishConnection;
     }
 
-
     /// <summary>
     /// Publish an Event to the Event Bus
     /// </summary>
@@ -62,13 +54,6 @@ public class EventBus : IEventBus
     /// <exception cref="NotImplementedException"></exception>
     public void Publish<T>(T @event) where T : Event
     {
-        //var factory = GetConnectionFactory<T>();
-        //var connection = factory.CreateConnection();
-        //if (!connection.IsOpen)
-        //{
-
-        //}
-
         var connection = GetPublishConnection<T>();
 
         var channel = connection.CreateModel();
@@ -79,9 +64,6 @@ public class EventBus : IEventBus
         var message = JsonConvert.SerializeObject(@event);
         var body = Encoding.UTF8.GetBytes(message);
         channel.BasicPublish(ExchangeName, RoutingKey, null, body);
-
-        //channel.Close();
-        //connection.Close();
     }
 
     private IConnection _subscribeConnection;
@@ -90,7 +72,7 @@ public class EventBus : IEventBus
     {
         if (_subscribeConnection is not null) return _subscribeConnection;
 
-        var factory = GetConnectionFactory<T>();
+        var factory = GetConnectionFactory();
         var connection = factory.CreateConnection();
         if (!connection.IsOpen)
         {
@@ -100,7 +82,6 @@ public class EventBus : IEventBus
 
         return _subscribeConnection;
     }
-
 
     /// <summary>
     /// Subscribe to an Event with an EventHandler
@@ -144,13 +125,6 @@ public class EventBus : IEventBus
 
     private void StartBasicConsumer<T>()
     {
-        //var factory = GetConnectionFactory<T>();
-        //var connection = factory.CreateConnection();
-        //if (!connection.IsOpen)
-        //{
-
-        //}
-
         var connection = GetSubscribeConnection<T>();
 
         var channel = connection.CreateModel();
@@ -161,14 +135,11 @@ public class EventBus : IEventBus
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.Received += ConsumerReceived;
         channel.BasicConsume(queueName, autoAck: false, consumer);
-
-        //channel.Close();
-        //connection.Close();
     }
 
     private ConnectionFactory? _factory;
 
-    private ConnectionFactory GetConnectionFactory<T>()
+    private ConnectionFactory GetConnectionFactory()
     {
         if (_factory is null)
         {
@@ -188,7 +159,6 @@ public class EventBus : IEventBus
     private async Task ConsumerReceived(object sender, BasicDeliverEventArgs args)
     {
         var exchangeName = args.Exchange;
-        //var routingKey = args.RoutingKey;
         var message = Encoding.UTF8.GetString(args.Body.Span);
         var eventName = EventName(message);
 
