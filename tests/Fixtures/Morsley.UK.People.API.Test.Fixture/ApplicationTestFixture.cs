@@ -2,6 +2,8 @@
 
 public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
 {
+    //protected ILogger Logger;
+
     //protected bool HasBus = false;
     //protected bool HasDatabase = false;
 
@@ -29,20 +31,9 @@ public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
             return _applicationPort;
         }
     }
-
-    public ApplicationTestFixture()
+    
+    protected ApplicationTestFixture()
     {
-        //var name = typeof(TProgram).Name;
-        //if (name.Contains("Read"))
-        //{
-        //    HasDatabase = true;
-        //}
-        //else if (name.Contains("Write"))
-        //{
-        //    //HasBus = true;
-        //    HasDatabase = true;
-        //}
-
         AutoFixture = new global::AutoFixture.Fixture();
         AutoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
         AutoFixture.Customizations.Add(new AddPersonRequestSpecimenBuilder());
@@ -51,32 +42,12 @@ public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
     [OneTimeSetUp]
     protected async virtual Task OneTimeSetUp()
     {
-        //if (HasBus)
-        //{
-        //    BusTestFixture = new BusTestFixture();
-        //    await BusTestFixture.OneTimeSetUp();
-        //}
-
-        //if (HasDatabase)
-        //{
-        //    DatabaseTestFixture = new DatabaseTestFixture();
-        //    await DatabaseTestFixture.OneTimeSetUp();
-        //}
-
-        //if (HasWriteDatabase)
-        //{
-        //    WriteDatabaseTestFixture = new DatabaseTestFixture();
-        //    await WriteDatabaseTestFixture.OneTimeSetUp();
-        //}
+        await Task.CompletedTask;
     }
 
     [SetUp]
-    protected virtual void SetUp()
+    protected async virtual Task SetUp()
     {
-        //if (HasBus) BusTestFixture!.SetUp();
-        //if (HasDatabase)
-        //DatabaseTestFixture!.SetUp();
-
         var factory = new WebApplicationFactory<TProgram>()
             .WithWebHostBuilder(builder =>
             {
@@ -96,23 +67,20 @@ public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
         {
             BaseAddress = new System.Uri($"https://localhost:{ApplicationPort}")
         });
+
+        await Task.CompletedTask;
     }
 
     [TearDown]
     protected virtual void TearDown()
     {
-        //BusTestFixture?.TearDown();
-        //DatabaseTestFixture?.TearDown();
-        //WriteDatabaseTestFixture?.TearDown();
-
         HttpClient?.Dispose();
     }
 
     [OneTimeTearDown]
     protected async virtual Task OneTimeTearDown()
     {
-        //if(HasBus) await BusTestFixture!.OneTimeTearDown();
-        //if(HasDatabase) await DatabaseTestFixture!.OneTimeTearDown();
+        await Task.CompletedTask;
     }
 
     protected static string AddToFieldsIfMissing(string toAdd, string fields)

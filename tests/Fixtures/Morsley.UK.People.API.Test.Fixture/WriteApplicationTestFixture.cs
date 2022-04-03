@@ -8,26 +8,21 @@
 public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixture<TProgram> where TProgram : class
 {
     public BusTestFixture BusTestFixture => _busTestFixture!;
-
     public DatabaseTestFixture ReadDatabase => _readDatabaseTestFixture!;
-
     public DatabaseTestFixture WriteDatabase => _writeDatabaseTestFixture!;
 
     protected BusTestFixture? _busTestFixture;
-
     protected DatabaseTestFixture? _readDatabaseTestFixture;
-
     protected DatabaseTestFixture? _writeDatabaseTestFixture;
-
-    protected WorkerTestFixture<SynchronizerProgram> _synchronizerTestFixture;
-
-    public WriteApplicationTestFixture()
-    {
-
-    }
 
     [OneTimeSetUp]
     protected async override Task OneTimeSetUp()
+    {
+        await base.OneTimeSetUp();
+    }
+
+    [SetUp]
+    protected async override Task SetUp()
     {
         var readDatabaseConfiguration = GetReadDatabaseConfiguration();
         _readDatabaseTestFixture = new DatabaseTestFixture("Read_Database_Test", readDatabaseConfiguration, "ReadMongoDBSettings");
@@ -37,16 +32,42 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
         var writeDatabaseConfiguration = GetWriteDatabaseConfiguration();
         _writeDatabaseTestFixture = new DatabaseTestFixture("Write_Database_Test", writeDatabaseConfiguration, "WriteMongoDBSettings");
         await _writeDatabaseTestFixture.CreateDatabase();
-        //writeDatabaseConfiguration = _writeDatabaseTestFixture.Configuration;
 
         var busConfiguration = GetBusConfiguration();
         var combinedConfiguration = GetCombinedConfiguration(busConfiguration, readDatabaseConfiguration);
         _busTestFixture = new BusTestFixture("Bus_Test", combinedConfiguration, "ReadMongoDBSettings");
         await _busTestFixture.CreateBus();
-        //busConfiguration = _busTestFixture.Configuration;
 
-        //var workerConfiguration = GetWorkerConfiguration(busConfiguration, readDatabaseConfiguration);
-        //_synchronizerTestFixture = new WorkerTestFixture<SynchronizerProgram>(workerConfiguration, "ReadMongoDBSettings");
+        _busTestFixture.Subscribe<PersonAddedEvent, PersonAddedEventHandler>();
+        _busTestFixture.Subscribe<PersonUpdatedEvent, PersonUpdatedEventHandler>();
+
+        _busTestFixture!.SetUp();
+        _readDatabaseTestFixture!.SetUp();
+        _writeDatabaseTestFixture!.SetUp();
+
+        await base.SetUp();
+    }
+
+    [TearDown]
+    protected override void TearDown()
+    {
+        _busTestFixture?.TearDown();
+        _readDatabaseTestFixture?.TearDown();
+        _writeDatabaseTestFixture?.TearDown();
+
+        base.TearDown();
+    }
+
+    [OneTimeTearDown]
+    protected async override Task OneTimeTearDown()
+    {
+        
+
+        await _busTestFixture!.OneTimeTearDown();
+        await _readDatabaseTestFixture!.OneTimeTearDown();
+        await _writeDatabaseTestFixture!.OneTimeTearDown();
+
+        await base.OneTimeTearDown();
     }
 
     private IConfiguration GetConfiguration()
@@ -136,7 +157,7 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
         return GetConfiguration();
     }
 
-    private IConfiguration GetCombinedConfiguration(IConfiguration busConfiguration, IConfiguration  readDatabaseConfiguration)
+    private IConfiguration GetCombinedConfiguration(IConfiguration busConfiguration, IConfiguration readDatabaseConfiguration)
     {
         var builder = new ConfigurationBuilder()
             .AddConfiguration(busConfiguration)
@@ -152,31 +173,7 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
 
         return configuration;
     }
-
-    [SetUp]
-    protected virtual void SetUp()
-    {
-        _busTestFixture!.SetUp();
-        _readDatabaseTestFixture!.SetUp();
-        _writeDatabaseTestFixture!.SetUp();
-    }
-
-    [TearDown]
-    protected virtual void TearDown()
-    {
-        _busTestFixture?.TearDown();
-        _readDatabaseTestFixture?.TearDown();
-        _writeDatabaseTestFixture?.TearDown();
-    }
-
-    [OneTimeTearDown]
-    protected async virtual Task OneTimeTearDown()
-    {
-        await _busTestFixture!.OneTimeTearDown();
-        await _readDatabaseTestFixture!.OneTimeTearDown();
-        await _writeDatabaseTestFixture!.OneTimeTearDown();
-    }
-
+    
     protected override Dictionary<string, string> GetInMemoryConfiguration()
     {
         var additional = new Dictionary<string, string>();

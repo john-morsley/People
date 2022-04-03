@@ -1,12 +1,7 @@
-﻿
-
-namespace Morsley.UK.People.API.Write.Tests.Methods;
+﻿namespace Morsley.UK.People.API.Write.Tests.Methods;
 
 public class OPTIONS : ApplicationTestFixture<WriteProgram>
 {
-    //private TestServer _server;
-    //private HttpClient HttpClient;
-
     [Test]
     [Category("Happy")]
     public async Task Given_An_API_With_Unknown_Capabilities___When_An_Options_Call_Is_Made___Then_200_OK_And_Allowed_HTTP_Methods_Are_Returned()

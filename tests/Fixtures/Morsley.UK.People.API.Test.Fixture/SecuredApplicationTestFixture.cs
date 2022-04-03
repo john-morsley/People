@@ -76,27 +76,6 @@ public abstract class SecuredApplicationTestFixture<TProgram> : ApplicationTestF
         return issuer;
     }
 
-    //protected IConfiguration GetConfiguration(Dictionary<string, string>? additional = null)
-    //{
-    //    var builder = new ConfigurationBuilder();
-
-    //    builder.AddJsonFile("appsettings.json");
-
-    //    if (additional != null && additional.Count > 0) builder.AddInMemoryCollection(additional);
-
-    //    IConfiguration configuration = builder.Build();
-
-    //    return configuration;
-    //}
-
-    //protected override Dictionary<string, string> GetInMemoryConfiguration()
-    //{
-    //    var additional = base.GetInMemoryConfiguration();
-    //    additional.Add("Jwt:Key", GetJwtKey());
-    //    additional.Add("Jwt:Audience", GetJwtAudience());
-    //    return additional;
-    //}
-
     protected string GetJwtAudience()
     {
         //var port = GetApplicationPort(DatabaseTestFixture.Configuration);
@@ -125,17 +104,6 @@ public abstract class SecuredApplicationTestFixture<TProgram> : ApplicationTestF
         if (response == null) return null;
         return response.Token;
     }
-
-    //protected int GetSecurityPort(IConfiguration configuration)
-    //{
-    //    var potentialPort = configuration["SecurityPort"];
-
-    //    if (string.IsNullOrEmpty(potentialPort)) throw new InvalidProgramException("Invalid configuration --> Port is missing!");
-
-    //    if (int.TryParse(potentialPort, out var port)) return port;
-
-    //    throw new InvalidProgramException("Invalid configuration --> port is not a number!");
-    //}
 
     protected void TokensShouldBeEquivalent(JwtSecurityToken originalToken, JwtSecurityToken validatedToken)
     {

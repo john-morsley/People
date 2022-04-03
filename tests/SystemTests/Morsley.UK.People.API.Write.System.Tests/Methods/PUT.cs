@@ -58,6 +58,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
     {
         // Arrange...
         WriteDatabase.NumberOfPeople().Should().Be(0);
+        ReadDatabase.NumberOfPeople().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -96,10 +97,20 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         // - Headers
         result.Headers.Location.Should().Be($"https://localhost/api/person/{userId}");
 
-        // - Database
-        var actualUser = WriteDatabase.GetPersonFromDatabase(userId);
-        actualUser.Should().NotBeNull();
-        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualUser, "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
+        // - Databases
+        WriteDatabase!.NumberOfPeople().Should().Be(1);
+        ReadDatabase!.NumberOfPeople(delayInMilliSeconds: 50, maximumNumberOfRetries: 200, expectedResult: 1).Should().Be(1);
+
+        // Verify that the person in the write database is what we expect it to be ...
+        var actualWritePerson = WriteDatabase.GetPersonFromDatabase(personResource.Data.Id);
+        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualWritePerson, "Id", "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
+
+        // Verify that the person in the read database is what we expect it to be ...
+        var actualReadPerson = WriteDatabase.GetPersonFromDatabase(personResource.Data.Id);
+        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualReadPerson, "Id", "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
+
+        // Verify that both read and write instances are equal...
+        actualReadPerson.Should().BeEquivalentTo(actualWritePerson);
     }
 
     // 

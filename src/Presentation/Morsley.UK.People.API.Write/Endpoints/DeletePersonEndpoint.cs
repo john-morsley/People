@@ -62,7 +62,6 @@ public static class DeletePersonEndpoint
         }
     }
 
-
     private async static Task TryDeletePerson(
         Guid personId,
         IMediator mediator,
@@ -70,8 +69,7 @@ public static class DeletePersonEndpoint
     {
         try
         {
-            var deletePersonCommand = new DeletePersonCommand(personId);
-            await mediator.Send(deletePersonCommand);
+            await PersonHelper.DeletePerson(personId, mediator, logger);
         }
         catch (Exception e)
         {

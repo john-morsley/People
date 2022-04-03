@@ -28,7 +28,7 @@ public static class GetPeopleEndpoint
                    .Produces<IPagedList<PersonResponse>>(StatusCodes.Status200OK, "application/json")
                    .Produces(StatusCodes.Status422UnprocessableEntity)
                    .Produces(StatusCodes.Status500InternalServerError)
-                   .WithName("GetPeople").AllowAnonymous();
+                   .WithName("GetPeople");
     }
 
     private async static Task<IResult> GetPeople(

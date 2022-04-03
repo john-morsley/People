@@ -102,7 +102,7 @@ public class DatabaseTestFixture
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
-        await DockerTestFixture?.RunAfterTests();
+        await DockerTestFixture!.RunAfterTests();
     }
 
     protected int ContainerPort
@@ -265,40 +265,23 @@ public class DatabaseTestFixture
         return person;
     }
 
-    //    protected IQueryable<Person> GetPeopleFromDatabase()
-    //    {
-    //        var additional = GetInMemoryConfiguration();
-    //        var configuration = GetConfiguration(additional);
-    //        var section = configuration.GetSection(nameof(MongoSettings));
-    //        var settings = section.Get<MongoSettings>();
-    //        var connectionString = _testFixture!.MongoDBConnectionString;
-    //        var mongoClient = new MongoClient(connectionString);
-    //        var database = mongoClient.GetDatabase(settings.DatabaseName);
-    //        var peopleTable = database.GetCollection<Person>(settings.TableName);
-    //        return peopleTable.AsQueryable();
-    //    }
-
-    //private void LoadAdditionalConfiguration()
-    //{
-    //    var additionalConfiguration = GetInMemoryConfiguration();
-    //    //_configuration = GetConfiguration(additionalConfiguration);
-    //    var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
-    //    builder.AddInMemoryCollection(additionalConfiguration);
-    //    _configuration = builder.Build();
-    //}
-
-    //protected void LoadInitialConfiguration()
-    //{
-    //    _configuration = GetConfiguration();
-    //}
-
-    public long NumberOfPeople()
+    // Delay & retries are a crude mechanism to resolve eventual consistency
+    public long NumberOfPeople(int delayInMilliSeconds = 0, int maximumNumberOfRetries = 1, long? expectedResult = null)
     {
-        var connectionString = GetConnectionString();
-        var mongoClient = new MongoClient(connectionString);
-        var database = mongoClient.GetDatabase(GetDatabaseName());
-        var peopleTable = database.GetCollection<Person>(GetTableName());
-        var numberOfPeople = peopleTable.Find(_ => true).CountDocuments();
+        var numberOfPeople = 0L;
+        for (var i = 0; i < maximumNumberOfRetries; i++)
+        {
+            if (delayInMilliSeconds > 0) Task.Delay(delayInMilliSeconds);
+            var connectionString = GetConnectionString();
+            var mongoClient = new MongoClient(connectionString);
+            var database = mongoClient.GetDatabase(GetDatabaseName());
+            var peopleTable = database.GetCollection<Person>(GetTableName());
+            numberOfPeople = peopleTable.Find(_ => true).CountDocuments();
+            if (expectedResult is not null)
+            {
+                if (numberOfPeople == expectedResult) return numberOfPeople;
+            }
+        }
         return numberOfPeople;
     }
 }

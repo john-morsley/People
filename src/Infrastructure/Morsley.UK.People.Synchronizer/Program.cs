@@ -23,6 +23,8 @@ try
         services.AddPersistence(configuration, "ReadMongoDBSettings");
         services.AddApplication();
         services.AddSingleton<PersonAddedEventHandler>();
+        services.AddSingleton<PersonDeletedEventHandler>();
+        services.AddSingleton<PersonUpdatedEventHandler>();
     });
 
     var host = builder.Build();
@@ -31,6 +33,8 @@ try
     if (bus == null) throw new InvalidOperationException("Could not get a handle on the queue!");
 
     bus.Subscribe<PersonAddedEvent, PersonAddedEventHandler>();
+    bus.Subscribe<PersonDeletedEvent, PersonDeletedEventHandler>();
+    bus.Subscribe<PersonUpdatedEvent, PersonUpdatedEventHandler>();
 
     await host.RunAsync();
 }
@@ -38,6 +42,7 @@ catch (Exception e)
 {
     Log.Error(e, "An unexpected error occurred!");
     Console.WriteLine("The SYNCHRONIZER application has exited because on an unexpected error!");
+    Console.ReadKey();
 }
 
 #region System Testing

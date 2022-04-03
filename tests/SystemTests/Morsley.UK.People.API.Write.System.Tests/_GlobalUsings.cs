@@ -2,7 +2,10 @@
 global using Microsoft.AspNetCore.JsonPatch;
 global using Morsley.UK.People.API.Contracts.Requests;
 global using Morsley.UK.People.API.Test.Fixture;
+global using Morsley.UK.People.Application.Events;
+global using Morsley.UK.People.Application.Handlers;
 global using Morsley.UK.People.Domain.Enumerations;
+global using Morsley.UK.People.Domain.Models;
 global using Morsley.UK.People.Tests.Common;
 global using Newtonsoft.Json;
 global using NUnit.Framework;

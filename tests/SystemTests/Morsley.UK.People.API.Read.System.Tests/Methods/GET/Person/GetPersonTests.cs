@@ -2,11 +2,11 @@ namespace Morsley.UK.People.API.Read.System.Tests.Methods.GET.Person;
 
 public class GetPersonTests : ReadApplicationTestFixture<ReadProgram>
 {
-    [SetUp]
-    protected override void SetUp()
-    {
-        base.SetUp();
-    }
+    //[SetUp]
+    //protected override void SetUp()
+    //{
+    //    base.SetUp();
+    //}
 
     [Test]
     [Category("Happy")]

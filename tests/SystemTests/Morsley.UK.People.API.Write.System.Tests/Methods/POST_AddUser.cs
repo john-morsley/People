@@ -1,24 +1,25 @@
-﻿using Morsley.UK.People.Application.Events;
-using Morsley.UK.People.Application.Handlers;
-
-namespace Morsley.UK.People.API.Write.Tests.Methods;
+﻿namespace Morsley.UK.People.API.Write.Tests.Methods;
 
 public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
 {
-    [SetUp]
-    protected override void SetUp()
-    {
-        base.SetUp();
-    }
+    //[SetUp]
+    //protected async override Task SetUp()
+    //{
+    //    await base.SetUp();
+    //}
 
+    /// <notes>
+    /// Adding a valid person should result in a 200 OK.
+    /// It should also result in that person being added to the write database immediately.
+    /// It should also result in that person being added to the read database given eventual consistency.
+    /// </notes>
     [Test]
     [Category("Happy")]
-    public async Task Given_Person_Does_Not_Exist___When_Post_Add_Person___Then_200_OK_And_Person_Should_Be_Added()
+    public async Task Given_Person_Does_Not_Exist___When_Post_Add_Person___Then_200_OK_And_Person_Should_Be_Created()
     {
         // Arrange...
         ReadDatabase!.NumberOfPeople().Should().Be(0);
         WriteDatabase!.NumberOfPeople().Should().Be(0);
-        BusTestFixture!.Subscribe<PersonAddedEvent, PersonAddedEventHandler>();
 
         await AuthenticateAsync(Username, Password);
 
@@ -31,8 +32,6 @@ public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
         var result = await HttpClient!.PostAsync(url, payload);
 
         // Assert...
-        WriteDatabase!.NumberOfPeople().Should().Be(1);
-
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.Created);        
 
@@ -58,18 +57,19 @@ public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
         result.Headers.Location.Should().Be($"http://localhost/api/person/{personResource.Data.Id}");
 
         // - Databases
-        var actualPerson = WriteDatabase.GetPersonFromDatabase(personResource.Data.Id);
-        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualPerson, "Id", "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
+        ReadDatabase!.NumberOfPeople(delayInMilliSeconds: 50, maximumNumberOfRetries: 200, expectedResult: 1).Should().Be(1);
+        WriteDatabase!.NumberOfPeople().Should().Be(1);
+        
+        // Verify that the person in the write database is what we expect it to be ...
+        var actualWritePerson = WriteDatabase.GetPersonFromDatabase(personResource.Data.Id);
+        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualWritePerson, "Id", "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
 
-        var numberOfPeople = 0L;
-        for (var i = 0; i < 9999; i++)
-        {
-            await Task.Delay(50);
-            numberOfPeople = ReadDatabase!.NumberOfPeople();
-            if (numberOfPeople == 1) break;
-            Console.WriteLine(i);
-        }
-        numberOfPeople.Should().Be(1);
+        // Verify that the person in the read database is what we expect it to be ...
+        var actualReadPerson = WriteDatabase.GetPersonFromDatabase(personResource.Data.Id);
+        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualReadPerson, "Id", "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
+
+        // Verify that both read and write instances are equal...
+        actualReadPerson.Should().BeEquivalentTo(actualWritePerson);
     }
 
     [Test]

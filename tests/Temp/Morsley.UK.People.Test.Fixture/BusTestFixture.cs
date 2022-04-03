@@ -85,6 +85,8 @@ public class BusTestFixture
         {
             //services.AddSingleton<IEventBus, EventBus>();
             services.AddScoped<PersonAddedEventHandler>();
+            services.AddScoped<PersonDeletedEventHandler>();
+            services.AddScoped<PersonUpdatedEventHandler>();
             //services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddApplication();
             services.AddPersistence(_configuration, _persistenceKey);

@@ -6,11 +6,14 @@ public sealed class AddPersonCommandHandler : IRequestHandler<AddPersonCommand, 
     private readonly IMapper _mapper;
     private readonly IEventBus _bus;
 
-    public AddPersonCommandHandler(IPersonRepository personRepository, IMapper mapper, IEventBus bus)
+    public AddPersonCommandHandler(
+        IPersonRepository personRepository, 
+        IMapper mapper, 
+        IEventBus bus)
     {
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _bus = bus;
+        _bus = bus ?? throw new ArgumentNullException(nameof(bus));
     }
 
     public async Task<Person> Handle(AddPersonCommand command, CancellationToken ct)
@@ -21,12 +24,14 @@ public sealed class AddPersonCommandHandler : IRequestHandler<AddPersonCommand, 
 
         await _personRepository.AddAsync(person);
 
-        var personAddedEvent = _mapper.Map<PersonAddedEvent>(person!);
-
-        //var personAddedEvent = new PersonAddedEvent();
-
-        _bus.Publish(personAddedEvent);
+        RaisePersonAddedEvent(person);
 
         return person;
+    }
+
+    private void RaisePersonAddedEvent(Person person)
+    {
+        var personAddedEvent = _mapper.Map<PersonAddedEvent>(person!);
+        _bus.Publish(personAddedEvent);
     }
 }

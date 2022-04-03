@@ -23,7 +23,7 @@ public static class AddPersonEndpoint
                    .Produces<PersonResponse>(StatusCodes.Status200OK, "application/json")
                    .Produces(StatusCodes.Status422UnprocessableEntity)
                    .Produces(StatusCodes.Status500InternalServerError)
-                   .WithName("AddPerson").WithDisplayName("Add Person").AllowAnonymous();
+                   .WithName("AddPerson").WithDisplayName("Add Person");
     }
 
     [HttpPost]
@@ -41,10 +41,6 @@ public static class AddPersonEndpoint
         var personResponse = await TryAddPerson(request, mapper, mediator, logger);
 
         if (personResponse == null) return Results.UnprocessableEntity();
-
-        //var shapedPerson = personResponse.ShapeData();
-
-        //var shapedPersonWithLinks = LinksHelper.AddLinks(shapedPerson!, personResponse.Id);
 
         var shapedPersonWithLinks = PersonResponseHelper.ShapePersonWithLinks(personResponse);
 

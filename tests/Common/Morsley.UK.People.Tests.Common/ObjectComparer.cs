@@ -1,7 +1,4 @@
-﻿using NUnit.Framework;
-using System.Globalization;
-
-namespace Morsley.UK.People.Tests.Common;
+﻿namespace Morsley.UK.People.Tests.Common;
 
 public class ObjectComparer
 {

@@ -3,10 +3,17 @@
 public sealed class UpdatePersonCommandHandler : IRequestHandler<UpdatePersonCommand, Person>
 {
     private readonly IPersonRepository _personRepository;
+    private readonly IMapper _mapper;
+    private readonly IEventBus _bus;
 
-    public UpdatePersonCommandHandler(IPersonRepository personRepository)
+    public UpdatePersonCommandHandler(
+        IPersonRepository personRepository,
+        IMapper mapper,
+        IEventBus bus)
     {
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _bus = bus ?? throw new ArgumentNullException(nameof(bus));
     }
 
     public async Task<Person> Handle(UpdatePersonCommand command, CancellationToken ct)
@@ -22,7 +29,6 @@ public sealed class UpdatePersonCommandHandler : IRequestHandler<UpdatePersonCom
     {
         if (command == null) throw new ArgumentNullException(nameof(command));
 
-        //if (person.Title != command.Title) person.Title = command.Title;
         if (person.FirstName != command.FirstName && command.FirstName is not null) person.FirstName = command.FirstName;
         if (person.LastName != command.LastName && command.LastName is not null) person.LastName = command.LastName;
         if (person.Sex != command.Sex) person.Sex = command.Sex;
@@ -45,9 +51,15 @@ public sealed class UpdatePersonCommandHandler : IRequestHandler<UpdatePersonCom
         }
 
         await _personRepository.UpdateAsync(person);
-        //var numberOfRowsAffected = await _personRepository.CompleteAsync();
-        // ToDo --> Log!
+
+        RaisePersonUpdatedEvent(person);
 
         return person;
+    }
+
+    private void RaisePersonUpdatedEvent(Person person)
+    {
+        var personUpdatedEvent = _mapper.Map<PersonUpdatedEvent>(person!);
+        _bus.Publish(personUpdatedEvent);
     }
 }

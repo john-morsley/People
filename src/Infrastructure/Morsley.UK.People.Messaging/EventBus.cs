@@ -29,11 +29,11 @@ public class EventBus : IEventBus
         return rabbitMQSettings;
     }
 
-    private IConnection _publishConnection;
+    private IConnection? _publishConnection;
 
     private IConnection GetPublishConnection<T>()
     {
-        if (_publishConnection is not null) return _publishConnection;
+        if (_publishConnection is not null && _publishConnection.IsOpen) return _publishConnection;
 
         var factory = GetConnectionFactory();
         var connection = factory.CreateConnection();
@@ -47,7 +47,7 @@ public class EventBus : IEventBus
     }
 
     /// <summary>
-    /// Publish an Event to the Event Bus
+    ///     Publish an Event to the Event Bus
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="event"></param>
@@ -66,11 +66,11 @@ public class EventBus : IEventBus
         channel.BasicPublish(ExchangeName, RoutingKey, null, body);
     }
 
-    private IConnection _subscribeConnection;
+    private IConnection? _subscribeConnection;
 
     private IConnection GetSubscribeConnection<T>()
     {
-        if (_subscribeConnection is not null) return _subscribeConnection;
+        if (_subscribeConnection is not null && _subscribeConnection.IsOpen) return _subscribeConnection;
 
         var factory = GetConnectionFactory();
         var connection = factory.CreateConnection();
@@ -84,7 +84,7 @@ public class EventBus : IEventBus
     }
 
     /// <summary>
-    /// Subscribe to an Event with an EventHandler
+    ///     Subscribe to an Event with an EventHandler
     /// </summary>
     /// <typeparam name="T">The Event to subscribe to.</typeparam>
     /// <typeparam name="TH">The EventHandler to be called when the event happens.</typeparam>
@@ -158,13 +158,12 @@ public class EventBus : IEventBus
 
     private async Task ConsumerReceived(object sender, BasicDeliverEventArgs args)
     {
-        var exchangeName = args.Exchange;
         var message = Encoding.UTF8.GetString(args.Body.Span);
         var eventName = EventName(message);
 
         try
         {
-            await ProcessEvent(exchangeName, eventName, message).ConfigureAwait(false);
+            await ProcessEvent(eventName, message).ConfigureAwait(false);
             ((AsyncDefaultBasicConsumer)sender).Model.BasicAck(deliveryTag: args.DeliveryTag, multiple: false);
         }
         catch (Exception e)
@@ -180,7 +179,7 @@ public class EventBus : IEventBus
         return typeName;
     }
 
-    private async Task ProcessEvent(string exchangeName, string eventName, string message)
+    private async Task ProcessEvent(string eventName, string message)
     {
         if (_eventHandlers.ContainsKey(eventName))
         {

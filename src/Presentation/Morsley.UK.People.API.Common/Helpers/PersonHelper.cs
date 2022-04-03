@@ -26,6 +26,25 @@ public class PersonHelper
         return person;
     }
 
+    public static Task<Person> AddPerson(
+        UpdatePersonRequest request,
+        IMapper mapper,
+        IMediator mediator,
+        ILogger logger)
+    {
+        var addPersonRequest = mapper.Map<AddPersonRequest>(request);
+        return AddPerson(request.Id, addPersonRequest, mapper, mediator, logger);
+    }
+
+    public async static Task DeletePerson(
+        Guid id,
+        IMediator mediator,
+        ILogger logger)
+    {
+        var deletePersonCommand = new DeletePersonCommand(id);
+        await mediator.Send(deletePersonCommand);
+    }
+
     public async static Task<bool> DoesPersonExist(
         Guid personId,
         IMediator mediator,
@@ -57,11 +76,5 @@ public class PersonHelper
         var partiallyUpdatePersonCommand = mapper.Map<UpdatePersonCommand>(request);
         var updatedPerson = await mediator.Send(partiallyUpdatePersonCommand);
         return updatedPerson;
-    }
-
-    public static Task<Person> AddPerson(UpdatePersonRequest request, IMapper mapper, IMediator mediator, ILogger logger)
-    {
-        var addPersonRequest = mapper.Map<AddPersonRequest>(request);
-        return AddPerson(request.Id, addPersonRequest, mapper, mediator, logger);
     }
 }

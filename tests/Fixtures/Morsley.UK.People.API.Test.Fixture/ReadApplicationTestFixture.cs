@@ -17,26 +17,34 @@ public class ReadApplicationTestFixture<TProgram> : SecuredApplicationTestFixtur
     [OneTimeSetUp]
     protected async override Task OneTimeSetUp()
     {
-        var readDatabaseConfiguration = GetReadDatabaseConfiguration();
-        _readDatabaseTestFixture = new DatabaseTestFixture("Read_Database_Test", readDatabaseConfiguration, "ReadMongoDBSettings");
-        await _readDatabaseTestFixture.CreateDatabase();
+        await base.OneTimeSetUp();
     }
 
     [SetUp]
-    protected virtual void SetUp()
+    protected async override Task SetUp()
     {
+        var readDatabaseConfiguration = GetReadDatabaseConfiguration();
+        _readDatabaseTestFixture = new DatabaseTestFixture("Read_Database_Test", readDatabaseConfiguration, "ReadMongoDBSettings");
+        await _readDatabaseTestFixture.CreateDatabase();
+
         _readDatabaseTestFixture!.SetUp();
+
+        base.SetUp();
     }
 
     [TearDown]
-    protected virtual void TearDown()
+    protected override void TearDown()
     {
+        base.TearDown();
+
         _readDatabaseTestFixture?.TearDown();
     }
 
     [OneTimeTearDown]
-    protected async virtual Task OneTimeTearDown()
+    protected async override Task OneTimeTearDown()
     {
+        await base.OneTimeTearDown();
+
         await _readDatabaseTestFixture!.OneTimeTearDown();
     }
 
