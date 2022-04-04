@@ -51,7 +51,7 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
         var actualPerson = WriteDatabase.GetPersonFromDatabase(billGates.Id);
         actualPerson.Should().NotBeNull();
         actualPerson.FirstName.Should().Be(replacementFirstName);
-        
+
         httpResponse.IsSuccessStatusCode.Should().BeTrue();
         httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -257,7 +257,7 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
         personResource.Should().NotBeNull();
 
         // - Person
-        personResource!.Data.Should().NotBeNull();        
+        personResource!.Data.Should().NotBeNull();
 
         // - Links
         personResource.Links.Should().NotBeNull();
@@ -414,8 +414,8 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
     public async Task Given_Person_Does_Not_Exist___When_Patch_Partial_Update_Person___Then_201_Created_And_Person_Created()
     {
         // Arrange...
-        WriteDatabase.NumberOfPeople().Should().Be(0);
         ReadDatabase.NumberOfPeople().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -431,8 +431,6 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
         var result = await HttpClient!.PatchAsync(url, payload);
 
         // Assert...
-        WriteDatabase.NumberOfPeople().Should().Be(1);
-
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.Created);
 

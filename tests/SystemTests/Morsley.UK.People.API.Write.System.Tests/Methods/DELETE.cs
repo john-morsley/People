@@ -15,8 +15,6 @@ public class DELETE : WriteApplicationTestFixture<WriteProgram>
         ReadDatabase!.NumberOfPeople().Should().Be(0);
         WriteDatabase.NumberOfPeople().Should().Be(0);
 
-        BusTestFixture!.Subscribe<PersonDeletedEvent, PersonDeletedEventHandler>();
-
         var userToBeDeleted = WriteDatabase.GenerateTestPerson();
         var userId = userToBeDeleted.Id;
         WriteDatabase.AddPersonToDatabase(userToBeDeleted);
@@ -32,11 +30,11 @@ public class DELETE : WriteApplicationTestFixture<WriteProgram>
 
         // Assert...
         result.IsSuccessStatusCode.Should().BeTrue();
-        result.StatusCode.Should().Be(HttpStatusCode.NoContent);        
-        
+        result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().Be(0);
-        
+
         var shouldNotExistUser = WriteDatabase.GetPersonFromDatabase(userId);
         shouldNotExistUser.Should().BeNull();
 
@@ -86,7 +84,7 @@ public class DELETE : WriteApplicationTestFixture<WriteProgram>
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        
+
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().Be(0);
     }

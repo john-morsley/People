@@ -2,8 +2,8 @@
 
 public class EventBus : IEventBus
 {
-    private const string ExchangeName = "direct_people";
-    private const string RoutingKey = "people_only";
+    //private const string ExchangeName = "direct_people";
+    //private const string RoutingKey = "people_only";
 
     private readonly IConfiguration _configuration;
     private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -12,7 +12,10 @@ public class EventBus : IEventBus
     private readonly Dictionary<string, List<Type>> _eventHandlers;
     private readonly List<Type> _eventTypes;
 
-    public EventBus(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, ILogger logger)
+    public EventBus(
+        IConfiguration configuration, 
+        IServiceScopeFactory serviceScopeFactory, 
+        ILogger logger)
     {
         _configuration = configuration;
         _serviceScopeFactory = serviceScopeFactory;
@@ -56,14 +59,24 @@ public class EventBus : IEventBus
     {
         var connection = GetPublishConnection<T>();
 
-        var channel = connection.CreateModel();
+        //var channel = connection.CreateModel();
 
-        channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
-        var queueName = channel.QueueDeclare().QueueName;
-        channel.QueueBind(queueName, ExchangeName, RoutingKey);
+        //channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
+        //var queueName = channel.QueueDeclare().QueueName;
+        //channel.QueueBind(queueName, ExchangeName, RoutingKey);
+
+        using var channel = connection.CreateModel();
+        var eventName = @event.GetType().Name;
+
+
+
         var message = JsonConvert.SerializeObject(@event);
         var body = Encoding.UTF8.GetBytes(message);
-        channel.BasicPublish(ExchangeName, RoutingKey, null, body);
+
+
+        //channel.BasicPublish(ExchangeName, RoutingKey, null, body);
+
+        channel.BasicPublish("", eventName, null, body);
     }
 
     private IConnection? _subscribeConnection;
@@ -128,13 +141,14 @@ public class EventBus : IEventBus
         var connection = GetSubscribeConnection<T>();
 
         var channel = connection.CreateModel();
-        channel.ExchangeDeclare("direct_people", ExchangeType.Direct);
-        var queueName = channel.QueueDeclare().QueueName;
-        channel.QueueBind(queueName, ExchangeName, RoutingKey);
+
+
+        var eventName = typeof(T).Name;
+        channel.QueueDeclare(eventName, false, false, false, null);
 
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.Received += ConsumerReceived;
-        channel.BasicConsume(queueName, autoAck: false, consumer);
+        channel.BasicConsume(eventName, false, consumer);
     }
 
     private ConnectionFactory? _factory;

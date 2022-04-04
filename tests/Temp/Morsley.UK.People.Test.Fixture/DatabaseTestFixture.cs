@@ -88,15 +88,15 @@ public class DatabaseTestFixture
     }
 
     [SetUp]
-    public virtual void SetUp()
+    public async virtual Task SetUp()
     {
-        DeleteAllPeopleFromDatabase();
+        await DeleteAllPeopleFromDatabase();
     }
 
     [TearDown]
-    public virtual void TearDown()
+    public async virtual Task TearDown()
     {
-        DeleteAllPeopleFromDatabase();
+        await DeleteAllPeopleFromDatabase();
     }
 
     [OneTimeTearDown]
@@ -126,13 +126,13 @@ public class DatabaseTestFixture
         return tableName;
     }
 
-    private void DeleteAllPeopleFromDatabase()
+    private async Task DeleteAllPeopleFromDatabase()
     {
         var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(GetDatabaseName());
         var peopleTable = database.GetCollection<Person>(GetTableName());
-        peopleTable.DeleteMany("{}");
+        await peopleTable.DeleteManyAsync("{}");
     }
 
     private string GetConnectionString()

@@ -2,12 +2,6 @@ namespace Morsley.UK.People.API.Read.System.Tests.Methods.GET.Person;
 
 public class GetPersonTests : ReadApplicationTestFixture<ReadProgram>
 {
-    //[SetUp]
-    //protected override void SetUp()
-    //{
-    //    base.SetUp();
-    //}
-
     [Test]
     [Category("Happy")]
     public async Task Given_Person_Exists___When_That_Person_Is_Requested___Then_200_OK_And_Person_Returned()

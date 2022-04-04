@@ -33,7 +33,7 @@ public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
 
         // Assert...
         result.IsSuccessStatusCode.Should().BeTrue();
-        result.StatusCode.Should().Be(HttpStatusCode.Created);        
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
@@ -59,7 +59,7 @@ public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
         // - Databases
         ReadDatabase!.NumberOfPeople(delayInMilliSeconds: 50, maximumNumberOfRetries: 200, expectedResult: 1).Should().Be(1);
         WriteDatabase!.NumberOfPeople().Should().Be(1);
-        
+
         // Verify that the person in the write database is what we expect it to be ...
         var actualWritePerson = WriteDatabase.GetPersonFromDatabase(personResource.Data.Id);
         ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualWritePerson, "Id", "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
@@ -123,7 +123,7 @@ public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
-        
+
         var content = await result.Content.ReadAsStringAsync();
         var validationErrors = new Dictionary<string, string>
         {

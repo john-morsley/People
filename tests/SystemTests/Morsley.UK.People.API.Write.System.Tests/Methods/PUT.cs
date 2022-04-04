@@ -30,7 +30,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
 
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         var content = await response.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
@@ -40,7 +40,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         // - Person
         userResource!.Data.Should().NotBeNull();
         var actualUser = WriteDatabase.GetPersonFromDatabase(originalUser.Id);
-        
+
         // The result of upsert should 'equal' the requested upsert...
         ObjectComparer.PublicInstancePropertiesEqual(userResource.Data!, updateUserRequest).Should().BeTrue();
 
@@ -81,7 +81,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
 
         var personResource = DeserializePersonResource(content);
         personResource.Should().NotBeNull();
-        
+
         // - User
         personResource!.Data.Should().NotBeNull();
         ObjectComparer.PublicInstancePropertiesEqual(personResource.Data!, upsertUserRequest).Should().BeTrue();

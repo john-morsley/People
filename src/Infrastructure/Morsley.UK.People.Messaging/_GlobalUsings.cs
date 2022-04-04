@@ -1,4 +1,5 @@
-﻿global using Microsoft.Extensions.Configuration;
+﻿global using Microsoft.AspNetCore.Builder;
+global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Morsley.UK.People.Application.Events;
 global using Morsley.UK.People.Application.Interfaces;

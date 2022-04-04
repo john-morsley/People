@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-
-namespace Morsley.UK.People.Messaging.IoC;
+﻿namespace Morsley.UK.People.Messaging.IoC;
 
 public static class ApplicationBuilderExtensions
 {
@@ -8,11 +6,10 @@ public static class ApplicationBuilderExtensions
     {
         if (applicationBuilder == null) throw new ArgumentNullException(nameof(applicationBuilder));
 
-
         var section = configuration.GetSection(nameof(RabbitMQSettings));
         var rabbitSettings = section.Get<RabbitMQSettings>();
-
-
+        if (rabbitSettings == null) throw new ArgumentNullException(nameof(rabbitSettings));
+        if (!rabbitSettings.IsValid()) throw new ArgumentOutOfRangeException(nameof(rabbitSettings));
 
         return applicationBuilder;
     }

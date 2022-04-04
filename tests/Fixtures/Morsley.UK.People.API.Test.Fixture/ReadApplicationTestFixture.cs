@@ -17,19 +17,19 @@ public class ReadApplicationTestFixture<TProgram> : SecuredApplicationTestFixtur
     [OneTimeSetUp]
     protected async override Task OneTimeSetUp()
     {
+        var readDatabaseConfiguration = GetReadDatabaseConfiguration();
+        _readDatabaseTestFixture = new DatabaseTestFixture("Read_Database_Test", readDatabaseConfiguration, "ReadMongoDBSettings");
+        await _readDatabaseTestFixture.CreateDatabase();
+
         await base.OneTimeSetUp();
     }
 
     [SetUp]
     protected async override Task SetUp()
     {
-        var readDatabaseConfiguration = GetReadDatabaseConfiguration();
-        _readDatabaseTestFixture = new DatabaseTestFixture("Read_Database_Test", readDatabaseConfiguration, "ReadMongoDBSettings");
-        await _readDatabaseTestFixture.CreateDatabase();
-
         _readDatabaseTestFixture!.SetUp();
 
-        base.SetUp();
+        await base.SetUp();
     }
 
     [TearDown]

@@ -18,12 +18,6 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
     [OneTimeSetUp]
     protected async override Task OneTimeSetUp()
     {
-        await base.OneTimeSetUp();
-    }
-
-    [SetUp]
-    protected async override Task SetUp()
-    {
         var readDatabaseConfiguration = GetReadDatabaseConfiguration();
         _readDatabaseTestFixture = new DatabaseTestFixture("Read_Database_Test", readDatabaseConfiguration, "ReadMongoDBSettings");
         await _readDatabaseTestFixture.CreateDatabase();
@@ -39,11 +33,18 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
         await _busTestFixture.CreateBus();
 
         _busTestFixture.Subscribe<PersonAddedEvent, PersonAddedEventHandler>();
+        _busTestFixture.Subscribe<PersonDeletedEvent, PersonDeletedEventHandler>();
         _busTestFixture.Subscribe<PersonUpdatedEvent, PersonUpdatedEventHandler>();
 
+        await base.OneTimeSetUp();
+    }
+
+    [SetUp]
+    protected async override Task SetUp()
+    {
         _busTestFixture!.SetUp();
-        _readDatabaseTestFixture!.SetUp();
-        _writeDatabaseTestFixture!.SetUp();
+        await _readDatabaseTestFixture!.SetUp();
+        await _writeDatabaseTestFixture!.SetUp();
 
         await base.SetUp();
     }
@@ -61,8 +62,6 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
     [OneTimeTearDown]
     protected async override Task OneTimeTearDown()
     {
-        
-
         await _busTestFixture!.OneTimeTearDown();
         await _readDatabaseTestFixture!.OneTimeTearDown();
         await _writeDatabaseTestFixture!.OneTimeTearDown();

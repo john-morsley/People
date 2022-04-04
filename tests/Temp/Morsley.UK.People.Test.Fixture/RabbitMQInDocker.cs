@@ -3,7 +3,7 @@
 public class RabbitMQInDocker : InDocker
 {
     public const string RABBITMQ_IMAGE = "rabbitmq";
-    public const string RABBITMQ_IMAGE_TAG = "3";
+    public const string RABBITMQ_IMAGE_TAG = "3-management";
     //public const string RABBITMQ_CONTAINER_NAME = "IntegrationTesting_RabbitMQ";
     //public const string RABBITMQ_AUTHENTICATION_MECHANISM = "SCRAM-SHA-1";
     //public const int RABBITMQ_PORT = 5672;
