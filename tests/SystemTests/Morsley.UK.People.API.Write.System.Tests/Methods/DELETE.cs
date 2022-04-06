@@ -75,8 +75,9 @@ public class DELETE : WriteApplicationTestFixture<WriteProgram>
 
         await AuthenticateAsync(Username, Password);
 
-        // Act...
         var url = $"/api/person/{userId}";
+
+        // Act...
         var result = await HttpClient!.DeleteAsync(url);
 
         // Assert...
