@@ -1,4 +1,6 @@
-﻿namespace Morsley.UK.People.API.Contracts.Tests;
+﻿using Morsley.UK.People.API.Contracts.Responses;
+
+namespace Morsley.UK.People.API.Models.Tests;
 
 public class PersonResponseConverterTests
 {
@@ -47,9 +49,9 @@ public class PersonResponseConverterTests
         var personId = Guid.NewGuid();
         var json = 
             "{" +
-            $"\"Id\":\"{personId}\"," +
-            "\"FirstName\":\"John\"," +
-            "\"LastName\":\"Doe\"" +
+                $"\"Id\":\"{personId}\"," +
+                "\"FirstName\":\"John\"," +
+                "\"LastName\":\"Doe\"" +
             "}";
 
         // Act...
@@ -66,15 +68,15 @@ public class PersonResponseConverterTests
 
         // Assert...
         personResource.Should().NotBeNull();
-        personResource.Data.Should().NotBeNull();
-        personResource.Data.Id.Should().Be(personId);
-        personResource.Data.FirstName.Should().Be("John");
-        personResource.Data.LastName.Should().Be("Doe");
-        personResource.Data.DateOfBirth.Should().BeNull();
-        personResource.Data.Gender.Should().BeNull();
-        personResource.Data.Sex.Should().BeNull();
-        personResource.Links.Should().BeNull();
-        personResource.Embedded.Should().BeNull();
+        personResource!.Data.Should().NotBeNull();
+        personResource!.Data!.Id.Should().Be(personId);
+        personResource!.Data!.FirstName.Should().Be("John");
+        personResource!.Data!.LastName.Should().Be("Doe");
+        personResource!.Data!.DateOfBirth.Should().BeNull();
+        personResource!.Data!.Gender.Should().BeNull();
+        personResource!.Data!.Sex.Should().BeNull();
+        personResource!.Links.Should().BeNull();
+        personResource!.Embedded.Should().BeNull();
     }
 
     [Test]
@@ -218,19 +220,19 @@ public class PersonResponseConverterTests
         // Arrange...
         var personId = Guid.NewGuid();
         var json =
-            "{" +
+        "{" +
             "\"_embedded\":[" +
-            "{" +
-            $"\"Id\":\"{personId}\"," +
-            "\"FirstName\":\"John\"," +
-            "\"LastName\":\"Doe\"," +
-            "\"_links\":[" +
-            $"{{\"hypertextReference\":\"http://localhost/api/person/{personId}\",\"relationship\":\"self\",\"method\":\"GET\"}}," +
-            $"{{\"hypertextReference\":\"http://localhost/api/person/{personId}\",\"relationship\":\"self\",\"method\":\"DELETE\"}}" +
-            "]" +
+                "{" +
+                    $"\"Id\":\"{personId}\"," +
+                    "\"FirstName\":\"John\"," +
+                    "\"LastName\":\"Doe\"," +
+                    "\"_links\":[" +
+                    $"{{\"hypertextReference\":\"http://localhost/api/person/{personId}\",\"relationship\":\"self\",\"method\":\"GET\"}}," +
+                    $"{{\"hypertextReference\":\"http://localhost/api/person/{personId}\",\"relationship\":\"self\",\"method\":\"DELETE\"}}" +
+                "]" +
             "}" +
             "]" +
-            "}";
+        "}";
 
         // Act...
         var options = new JsonSerializerOptions
@@ -269,6 +271,142 @@ public class PersonResponseConverterTests
         var deleteLink = embeddedPersonData?.Links.SingleOrDefault(_ => _.Method == "DELETE" && _.Relationship == "self");
         deleteLink?.HypertextReference.Should().Be($"http://localhost/api/person/{personId}");
         deleteLink.Should().NotBeNull();
+    }
+
+    [Test]
+    [Category("Happy")]
+    public void Given_Person_Resource___When_Serialized_With_Converter___The_Should_Produce_Valid_JSON()
+    {
+        // Arrange...
+        var resource = new PersonResource();
+
+        // Act...
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters =
+            {
+                new PersonResourceConverter(),
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            }
+        };
+        var expectedJSON = JsonSerializer.Serialize<PersonResource>(resource, options);
+
+        // Assert...
+        expectedJSON.Should().NotBeNull();
+
+        var actualJSON = "{}";
+
+        expectedJSON.Should().Be(actualJSON);
+    }
+
+    [Test]
+    [Category("Happy")]
+    public void Given_Person_Resource_With_Data___When_Serialized_With_Converter___The_Should_Produce_Valid_JSON()
+    {
+        // Arrange...
+        var personId = Guid.NewGuid();
+        var resource = new PersonResource();
+        var data = new PersonResponse(personId) {
+            FirstName = "John",
+            LastName = "Doe"
+        };
+        resource.AddData(data);
+
+        // Act...
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters =
+            {
+                new PersonResourceConverter(),
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            }
+        };
+        var expectedJSON = JsonSerializer.Serialize<PersonResource>(resource, options);
+
+        // Assert...
+        expectedJSON.Should().NotBeNull();
+
+        var actualJSON = $"{{\"Id\":\"{personId}\",\"FirstName\":\"John\",\"LastName\":\"Doe\"}}";
+
+        expectedJSON.Should().Be(actualJSON);
+    }
+
+    [Test]
+    [Category("Happy")]
+    public void Given_Person_Resource_With_Embedded___When_Serialized_With_Converter___The_Should_Produce_Valid_JSON()
+    {
+        // Arrange...
+        var personId = Guid.NewGuid();
+        var resource = new PersonResource();
+        var embedded = new List<PersonResource>();
+        var embeddedResource = new PersonResource();
+        var data = new PersonResponse(personId)
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            //Sex = "Male",
+            //Gender = "Gisgender",
+            //DateOfBirth = "2001-02-03"
+        };
+        embeddedResource.AddData(data);
+        embedded.Add(embeddedResource);
+        resource.AddEmbedded(embedded);
+
+        //var links = new List<Link>();
+        //resource.AddLinks(links);
+
+        // Act...
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters =
+            {
+                new PersonResourceConverter(),
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            }
+        };
+        var expectedJSON = JsonSerializer.Serialize<PersonResource>(resource, options);
+
+        // Assert...
+        expectedJSON.Should().NotBeNull();
+
+        var actualJSON = $"{{\"_embedded\":[{{\"Id\":\"{personId}\",\"FirstName\":\"John\",\"LastName\":\"Doe\"}}]}}";
+
+        expectedJSON.Should().Be(actualJSON);
+    }
+
+    [Test]
+    [Category("Happy")]
+    public void Given_Person_Resource_With_Links___When_Serialized_With_Converter___The_Should_Produce_Valid_JSON()
+    {
+        // Arrange...
+        var personId = Guid.NewGuid();
+        var resource = new PersonResource();
+        var links = new List<Link>();
+        var link = new Link("http://localhost:1234/api", "self", "GET");
+        links.Add(link);
+        resource.AddLinks(links);
+
+        // Act...
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters =
+            {
+                new PersonResourceConverter(),
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            }
+        };
+        var expectedJSON = JsonSerializer.Serialize<PersonResource>(resource, options);
+
+        // Assert...
+        expectedJSON.Should().NotBeNull();
+
+        var actualJSON = $"{{\"_links\":[{{\"HypertextReference\":\"http://localhost:1234/api\",\"Relationship\":\"self\",\"Method\":\"GET\"}}]}}";
+
+        expectedJSON.Should().Be(actualJSON);
     }
 
     [Test]

@@ -24,6 +24,8 @@
         <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
         <PackageReference Include="SerilogTimings" Version="2.3.0" />
         <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>

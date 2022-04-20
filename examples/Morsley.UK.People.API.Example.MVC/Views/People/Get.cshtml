@@ -1,0 +1,124 @@
+﻿@model GetPeople
+
+@{
+    var url = ViewData["URL"]?.ToString();
+    if (string.IsNullOrEmpty(url)) throw new InvalidOperationException("Did not expect 'url' to be empty!");
+}
+
+<div class="text-center">
+
+    <h1 class="border-bottom pb-3 mb-4">Get People</h1>
+    
+    <form asp-controller="People" asp-action="Get" method="post" class="needs-validation" novalidate>
+
+        @* PAGE NUMBER *@
+        <div class="mb-3 row">
+            <label for="PageNumber" class="col-sm-3 col-form-label text-end">Page Number</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="PageNumber" value="@Model?.PageNumber">
+            </div>
+        </div>
+
+        @* PAGE SIZE *@
+        <div class="mb-3 row">
+            <label for="PageSize" class="col-sm-3 col-form-label text-end">Page Size</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="PageSize" value="@Model?.PageSize">
+            </div>
+        </div>
+
+        @* FIELDS *@
+        <div class="mb-3 row">
+            <label for="Fields" class="col-sm-3 col-form-label text-end">Fields</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="Fields" value="@Model?.Fields">
+            </div>
+        </div>
+            
+        @* FILTER *@
+        <div class="mb-3 row">
+            <label for="Filter" class="col-sm-3 col-form-label text-end">Filter</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="Filter" value="@Model?.Filter">
+            </div>
+        </div>
+
+        @* SEARCH *@
+        <div class="mb-3 row">
+            <label for="Search" class="col-sm-3 col-form-label text-end">Search</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="Search" value="@Model?.Search">
+            </div>
+        </div>
+        
+        @* SORT *@
+        <div class="mb-3 row">
+            <label for="Sort" class="col-sm-3 col-form-label text-end">Sort</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="Sort" value="@Model?.Sort">
+            </div>
+        </div>
+    
+        <a asp-controller="Home" asp-action="Index" class="btn btn-sm btn-secondary btn-width">Cancel</a>
+        <input type="submit" class="btn btn-sm btn-success btn-width" value="Get" />
+    
+    </form>
+    
+</div>    
+
+<div class="container-fluid text-center">
+
+    <h5 class="border-bottom border-top pb-3 pt-3 mb-4 mt-4">Embedded</h5>
+    
+    @{
+
+        if (Model?.Resource?.Embedded?.Any() is not null)
+        {
+            <table class="table table-responsive text-start">
+                <thead>
+                    <tr>
+                        <th>Identifier</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Sex</th>
+                        <th>Gender</th>
+                        <th>Date of Birth</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="small">
+                @{
+                    foreach (var person in Model.Resource.Embedded)
+                    {
+                        @if (person?.Data is not null)
+                        {
+                            <tr>
+                                <td>@person.Data.Id</td>
+                                <td>@person.Data.FirstName</td>
+                                <td>@person.Data.LastName</td>
+                                <td>@person.Data.Sex</td>
+                                <td>@person.Data.Gender</td>
+                                <td>@person.Data.DateOfBirth</td>
+                                <td class="text-center">
+
+                                    @if (person.Links is not null)
+                                    {
+                                        foreach (var link in person.Links)
+                                        {
+                                            TempData[$"{link.Method}_{person.Data.Id}"] = link.HypertextReference;
+                                            <a href="@(ButtonHelper.GetHypertextReference(url, link.Method, link.HypertextReference))" class="btn btn-sm btn-@(ButtonHelper.GetBootstrapColour(link.Method)) btn-width" data-link="@link.HypertextReference">@link.Method</a>
+                                        }
+                                    }
+
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                </tbody>
+            </table>
+        }
+
+    }
+
+</div>

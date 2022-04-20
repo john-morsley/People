@@ -1,0 +1,71 @@
+﻿@model Morsley.UK.People.API.Contracts.Shared.PersonResource
+
+<div class="text-center">
+
+    <h1 class="border-bottom pb-3 mb-4">Get Person</h1>
+
+    @* IDENTIFIER *@
+    <div class="mb-3 row">
+        <label for="Id" class="col-sm-3 col-form-label text-end">Id</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" id="Id" value="@Model?.Data?.Id" readonly>
+        </div>
+    </div>
+
+    @* FIRST NAME *@
+    <div class="mb-3 row">
+        <label for="FirstName" class="col-sm-3 col-form-label text-end">First Name</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" id="FirstName" value="@Model?.Data?.FirstName" readonly>
+        </div>
+    </div>
+
+    @* LAST NAME *@
+    <div class="mb-3 row">
+        <label for="LastName" class="col-sm-3 col-form-label text-end">Last Name</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" id="LastName" value="@Model?.Data?.LastName" readonly>
+        </div>
+    </div>
+        
+    @* SEX *@
+    <div class="mb-3 row">
+        <label for="Sex" class="col-sm-3 col-form-label text-end">Sex</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" id="Sex" value="@Model?.Data?.Sex" readonly>
+        </div>
+    </div>
+
+    @* GENDER *@
+    <div class="mb-3 row">
+        <label for="Gender" class="col-sm-3 col-form-label text-end">Gender</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" id="Gender" value="@Model?.Data?.Gender" readonly>
+        </div>
+    </div>
+    
+    @* DATE OF BIRTH *@
+    <div class="mb-3 row">
+        <label for="DateOfBirth" class="col-sm-3 col-form-label text-end">Date of Birth</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" id="DateOfBirth" value="@Model?.Data?.DateOfBirth" readonly>
+        </div>
+    </div>
+    
+    <h5 class="border-bottom border-top pb-3 pt-3 mb-4">Links</h5>
+
+    @{
+        var url = ViewData["URL"]?.ToString();
+        if (string.IsNullOrEmpty(url)) throw new InvalidOperationException("Did not expect 'url' to be empty!");
+
+        if (Model?.Links is not null && Model.Links.Any())
+        {
+            foreach (var link in Model.Links)
+            {
+                TempData[link.Method] = link.HypertextReference;
+                <a href="@(ButtonHelper.GetHypertextReference(url, link.Method, link.HypertextReference))" class="btn btn-sm btn-@(ButtonHelper.GetBootstrapColour(link.Method)) btn-width" data-link="@link.HypertextReference">@link.Method</a>
+            }
+        }
+    }
+
+</div>

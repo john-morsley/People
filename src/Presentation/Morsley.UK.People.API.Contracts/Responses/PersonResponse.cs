@@ -14,6 +14,10 @@ public class PersonResponse
 
     public string? DateOfBirth { get; set; }
 
+    //public string? Email { get; set; }
+
+    //public string? Mobile { get; set; }
+
     public PersonResponse(Guid id)
     {
         Id = id;
@@ -26,8 +30,17 @@ public class PersonResponse
         var sex = FormatStringValue(Sex);
         var gender = FormatStringValue(Gender);
         var dateOfBirth = FormatStringValue(DateOfBirth);
+        //var email = FormatStringValue(Email);
+        //var mobile = FormatStringValue(Mobile);
 
-        return $"Id: {Id} | FirstName: {firstName} | LastName: {lastName} | Sex: {sex} | Gender: {gender} | DateOfBirth: {dateOfBirth}";
+        return $"Id: {Id} | " +
+               $"FirstName: {firstName} | " +
+               $"LastName: {lastName} | " +
+               $"Sex: {sex} | " +
+               $"Gender: {gender} | " +
+               $"DateOfBirth: {dateOfBirth}";
+        //$"Email: { email} | " +
+        //$"Mobile: { mobile}";
     }
 
     private string FormatStringValue(string? value)
@@ -36,13 +49,4 @@ public class PersonResponse
         if (!string.IsNullOrEmpty(FirstName) && FirstName.Length == 0) return "[Empty]";
         return value;
     }
-
-    //private static string? FormatEnumValue<T>(T value)
-    //{
-    //    if (value == null) return "[Null]";
-    //    var type = typeof(T);
-    //    var underlying = Nullable.GetUnderlyingType(type);
-    //    if (underlying != null) type = underlying;
-    //    return Enum.GetName(type, value);
-    //}
 }

@@ -17,18 +17,18 @@ services:
   #  networks:
   #  - morsley_uk_network
 
-  # Database for users (authentication and authorization): : mongodb://root:password@localhost:27000
-  morsley_uk_people_database_users:
-    image: mongo:latest
-    container_name: morsley_uk_people_database_users
-    ports:
-    - 27000:27017
-    environment:
-    - MONGO_INITDB_ROOT_USERNAME=root
-    - MONGO_INITDB_ROOT_PASSWORD=password
-    restart: unless-stopped
-    networks:
-    - morsley_uk_network
+  ## Database for users (authentication and authorization): : mongodb://root:password@localhost:27000
+  #morsley_uk_people_database_users:
+  #  image: mongo:latest
+  #  container_name: morsley_uk_people_database_users
+  #  ports:
+  #  - 27000:27017
+  #  environment:
+  #  - MONGO_INITDB_ROOT_USERNAME=root
+  #  - MONGO_INITDB_ROOT_PASSWORD=password
+  #  restart: unless-stopped
+  #  networks:
+  #  - morsley_uk_network
 
   # Database for the reads: mongodb://root:password@localhost:27001
   morsley_uk_people_database_read:
@@ -71,16 +71,16 @@ services:
     networks:
     - morsley_uk_network
 
-  # Cache (Redis)...
-  morsley_uk_people_cache:
-    image: redis
-    container_name: morsley_uk_people_cache
-    ports: 
-    - 6379:6379
-    #command: redis-server --save 60 1 
-    restart: unless-stopped
-    networks:
-    - morsley_uk_network
+  ## Cache (Redis)...
+  #morsley_uk_people_cache:
+  #  image: redis
+  #  container_name: morsley_uk_people_cache
+  #  ports: 
+  #  - 6379:6379
+  #  #command: redis-server --save 60 1 
+  #  restart: unless-stopped
+  #  networks:
+  #  - morsley_uk_network
 
   ## Database GUI...
   #morsley_uk_people_database_gui:
@@ -109,16 +109,45 @@ services:
   #  #links:
   #  #- morsley_uk_people_database:morsley_uk_people_database
 
-  # Cache GUI...
-  morsley_uk_people_cache_gui:
-    image: rediscommander/redis-commander
-    container_name: morsley_uk_people_cache_gui
+  ## Cache GUI...
+  #morsley_uk_people_cache_gui:
+  #  image: rediscommander/redis-commander
+  #  container_name: morsley_uk_people_cache_gui
+  #  ports: 
+  #  - 8081:8081
+  #  environment:
+  #  - REDIS_HOSTS=local:morsley_uk_people_cache:6379
+  #  restart: unless-stopped
+  #  networks:
+  #  - morsley_uk_network
+  #  depends_on:
+  #  - morsley_uk_people_cache
+
+  # Tracing (Jaeger, including GUI) | See
+  morsley_uk_people_tracing_jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: morsley_uk_people_tracing_jaeger
     ports: 
-    - 8081:8081
+    - 5775:5775/udp
+    - 5778:5778/tcp
+    - 6831:6831/udp
+    - 6832:6832/udp
+    - 16686:16686
+    - 14250:14250
+    - 14268:14268
+    - 14269:14269
     environment:
-    - REDIS_HOSTS=local:morsley_uk_people_cache:6379
+    - COLLECTOR_ZIPKIN_HOST_PORT=9411
     restart: unless-stopped
     networks:
     - morsley_uk_network
-    depends_on:
-    - morsley_uk_people_cache
+
+  # Tracing (Zipkin, including GUI)...
+  morsley_uk_people_tracing_zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: morsley_uk_people_tracing_zipkin
+    ports: 
+    - 9411:9411
+    restart: unless-stopped
+    networks:
+    - morsley_uk_network

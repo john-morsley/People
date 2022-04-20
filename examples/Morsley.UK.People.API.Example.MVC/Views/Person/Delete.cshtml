@@ -1,0 +1,32 @@
+﻿@model string
+
+@{
+    var message = ViewBag.Message?.ToString();
+}
+
+<div class="text-center">
+
+    <h1 class="border-bottom pb-3 mb-4">Delete Person</h1>
+    
+     @if (string.IsNullOrWhiteSpace(message))
+     {
+
+         <p>Are you sure?</p>
+
+         <form asp-controller="Person" asp-action="Delete" method="post">
+
+             <input type="hidden" name="path" value="@Model"/>
+             <input type="submit" class="btn btn-sm btn-danger btn-width" value="Yes"/>
+             <a asp-controller="Home" asp-action="Index" class="btn btn-sm btn-success btn-width">No</a>
+
+         </form>
+
+     } else {
+
+        <div>
+            <p>@message</p>
+        </div>
+
+    }
+
+</div>

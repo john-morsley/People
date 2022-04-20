@@ -21,41 +21,6 @@ public class LinksHelper
         return shapedPerson as ExpandoObject;
     }
 
-    protected static IEnumerable<Link> CreateLinksForPerson(Guid personId)
-    {
-        var links = new List<Link>();
-
-        //string url;
-        //Link link;
-
-        //if (string.IsNullOrWhiteSpace(getPersonRequest.Fields))
-        //{
-        //var getPersonLink = GetPersonLink(personId);
-        //url = Url.Action("GetPerson", "Persons.API.Read.Controllers.v1.PersonsController", new { personId });
-        //var url = Url.Link("GetPerson", new { personId });
-        //link = new Link(url, "self", "GET");
-        //links.Add(getPersonLink);
-        //}
-        //else
-        //{
-        var getPersonLink = GetPersonLink(personId);
-        //url = Url.Action(nameof(Persons.API.Read.Controllers.v1.PersonsController.Get), nameof(Persons.API.Read.Controllers.v1.PersonsController), new { personId });
-        //url = Url.Link("GetPerson", new { personId, getPersonRequest });
-        //link = new Link(url, "self", "GET");
-        links.Add(getPersonLink);
-        //}
-
-        //url = Url.Link("DeletePerson", new { personId });
-        var deletePersonLink = DeletePersonLink(personId);
-        links.Add(deletePersonLink);
-
-        //url = Url.Link("CreatePerson", new { personId });
-        //link = new Link(url, "create_person", "POST");
-        //links.Add(link);
-
-        return links;
-    }
-
     public static IEnumerable<ExpandoObject> AddLinks(IEnumerable<ExpandoObject> shapedPageOfPersons)
     {
         foreach (var shapedPerson in shapedPageOfPersons)
@@ -71,31 +36,22 @@ public class LinksHelper
         return shapedPageOfPersons;
     }
 
-    protected static Link DeletePersonLink(Guid personId)
+    protected static IEnumerable<Link> CreateLinksForPerson(Guid personId)
     {
-        //var url = FullUrl(endpoint);
-        var getPersonUrl = $"/api/person/{personId}";
-        var link = new Link(getPersonUrl, "self", "DELETE");
-        return link;
+        var links = new List<Link>();
+
+        var getPersonLink = GetPersonLink(personId);
+        links.Add(getPersonLink);
+
+        var updatePersonLink = UpdatePersonLink(personId);
+        links.Add(updatePersonLink);
+
+        var deletePersonLink = DeletePersonLink(personId);
+        links.Add(deletePersonLink);
+
+
+        return links;
     }
-
-    protected static Link GetPersonLink(Guid personId)
-    {
-        //var url = FullUrl(endpoint);
-        var getPersonUrl = $"/api/person/{personId}";
-        //var test = UrlHelperExtensions.("demo", values);
-        //Uri test = new Uri(url);
-
-        var link = new Link(getPersonUrl, "self", "GET");
-        return link;
-    }
-
-    //private static string FullUrl(string endpoint)
-    //{
-        //return $"{BaseUrlWithVersion()}/{ControllerName()}";
-        //return $"{ControllerName()}";
-        //return $"/api/{endpoint}";
-    //}
 
     public static IEnumerable<Link> CreateLinksForPageOfPersons(
         GetPeopleRequest getPageOfPersonsRequest,
@@ -143,36 +99,43 @@ public class LinksHelper
         {
             case ResourceUriType.PreviousPage:
                 link = GetPeopleResourceUri(
-                        getPageOfPersonsRequest.PageNumber - 1,
-                        getPageOfPersonsRequest.PageSize,
-                        getPageOfPersonsRequest.Fields,
-                        getPageOfPersonsRequest.Filter,
-                        getPageOfPersonsRequest.Search,
-                        getPageOfPersonsRequest.Sort
-                    );
+                    getPageOfPersonsRequest.PageNumber - 1,
+                    getPageOfPersonsRequest.PageSize,
+                    getPageOfPersonsRequest.Fields,
+                    getPageOfPersonsRequest.Filter,
+                    getPageOfPersonsRequest.Search,
+                    getPageOfPersonsRequest.Sort
+                );
                 return link;
             case ResourceUriType.NextPage:
                 link = GetPeopleResourceUri(
-                        getPageOfPersonsRequest.PageNumber + 1,
-                        getPageOfPersonsRequest.PageSize,
-                        getPageOfPersonsRequest.Fields,
-                        getPageOfPersonsRequest.Filter,
-                        getPageOfPersonsRequest.Search,
-                        getPageOfPersonsRequest.Sort
-                    );
+                    getPageOfPersonsRequest.PageNumber + 1,
+                    getPageOfPersonsRequest.PageSize,
+                    getPageOfPersonsRequest.Fields,
+                    getPageOfPersonsRequest.Filter,
+                    getPageOfPersonsRequest.Search,
+                    getPageOfPersonsRequest.Sort
+                );
                 return link;
             case ResourceUriType.Current:
                 link = GetPeopleResourceUri(
-                        getPageOfPersonsRequest.PageNumber,
-                        getPageOfPersonsRequest.PageSize,
-                        getPageOfPersonsRequest.Fields,
-                        getPageOfPersonsRequest.Filter,
-                        getPageOfPersonsRequest.Search,
-                        getPageOfPersonsRequest.Sort
-                    );
+                    getPageOfPersonsRequest.PageNumber,
+                    getPageOfPersonsRequest.PageSize,
+                    getPageOfPersonsRequest.Fields,
+                    getPageOfPersonsRequest.Filter,
+                    getPageOfPersonsRequest.Search,
+                    getPageOfPersonsRequest.Sort
+                );
                 return link;
             default: throw new NotImplementedException();
         }
+    }
+
+    protected static Link DeletePersonLink(Guid personId)
+    {
+        var getPersonUrl = $"/api/person/{personId}";
+        var link = new Link(getPersonUrl, "self", "DELETE");
+        return link;
     }
 
     private static string GetPeopleResourceUri(
@@ -186,25 +149,17 @@ public class LinksHelper
         return $"/api/people?pageNumber={pageNumber}&pageSize={pageSize}&fields={fields}&filter={filter}&search={search}&sort={sort}";
     }
 
+    protected static Link GetPersonLink(Guid personId)
+    {
+        var getPersonUrl = $"/api/person/{personId}";
+        var link = new Link(getPersonUrl, "self", "GET");
+        return link;
+    }
 
-    /*
-
-     */
-
-
-    //private string BaseUrl()
-    //{
-    //var request = Context?.HttpContext?.Request;
-    //var baseUrl = $"{request?.Scheme}://{request?.Host}";
-    //return baseUrl;
-    //}
-
-    //private string BaseUrlWithVersion()
-    //{
-    //var baseUrl = BaseUrl();
-
-    //var version = ApiVersionDescriptionProvider.ApiVersionDescriptions.First().GroupName;
-
-    //return $"{baseUrl}/api"; ///{version}";
-    //}
+    protected static Link UpdatePersonLink(Guid personId)
+    {
+        var updatePersonUrl = $"/api/person/{personId}";
+        var link = new Link(updatePersonUrl, "self", "PUT");
+        return link;
+    }
 }

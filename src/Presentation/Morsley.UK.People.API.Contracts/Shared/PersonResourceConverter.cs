@@ -133,25 +133,53 @@ public class PersonResourceConverter : JsonConverter<PersonResource>
 
     public override void Write(Utf8JsonWriter writer, PersonResource value, JsonSerializerOptions options)
     {
-        throw new NotImplementedException();
+        writer.WriteStartObject();
 
-        //writer.WriteStartObject();
+        // Data...
+        if (value.Data != null)
+        {
+            writer.WriteString("Id", value.Data.Id.ToString());
+            if (!string.IsNullOrWhiteSpace(value.Data.FirstName)) writer.WriteString("FirstName", value.Data.FirstName);
+            if (!string.IsNullOrWhiteSpace(value.Data.LastName)) writer.WriteString("LastName", value.Data.LastName);
+            if (!string.IsNullOrWhiteSpace(value.Data.Sex)) writer.WriteString("Sex", value.Data.Sex);
+            if (!string.IsNullOrWhiteSpace(value.Data.Gender)) writer.WriteString("Gender", value.Data.Gender);
+            if (!string.IsNullOrWhiteSpace(value.Data.DateOfBirth)) writer.WriteString("DateOfBirth", value.Data.DateOfBirth);
+            //writer.WriteString("Email", value.Data.Email);
+            //writer.WriteString("Mobile", value.Data.Mobile);
+        }
 
-        //writer.WriteNumber("CurrentPage", value.CurrentPage);
-        //writer.WriteNumber("PageSize", value.PageSize);
-        //writer.WriteNumber("TotalPages", value.TotalPages);
-        //writer.WriteNumber("TotalCount", value.TotalCount);
-        //writer.WriteBoolean("HasPrevious", value.HasPrevious);
-        //writer.WriteBoolean("HasNext", value.HasNext);
+        // Links...
+        if (value.Links is not null && value.Links.Any())
+        {
+            writer.WriteStartArray("_links");
+            if (value.Links is not null)
+            {
+                foreach (var item in value.Links)
+                {
+                    var json = JsonSerializer.Serialize(item, options).Replace("\\", "");
+                    writer.WriteRawValue(json);
+                }
+            }
 
-        //writer.WriteStartArray("Items");
-        //foreach(var item in value)
-        //{
-        //    var json = JsonSerializer.Serialize(item, options).Replace("\\", "");
-        //    writer.WriteRawValue(json);
-        //}
-        //writer.WriteEndArray();
+            writer.WriteEndArray();
+        }
 
-        //writer.WriteEndObject();
+        // Embedded...
+        if (value.Embedded is not null && value.Embedded.Any())
+        {
+            writer.WriteStartArray("_embedded");
+            if (value.Embedded is not null)
+            {
+                foreach (var item in value.Embedded)
+                {
+                    var json = JsonSerializer.Serialize(item, options).Replace("\\", "");
+                    writer.WriteRawValue(json);
+                }
+            }
+
+            writer.WriteEndArray();
+        }
+
+        writer.WriteEndObject();
     }
 }
