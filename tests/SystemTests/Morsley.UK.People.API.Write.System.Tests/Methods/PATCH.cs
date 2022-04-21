@@ -67,7 +67,7 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
 
         // - Links
         personResource.Links.Should().NotBeNull();
-        personResource.Links!.Count.Should().Be(2);
+        personResource.Links!.Count.Should().Be(3);
         LinksForPersonShouldBeCorrect(personResource.Links, personResource.Data!.Id);
 
         // - Embedded
@@ -165,7 +165,7 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
 
         // - Links
         personResource.Links.Should().NotBeNull();
-        personResource.Links!.Count.Should().Be(2);
+        personResource.Links!.Count.Should().Be(3);
         LinksForPersonShouldBeCorrect(personResource.Links, personResource.Data!.Id);
 
         // - Embedded
@@ -261,7 +261,7 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
 
         // - Links
         personResource.Links.Should().NotBeNull();
-        personResource.Links!.Count.Should().Be(2);
+        personResource.Links!.Count.Should().Be(3);
         LinksForPersonShouldBeCorrect(personResource.Links, personResource.Data!.Id);
 
         // - Embedded
@@ -363,7 +363,7 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
 
         // - Links
         personResource.Links.Should().NotBeNull();
-        personResource.Links!.Count.Should().Be(2);
+        personResource.Links!.Count.Should().Be(3);
         LinksForPersonShouldBeCorrect(personResource.Links, personResource.Data!.Id);
 
         // - Embedded
@@ -446,7 +446,7 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
 
         // - Links
         personResource.Links.Should().NotBeNull();
-        personResource.Links!.Count.Should().Be(2);
+        personResource.Links!.Count.Should().Be(3);
         LinksForPersonShouldBeCorrect(personResource.Links, personResource.Data!.Id);
 
         // - Embedded

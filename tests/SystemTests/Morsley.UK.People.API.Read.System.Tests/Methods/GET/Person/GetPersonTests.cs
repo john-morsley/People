@@ -38,7 +38,7 @@ public class GetPersonTests : ReadApplicationTestFixture<ReadProgram>
 
         // - Links
         userResource!.Links.Should().NotBeNull();
-        userResource!.Links!.Count.Should().Be(2);
+        userResource!.Links!.Count.Should().Be(3);
         LinksForPersonShouldBeCorrect(userResource.Links, expected.Id);
 
         // - Embedded

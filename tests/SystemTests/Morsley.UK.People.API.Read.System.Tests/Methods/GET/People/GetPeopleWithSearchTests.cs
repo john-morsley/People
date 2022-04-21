@@ -69,7 +69,7 @@ public class GetPeopleWithSearchTests : ReadApplicationTestFixture<ReadProgram>
 
             // Links...
             actualUserData.Links.Should().NotBeNull();
-            actualUserData.Links!.Count.Should().Be(2);
+            actualUserData.Links!.Count.Should().Be(3);
             LinksForPersonShouldBeCorrect(actualUserData.Links, actualUserData.Data.Id);
 
             // Embedded...

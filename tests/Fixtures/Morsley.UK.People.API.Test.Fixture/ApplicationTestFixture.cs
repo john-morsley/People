@@ -324,11 +324,15 @@ public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
     protected static void LinksForPersonShouldBeCorrect(IList<Link> links, Guid personId)
     {
         links.Should().NotBeNull();
-        links.Count.Should().Be(2);
+        links.Count.Should().Be(3);
 
         var getUserLink = links.Single(_ => _.Method == "GET" && _.Relationship == "self");
         getUserLink.Should().NotBeNull();
         getUserLink.HypertextReference.Should().Be($"/api/person/{personId}");
+
+        var updateUserLink = links.Single(_ => _.Method == "PUT" && _.Relationship == "self");
+        updateUserLink.Should().NotBeNull();
+        updateUserLink.HypertextReference.Should().Be($"/api/person/{personId}");
 
         var deleteUserLink = links.Single(_ => _.Method == "DELETE" && _.Relationship == "self");
         deleteUserLink.Should().NotBeNull();

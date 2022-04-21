@@ -47,7 +47,7 @@ public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
 
         // - Links
         personResource.Links.Should().NotBeNull();
-        personResource.Links!.Count.Should().Be(2);
+        personResource.Links!.Count.Should().Be(3);
         LinksForPersonShouldBeCorrect(personResource.Links, personResource.Data!.Id);
 
         // - Embedded
