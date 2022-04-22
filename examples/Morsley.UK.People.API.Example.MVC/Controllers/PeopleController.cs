@@ -23,6 +23,8 @@ public class PeopleController : BaseController
 
         getPeople.Resource = resource;
 
+        if (resource is null) getPeople.NoResults = true;
+
         ViewData["URL"] = $"{Request.Scheme}://{Request.Host}";
 
         return View(getPeople);

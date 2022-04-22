@@ -1,8 +1,163 @@
-﻿@{
-    ViewData["Title"] = "Morsley UK - People - ";
+﻿@model Morsley.UK.People.API.Example.MVC.Models.UpdatePerson
+
+@{
+    var personId = Model.Id;
+
+    var getPath = ViewBag.GetPath;
+    var putPath = ViewBag.PutPath;
+
+    TempData[$"GET_{personId}"] = getPath;
+    TempData[$"PUT_{personId}"] = putPath;
 }
 
 <div class="text-center">
-    <h1 class="display-4">Add People</h1>
+
+    <h1 class="display-4">Update Person</h1>
     
+    <form asp-controller="Person" asp-action="Update" method="post" class="needs-validation" novalidate>
+        
+        @* IDENTIFIER *@
+        <input type="hidden" name="Id" value="@Model.Id">
+
+        @* FIRST NAME *@
+        <div class="mb-3 row">
+            <label for="FirstName" class="col-sm-3 col-form-label text-end">First Name</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="FirstName" name="FirstName" value="@Model.FirstName">
+            </div>
+        </div>
+
+        @* LAST NAME *@
+        <div class="mb-3 row">
+            <label for="LastName" class="col-sm-3 col-form-label text-end">Last Name</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="LastName" name="LastName" value="@Model.LastName">
+            </div>
+        </div>
+            
+        @* SEX *@
+        <fieldset class="mb-3 row">
+            <legend class="col-sm-3 col-form-label pt-0 text-end">Sex</legend>
+            <div class="col-sm-9 text-start">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="Sex" id="Sex0" value="PreferNotToSay" checked="@(Model?.Sex == "PreferNotToSay")">
+                    <label class="form-check-label" for="Sex0">Prefer Not To Say</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="Sex" id="Sex1" value="Male" checked="@(Model?.Sex == "Male")">
+                    <label class="form-check-label" for="Sex1">Male</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="Sex" id="Sex2" value="Female" checked="@(Model?.Sex == "Female")">
+                    <label class="form-check-label" for="Sex2">Female</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="Sex" id="Sex3" value="Intersex" checked="@(Model?.Sex == "Intersex")">
+                    <label class="form-check-label" for="Sex3">Intersex</label>
+                </div>
+            </div>
+        </fieldset>
+
+        @* GENDER *@
+        <fieldset class="mb-3 row">
+            <legend class="col-sm-3 col-form-label pt-0 text-end">Gender</legend>
+            <div class="col-sm-9 text-start">
+                <div class="form-check-inline">
+                    <input class="form-check-input" type="radio" name="Gender" value="PreferNotToSay" checked="@(Model?.Gender == "PreferNotToSay")">
+                    <label class="form-check-label">Prefer Not To Say</label>
+                </div>
+                <div class="form-check form-check">
+                    <input class="form-check-input" type="radio" name="Gender" value="Cisgender" checked="@(Model?.Gender == "Cisgender")">
+                    <label class="form-check-label">Cisgender</label>
+                </div>
+                <div class="form-check form-check">
+                    <input class="form-check-input" type="radio" name="Gender" value="Bigender" checked="@(Model?.Gender == "Bigender")">
+                    <label class="form-check-label">Bigender</label>
+                </div>
+                <div class="form-check form-check">
+                    <input class="form-check-input" type="radio" name="Gender" value="Agender" checked="@(Model?.Gender == "Agender")">
+                    <label class="form-check-label">Agender</label>
+                </div>
+                <div class="form-check form-check">
+                    <input class="form-check-input" type="radio" name="Gender" value="GenderFluid" checked="@(Model?.Gender == "GenderFluid")">
+                    <label class="form-check-label">Gender Fluid</label>
+                </div>
+                <div class="form-check form-check">
+                    <input class="form-check-input" type="radio" name="Gender" value="NonBinary" checked="@(Model?.Gender == "NonBinary")">
+                    <label class="form-check-label">Non Binary</label>
+                </div>
+                <div class="form-check form-check">
+                    <input class="form-check-input" type="radio" name="Gender" value="Transgender" checked="@(Model?.Gender == "Transgender")">
+                    <label class="form-check-label">Transgender</label>
+                </div>
+            </div>
+        </fieldset>
+        
+        @* DATE OF BIRTH *@
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label text-end">Date of Birth</label>
+            <div class="col-sm-2">
+                <select class="form-select" name="Day">
+                    <option value="" selected="@(Model?.Day == string.Empty)">Day</option>
+                    @{
+                        for (var day = 1; day <= 31; day++)
+                        {
+                            <option value="@day" selected="@(Model?.Day == day.ToString())">@day</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <select class="form-select" name="Month">
+                    <option value="" selected="@(Model?.Month == string.Empty)">Month</option>
+                    @{
+                        for (var month = 1; month <= 12; month++)
+                        {
+                            var dt = new DateOnly(1, month, 1);
+                            <option value="@month" selected="@(Model?.Month == month.ToString())">@dt.ToString("MMMM")</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <select class="form-select" name="Year">
+                    <option value="" selected="@(Model?.Month == string.Empty)">Year</option>
+                    @{
+                        var now = DateTime.Now;
+                        for (var year = now.Year; year > now.Year - 100; year--)
+                        {
+                            <option value="@year" selected="@(Model?.Year == year.ToString())">@year</option>
+                        }
+                    }
+                </select>
+            </div> 
+        </div>
+
+        <a asp-controller="Home" asp-action="Index" class="btn btn-sm btn-secondary btn-width">Cancel</a>
+        <input type="submit" class="btn btn-sm btn-success btn-width" value="Update" />
+    
+    </form>
+    
+    <script>
+        // Self-executing function
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>    
+
 </div>

@@ -66,18 +66,27 @@
     
 </div>    
 
-<div class="container-fluid text-center">
+@if (Model!.Resource?.Embedded is not null || Model!.NoResults)
+{
+    <div class="container-fluid text-center">
 
-    <h5 class="border-bottom border-top pb-3 pt-3 mb-4 mt-4">Embedded</h5>
-    
-    @{
+        <h5 class="border-bottom border-top pb-3 pt-3 mb-4 mt-4">Embedded</h5>
 
-        if (Model?.Resource?.Embedded?.Any() is not null)
-        {
-            <table class="table table-responsive text-start">
-                <thead>
+        @{
+            //@if ()
+            //{
+            //    <p class="text-muted"></p>
+            //}
+            if (Model?.Resource?.Embedded?.Any() is null)
+            {
+                <p class="text-muted">No person(s) found that match that above criteria.</p>
+            }
+            else if (Model?.Resource?.Embedded?.Any() is not null)
+            {
+                <table class="table table-responsive text-start">
+                    <thead>
                     <tr>
-                        <th>Identifier</th>
+                        <!--<th>Identifier</th>-->
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Sex</th>
@@ -85,40 +94,41 @@
                         <th>Date of Birth</th>
                         <th class="text-center">Actions</th>
                     </tr>
-                </thead>
-                <tbody class="small">
-                @{
-                    foreach (var person in Model.Resource.Embedded)
-                    {
-                        @if (person?.Data is not null)
+                    </thead>
+                    <tbody class="small">
+                    @{
+                        foreach (var person in Model.Resource.Embedded)
                         {
-                            <tr>
-                                <td>@person.Data.Id</td>
-                                <td>@person.Data.FirstName</td>
-                                <td>@person.Data.LastName</td>
-                                <td>@person.Data.Sex</td>
-                                <td>@person.Data.Gender</td>
-                                <td>@person.Data.DateOfBirth</td>
-                                <td class="text-center">
+                            @if (person?.Data is not null)
+                            {
+                                <tr>
+                                    <!--<td>@person.Data.Id</td>-->
+                                    <td>@person.Data.FirstName</td>
+                                    <td>@person.Data.LastName</td>
+                                    <td>@person.Data.Sex</td>
+                                    <td>@person.Data.Gender</td>
+                                    <td>@person.Data.DateOfBirth</td>
+                                    <td class="text-center">
 
-                                    @if (person.Links is not null)
-                                    {
-                                        foreach (var link in person.Links)
+                                        @if (person.Links is not null)
                                         {
-                                            TempData[$"{link.Method}_{person.Data.Id}"] = link.HypertextReference;
-                                            <a href="@(ButtonHelper.GetHypertextReference(url, link.Method, link.HypertextReference))" class="btn btn-sm btn-@(ButtonHelper.GetBootstrapColour(link.Method)) btn-width" data-link="@link.HypertextReference">@link.Method</a>
+                                            foreach (var link in person.Links)
+                                            {
+                                                TempData[$"{link.Method}_{person.Data.Id}"] = link.HypertextReference;
+                                                <a href="@(ButtonHelper.GetHypertextReference(url, link.Method, link.HypertextReference))" class="btn btn-sm btn-@(ButtonHelper.GetBootstrapColour(link.Method)) btn-width" data-link="@link.HypertextReference">@link.Method</a>
+                                            }
                                         }
-                                    }
 
-                                </td>
-                            </tr>
+                                    </td>
+                                </tr>
+                            }
                         }
                     }
-                }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            }
+
         }
 
-    }
-
-</div>
+    </div>
+}

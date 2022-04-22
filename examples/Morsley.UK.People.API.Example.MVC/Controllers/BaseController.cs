@@ -157,7 +157,7 @@ public abstract class BaseController : Controller
         return _configuration["Authentication:Password"];
     }
 
-    protected async Task<PersonResource> GetPeopleAsync(GetPeople getPeople)
+    protected async Task<PersonResource?> GetPeopleAsync(GetPeople getPeople)
     {
         try
         {
@@ -169,23 +169,30 @@ public abstract class BaseController : Controller
 
             var result = await client.GetAsync(url);
 
-            if (result.IsSuccessStatusCode && result.StatusCode == HttpStatusCode.OK)
+            if (result.IsSuccessStatusCode)
             {
-                var content = await result.Content.ReadAsStringAsync();
-
-                var options = new JsonSerializerOptions
+                if (result.StatusCode == HttpStatusCode.OK)
                 {
-                    PropertyNameCaseInsensitive = true,
-                    Converters =
+                    var content = await result.Content.ReadAsStringAsync();
+
+                    var options = new JsonSerializerOptions
                     {
-                        new PersonResourceConverter(),
-                        new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
-                    }
-                };
+                        PropertyNameCaseInsensitive = true,
+                        Converters =
+                        {
+                            new PersonResourceConverter(),
+                            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+                        }
+                    };
 
-                var personResource = JsonSerializer.Deserialize<PersonResource>(content, options);
+                    var personResource = JsonSerializer.Deserialize<PersonResource>(content, options);
 
-                return personResource;
+                    return personResource;
+                }
+                if (result.StatusCode == HttpStatusCode.NoContent)
+                {
+                    return null;
+                }
             }
         }
         catch (Exception e)
@@ -248,4 +255,101 @@ public abstract class BaseController : Controller
         return _configuration["Authentication:Username"];
     }
 
+    protected int? GetDay(string? date)
+    {
+        if (string.IsNullOrWhiteSpace(date)) return null;
+        if (!IsValidDate(date, out var result)) return null;
+        return result.Day;
+    }
+
+    protected int? GetMonth(string? date)
+    {
+        if (string.IsNullOrWhiteSpace(date)) return null;
+        if (!IsValidDate(date, out var result)) return null;
+        return result.Month;
+    }
+
+    protected int? GetYear(string? date)
+    {
+        if (string.IsNullOrWhiteSpace(date)) return null;
+        if (!IsValidDate(date, out var result)) return null;
+        return result.Year;
+    }
+
+    private bool IsValidDate(string date, out DateOnly result)
+    {
+        if (string.IsNullOrWhiteSpace(date)) return false;
+        return DateOnly.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
+    }
+
+    protected async Task<PersonResource?> UpdatePersonAsync(UpdatePerson person, string path)
+    {
+        var personId = GetId(person.Id);
+
+        if (personId is null) return null;
+
+        var request = new UpdatePersonRequest {
+            Id = personId.Value,
+            FirstName = person.FirstName,
+            LastName = person.LastName,
+            Sex = GetSex(person.Sex),
+            Gender = GetGender(person.Gender),
+            DateOfBirth = GetDate(person.Year, person.Month, person.Day)
+        };
+        //request.Email = person.Email;
+        //request.Mobile = person.Mobile;
+
+        try
+        {
+            var client = new HttpClient();
+
+            await AuthenticateWriteAsync(client, GetUsername(), GetPassword());
+
+            var url = $"{WritePersonAPIBaseURL}{path}";
+
+            var json = JsonSerializer.Serialize(request);
+            var payload = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var result = await client.PutAsync(url, payload);
+
+            if (result.IsSuccessStatusCode && result.StatusCode == HttpStatusCode.OK)
+            {
+                var content = await result.Content.ReadAsStringAsync();
+
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    Converters =
+                    {
+                        new PersonResourceConverter(),
+                        new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+                    }
+                };
+
+                var resource = JsonSerializer.Deserialize<PersonResource>(content, options);
+
+                ViewBag.Message = "Person updated.";
+
+                return resource;
+            }
+            else
+            {
+                ViewBag.Message = "Person was not updated.";
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
+        return null;
+    }
+
+    private Guid? GetId(string potentialGuid)
+    {
+        if (string.IsNullOrWhiteSpace(potentialGuid)) return null;
+        if (!Guid.TryParse(potentialGuid, out var guid)) return null;
+        return guid;
+    }
 }

@@ -1,17 +1,21 @@
 ﻿@model Morsley.UK.People.API.Contracts.Shared.PersonResource
 
+@{
+    var personId = Model!.Data!.Id;
+}
+
 <div class="text-center">
 
     <h1 class="border-bottom pb-3 mb-4">Get Person</h1>
 
     @* IDENTIFIER *@
-    <div class="mb-3 row">
+@*    <div class="mb-3 row">
         <label for="Id" class="col-sm-3 col-form-label text-end">Id</label>
         <div class="col-sm-6">
             <input type="text" class="form-control" id="Id" value="@Model?.Data?.Id" readonly>
         </div>
     </div>
-
+*@
     @* FIRST NAME *@
     <div class="mb-3 row">
         <label for="FirstName" class="col-sm-3 col-form-label text-end">First Name</label>
@@ -62,7 +66,8 @@
         {
             foreach (var link in Model.Links)
             {
-                TempData[link.Method] = link.HypertextReference;
+                if (link.Method == "GET") continue;
+                TempData[$"{link.Method}_{personId}"] = link.HypertextReference;
                 <a href="@(ButtonHelper.GetHypertextReference(url, link.Method, link.HypertextReference))" class="btn btn-sm btn-@(ButtonHelper.GetBootstrapColour(link.Method)) btn-width" data-link="@link.HypertextReference">@link.Method</a>
             }
         }

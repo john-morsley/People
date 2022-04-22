@@ -15,5 +15,7 @@ public class GetPeople
 
     public string? Sort { get; set; } = Defaults.DefaultPageSort;
 
+    public bool NoResults { get; set; } = false;
+
     public PersonResource? Resource { get; set; }
 }
