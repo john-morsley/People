@@ -166,6 +166,7 @@ public abstract class BaseController : Controller
             await AuthenticateReadAsync(client, GetUsername(), GetPassword());
 
             var url = $"{ReadPersonAPIBaseURL}{PeoplePath}";
+            url = AddParametersToURL(url, getPeople);
 
             var result = await client.GetAsync(url);
 
@@ -202,6 +203,19 @@ public abstract class BaseController : Controller
         }
 
         throw new NotImplementedException();
+    }
+
+    private string AddParametersToURL(string url, GetPeople getPeople)
+    {
+        var parameters = new List<string>();
+        if (getPeople.PageNumber > 0) parameters.Add($"pageNumber={getPeople.PageNumber}");
+        if (getPeople.PageSize > 0) parameters.Add($"pageSize={getPeople.PageSize}");
+        if (!string.IsNullOrWhiteSpace(getPeople.Fields)) parameters.Add($"fields={getPeople.Fields}");
+        if (!string.IsNullOrWhiteSpace(getPeople.Filter)) parameters.Add($"filter={getPeople.Filter}");
+        if (!string.IsNullOrWhiteSpace(getPeople.Search)) parameters.Add($"search={getPeople.Search}");
+        if (!string.IsNullOrWhiteSpace(getPeople.Sort)) parameters.Add($"sort={getPeople.Sort}");
+        if (parameters.Count > 0) url = $"{url}?{string.Join('&', parameters)}";
+        return url;
     }
 
     protected async Task<PersonResource> GetPersonAsync(string path)

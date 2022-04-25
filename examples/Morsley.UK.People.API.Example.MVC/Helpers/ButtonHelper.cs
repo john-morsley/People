@@ -16,6 +16,20 @@ public class ButtonHelper
         }
     }
 
+    public static string GetButtonText(string method)
+    {
+        if (string.IsNullOrWhiteSpace(method)) return string.Empty;
+
+        switch (method.ToUpper())
+        {
+            case "GET": return "Get";
+            case "CREATE": return "Create";
+            case "PUT": return "Edit";
+            case "DELETE": return "Delete";
+            default: throw new NotImplementedException();
+        }
+    }
+
     public static string GetHypertextReference(string url, string method, string apiHypertextReference)
     {
         if (string.IsNullOrWhiteSpace(url)) throw new ArgumentNullException(nameof(url));

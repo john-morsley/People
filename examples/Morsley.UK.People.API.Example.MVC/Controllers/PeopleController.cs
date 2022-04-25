@@ -11,7 +11,7 @@ public class PeopleController : BaseController
     {
         var getPeople = new GetPeople();
 
-        ViewData["URL"] = $"{Request.Scheme}://{Request.Host}";
+        ViewBag.URL = $"{Request.Scheme}://{Request.Host}";
 
         return View(getPeople);
     }
@@ -25,7 +25,7 @@ public class PeopleController : BaseController
 
         if (resource is null) getPeople.NoResults = true;
 
-        ViewData["URL"] = $"{Request.Scheme}://{Request.Host}";
+        ViewBag.URL = $"{Request.Scheme}://{Request.Host}";
 
         return View(getPeople);
     }

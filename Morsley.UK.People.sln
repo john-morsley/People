@@ -4,8 +4,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{522054BB-BA22-47F9-8D96-4207A381B500}"
+	ProjectSection(SolutionItems) = preProject
+		src\README.md = src\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BAE0EF75-0041-4E24-A6D9-C64955712598}"
+	ProjectSection(SolutionItems) = preProject
+		tests\README.md = tests\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{5F996085-8F9E-4DA6-9976-D1BAF9036CE8}"
 	ProjectSection(SolutionItems) = preProject
@@ -35,7 +41,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_SolutionItems", "{F02AC20A-1C79-482F-8788-8AF566C62254}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Domain", "src\Domain\Morsley.UK.People.Domain\Morsley.UK.People.Domain.csproj", "{1DA73102-3FFD-446B-AF75-6F652D377F4B}"
@@ -81,6 +86,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infrastructure", "infrastructure", "{BCA17B32-BB69-42A7-AEB6-50D0F4C0E168}"
 	ProjectSection(SolutionItems) = preProject
 		infrastructure\docker-compose.yaml = infrastructure\docker-compose.yaml
+		IMPORTANT.md = IMPORTANT.md
 		infrastructure\README.md = infrastructure\README.md
 	EndProjectSection
 EndProject
@@ -89,12 +95,20 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Messaging", "src\Infrastructure\Morsley.UK.People.Messaging\Morsley.UK.People.Messaging.csproj", "{2E338EDE-E3A7-4F96-BD1C-7C3354495C0C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{044BC95F-E384-4C3B-9745-42BC20EC473D}"
+	ProjectSection(SolutionItems) = preProject
+		examples\README.md = examples\README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.API.Example.Console", "examples\Morsley.UK.People.API.Example.Console\Morsley.UK.People.API.Example.Console.csproj", "{ED01EC4C-965E-4DBC-9D39-13ACA74F52F2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.API.Example.MVC", "examples\Morsley.UK.People.API.Example.MVC\Morsley.UK.People.API.Example.MVC.csproj", "{AB1BC00E-9B12-4D92-85E1-8C6284BB238A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.API.Example.Razor", "examples\Morsley.UK.People.API.Example.Razor\Morsley.UK.People.API.Example.Razor.csproj", "{4BA310CF-D7B6-47AD-8E4F-8594A3CE4958}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{385DC06F-D701-4807-B22F-5EDC56CAC8DE}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

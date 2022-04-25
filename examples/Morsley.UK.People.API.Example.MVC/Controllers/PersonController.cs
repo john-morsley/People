@@ -120,15 +120,17 @@ public class PersonController : BaseController
     [HttpGet]
     public async Task<IActionResult> Get(Guid? id)
     {
+        var getPath = TempData[$"GET_{id}"]?.ToString();
+
+        if (getPath is null) throw new InvalidOperationException("Did not expect 'getPath' to be null here!");
+
+        ViewBag.GetPath = getPath;
+
+        ViewBag.URL = $"{Request.Scheme}://{Request.Host}";
+
         if (id is null) return View();
 
-        var url = TempData[$"GET_{id}"]?.ToString();
-
-        if (url is null) throw new InvalidOperationException("Did not expect 'url' to be null here!");
-
-        var resource = await GetPersonAsync(url);
-
-        ViewData["URL"] = $"{Request.Scheme}://{Request.Host}";
+        var resource = await GetPersonAsync(getPath);
 
         return View(resource);
     }

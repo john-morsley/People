@@ -2,20 +2,20 @@
 
 @{
     var personId = Model!.Data!.Id;
+
+    var getPath = ViewBag.GetPath;
+    if (string.IsNullOrEmpty(getPath)) throw new InvalidOperationException("Did not expect 'getPath' to be empty!");
+
+    TempData[$"GET_{personId}"] = getPath;
+
+    var url = ViewBag.URL;
+    if (string.IsNullOrEmpty(url)) throw new InvalidOperationException("Did not expect 'url' to be empty!");
 }
 
 <div class="text-center">
 
-    <h1 class="border-bottom pb-3 mb-4">Get Person</h1>
+    <h1 class="display-4 border-bottom pb-3 mb-4">Get Person</h1>
 
-    @* IDENTIFIER *@
-@*    <div class="mb-3 row">
-        <label for="Id" class="col-sm-3 col-form-label text-end">Id</label>
-        <div class="col-sm-6">
-            <input type="text" class="form-control" id="Id" value="@Model?.Data?.Id" readonly>
-        </div>
-    </div>
-*@
     @* FIRST NAME *@
     <div class="mb-3 row">
         <label for="FirstName" class="col-sm-3 col-form-label text-end">First Name</label>
@@ -59,7 +59,6 @@
     <h5 class="border-bottom border-top pb-3 pt-3 mb-4">Links</h5>
 
     @{
-        var url = ViewData["URL"]?.ToString();
         if (string.IsNullOrEmpty(url)) throw new InvalidOperationException("Did not expect 'url' to be empty!");
 
         if (Model?.Links is not null && Model.Links.Any())
@@ -68,7 +67,8 @@
             {
                 if (link.Method == "GET") continue;
                 TempData[$"{link.Method}_{personId}"] = link.HypertextReference;
-                <a href="@(ButtonHelper.GetHypertextReference(url, link.Method, link.HypertextReference))" class="btn btn-sm btn-@(ButtonHelper.GetBootstrapColour(link.Method)) btn-width" data-link="@link.HypertextReference">@link.Method</a>
+                <a href="@(ButtonHelper.GetHypertextReference(url, link.Method, link.HypertextReference))" 
+                   class="btn btn-sm btn-@(ButtonHelper.GetBootstrapColour(link.Method)) btn-width" data-link="@link.HypertextReference">@(ButtonHelper.GetButtonText(link.Method))</a>
             }
         }
     }

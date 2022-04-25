@@ -1,13 +1,13 @@
 ﻿@model GetPeople
 
 @{
-    var url = ViewData["URL"]?.ToString();
+    var url = ViewBag.URL;
     if (string.IsNullOrEmpty(url)) throw new InvalidOperationException("Did not expect 'url' to be empty!");
 }
 
 <div class="text-center">
 
-    <h1 class="border-bottom pb-3 mb-4">Get People</h1>
+    <h1 class="display-4 border-bottom pb-3 mb-4">Get People</h1>
     
     <form asp-controller="People" asp-action="Get" method="post" class="needs-validation" novalidate>
 
@@ -15,7 +15,8 @@
         <div class="mb-3 row">
             <label for="PageNumber" class="col-sm-3 col-form-label text-end">Page Number</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="PageNumber" value="@Model?.PageNumber">
+                <input type="text" class="form-control" id="PageNumber" name="PageNumber" aria-describedby="pageNumberHelp" value="@Model?.PageNumber">
+                <div id="pageNumberHelp" class="text-start form-text">A whole number, greater than or equal to 1 (defaults to 1).</div>
             </div>
         </div>
 
@@ -23,7 +24,8 @@
         <div class="mb-3 row">
             <label for="PageSize" class="col-sm-3 col-form-label text-end">Page Size</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="PageSize" value="@Model?.PageSize">
+                <input type="text" class="form-control" id="PageSize" name="PageSize" aria-describedby="pageSizeHelp" value="@Model?.PageSize">
+                <div id="pageSizeHelp" class="text-start form-text">A whole number, greater than or equal to 1 (defaults to 10).</div>
             </div>
         </div>
 
@@ -31,7 +33,8 @@
         <div class="mb-3 row">
             <label for="Fields" class="col-sm-3 col-form-label text-end">Fields</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="Fields" value="@Model?.Fields">
+                <input type="text" class="form-control" id="Fields" name="Fields" aria-describedby="fieldsHelp" value="@Model?.Fields">
+                <div id="fieldsHelp" class="text-start form-text">A comma separated list of fields you want in the response. i.e. FirstName,LastName</div>
             </div>
         </div>
             
@@ -39,7 +42,8 @@
         <div class="mb-3 row">
             <label for="Filter" class="col-sm-3 col-form-label text-end">Filter</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="Filter" value="@Model?.Filter">
+                <input type="text" class="form-control" id="Filter" name="Filter" aria-describedby="filtersHelp" value="@Model?.Filter">
+                <div id="filterHelp" class="text-start form-text">A comma separated list of filters you want in the response. i.e. Sex:Male,Gender:Cisgender</div>
             </div>
         </div>
 
@@ -47,7 +51,8 @@
         <div class="mb-3 row">
             <label for="Search" class="col-sm-3 col-form-label text-end">Search</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="Search" value="@Model?.Search">
+                <input type="text" class="form-control" id="Search" name="Search" aria-describedby="searchHelp" value="@Model?.Search">
+                <div id="searchHelp" class="text-start form-text">Text to search for in any text related fields.</div>
             </div>
         </div>
         
@@ -55,12 +60,13 @@
         <div class="mb-3 row">
             <label for="Sort" class="col-sm-3 col-form-label text-end">Sort</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="Sort" value="@Model?.Sort">
+                <input type="text" class="form-control" id="Sort" name="Sort" aria-describedby="sorthHelp" value="@Model?.Sort">
+                <div id="sortHelp" class="text-start form-text">A comma separated list of fields to sort by. i.e. LastName:asc,FirstName:asc (also the default)</div>
             </div>
         </div>
     
         <a asp-controller="Home" asp-action="Index" class="btn btn-sm btn-secondary btn-width">Cancel</a>
-        <input type="submit" class="btn btn-sm btn-success btn-width" value="Get" />
+        <input type="submit" class="btn btn-sm btn-info btn-width" value="Get" />
     
     </form>
     
@@ -73,10 +79,6 @@
         <h5 class="border-bottom border-top pb-3 pt-3 mb-4 mt-4">Embedded</h5>
 
         @{
-            //@if ()
-            //{
-            //    <p class="text-muted"></p>
-            //}
             if (Model?.Resource?.Embedded?.Any() is null)
             {
                 <p class="text-muted">No person(s) found that match that above criteria.</p>
@@ -86,7 +88,6 @@
                 <table class="table table-responsive text-start">
                     <thead>
                     <tr>
-                        <!--<th>Identifier</th>-->
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Sex</th>
@@ -102,7 +103,6 @@
                             @if (person?.Data is not null)
                             {
                                 <tr>
-                                    <!--<td>@person.Data.Id</td>-->
                                     <td>@person.Data.FirstName</td>
                                     <td>@person.Data.LastName</td>
                                     <td>@person.Data.Sex</td>
@@ -115,7 +115,8 @@
                                             foreach (var link in person.Links)
                                             {
                                                 TempData[$"{link.Method}_{person.Data.Id}"] = link.HypertextReference;
-                                                <a href="@(ButtonHelper.GetHypertextReference(url, link.Method, link.HypertextReference))" class="btn btn-sm btn-@(ButtonHelper.GetBootstrapColour(link.Method)) btn-width" data-link="@link.HypertextReference">@link.Method</a>
+                                                <a href="@(ButtonHelper.GetHypertextReference(url, link.Method, link.HypertextReference))" 
+                                                   class="btn btn-sm btn-@(ButtonHelper.GetBootstrapColour(link.Method)) btn-width">@(ButtonHelper.GetButtonText(link.Method))</a>
                                             }
                                         }
 

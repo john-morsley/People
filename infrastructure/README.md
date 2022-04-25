@@ -21,3 +21,4 @@ To destroy the infrastructure:
 ```
 docker-compose down
 ```
+
