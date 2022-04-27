@@ -1,11 +1,10 @@
-global using AutoFixture;
 global using FluentAssertions;
 global using Morsley.UK.People.API.Contracts.Shared;
 global using Morsley.UK.People.Domain.Enumerations;
 global using NUnit.Framework;
 global using System;
 global using System.Collections.Generic;
-global using System.IO;
 global using System.Linq;
 global using System.Text.Json;
 global using System.Text.Json.Serialization;
+global using Morsley.UK.People.API.Contracts.Responses;

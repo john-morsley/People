@@ -12,7 +12,7 @@ public class GetPersonWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
     [TestCase("Gender")]
     [TestCase("DateOfBirth")]
     [TestCase("FirstName,LastName,Sex,Gender,DateOfBirth")]
-    public async Task Given_User_Exist___When_It_Is_Requested_With_Fields___Then_200_OK_And_User_Should_Be_Shaped(string validFields)
+    public async Task Given_Person_Exist___When_It_Is_Requested_With_Fields___Then_200_OK_And_Person_Should_Be_Shaped(string validFields)
     {
         // Arrange...
         ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
@@ -44,7 +44,7 @@ public class GetPersonWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
         validFields = AddToFieldsIfMissing("Id", validFields);
         var (expected, unexpected) = DetermineExpectedAndUnexpectedFields(validFields);
 
-        // - User
+        // - Person
         userResource!.Data.Should().NotBeNull();
         ShouldBeEquivalent(expected, userResource.Data, user);
         ShouldBeNull(unexpected, userResource.Data);
@@ -73,8 +73,8 @@ public class GetPersonWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
         // Arrange...
         ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
 
-        var userId = Guid.NewGuid();
-        var url = $"/api/person/{userId}?fields=fielddoesnotexist";
+        var personId = Guid.NewGuid();
+        var url = $"/api/person/{personId}?fields=fielddoesnotexist";
 
         await AuthenticateAsync(Username, Password);
 

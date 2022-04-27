@@ -419,8 +419,8 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
 
         await AuthenticateAsync(Username, Password);
 
-        var userId = Guid.NewGuid();
-        var url = $"/api/person/{userId}";
+        var personId = Guid.NewGuid();
+        var url = $"/api/person/{personId}";
         var updates = new JsonPatchDocument<PartiallyUpdatePersonRequest>();
         updates.Add(_ => _.FirstName, "John");
         updates.Add(_ => _.LastName, "Doe");
@@ -442,7 +442,7 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
 
         // - Person
         personResource!.Data.Should().NotBeNull();
-        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data!, new { Id = userId, FirstName = "John", LastName = "Doe" }, "Gender", "Sex", "DateOfBirth").Should().BeTrue();
+        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data!, new { Id = personId, FirstName = "John", LastName = "Doe" }, "Gender", "Sex", "DateOfBirth").Should().BeTrue();
 
         // - Links
         personResource.Links.Should().NotBeNull();
@@ -453,7 +453,7 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
         personResource.Embedded.Should().BeNull();
 
         // - Headers
-        result.Headers.Location.Should().Be($"https://localhost/api/person/{userId}");
+        result.Headers.Location.Should().Be($"https://localhost/api/person/{personId}");
 
         // - Databases
         WriteDatabase!.NumberOfPeople().Should().Be(1);
@@ -493,12 +493,12 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
     public async Task When_Partial_Update_For_Property_That_Does_Not_Exist___Then_422_UnprocessableEntity_And_Problem_Details()
     {
         // Arrange...
-        var userId = Guid.NewGuid();
+        var personId = Guid.NewGuid();
         WriteDatabase.NumberOfPeople().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
-        var url = $"/api/person/{userId}";
+        var url = $"/api/person/{personId}";
         var partiallyUpdatePersonJson = "[" +
             "{" +
                 "\"op\":\"remove\"," +
@@ -573,9 +573,9 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
     public async Task When_An_Attempt_Is_Made_To_Update_A_Person_Without_Authorizing____Then_401_Unauthorized()
     {
         // Arrange...
-        var userId = Guid.NewGuid();
+        var personId = Guid.NewGuid();
         WriteDatabase.NumberOfPeople().Should().Be(0);
-        var url = $"/api/person/{userId}";
+        var url = $"/api/person/{personId}";
         var payload = new StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
 
         // Act...

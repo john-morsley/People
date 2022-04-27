@@ -1,4 +1,4 @@
-﻿namespace Morsley.UK.People.API.SampleConsumer;
+﻿namespace Morsley.UK.People.API.Example.Console;
 
 public class Security
 {
@@ -6,15 +6,15 @@ public class Security
 
     public async static Task<bool> AuthenticateAsync(HttpClient client, string username, string password)
     {
-        Console.Write("Authenticating... ");
+        System.Console.Write("Authenticating... ");
         var token = await GetJwtTokenAsync(client, username, password);
         if (token is null)
         {
-            Console.WriteLine("Failed to Authenticate!");
+            System.Console.WriteLine("Failed to Authenticate!");
             return false;
         }
         client!.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
-        Console.WriteLine("Authenticated.");
+        System.Console.WriteLine("Authenticated.");
 
         return true;
     }

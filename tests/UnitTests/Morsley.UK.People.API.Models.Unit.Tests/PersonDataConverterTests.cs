@@ -1,6 +1,4 @@
-﻿using Morsley.UK.People.API.Contracts.Responses;
-
-namespace Morsley.UK.People.API.Models.Tests;
+﻿namespace Morsley.UK.People.API.Models.Tests;
 
 public class PersonResponseConverterTests
 {
@@ -15,14 +13,15 @@ public class PersonResponseConverterTests
         "Gender":"Transgender",
         "DateOfBirth":"1941-01-16",
         "_links":[
-            {"hypertextReference":"http://localhost/api/v1/users/53e48a17-5a36-4820-9fbc-0beeef63164e","relationship":"self","method":"GET"},
-            {"hypertextReference":"http://localhost/api/v1/users/53e48a17-5a36-4820-9fbc-0beeef63164e","relationship":"self","method":"DELETE"}
+            {"hypertextReference":"http://localhost/api/v1/people/53e48a17-5a36-4820-9fbc-0beeef63164e","relationship":"self","method":"GET"},
+            {"hypertextReference":"http://localhost/api/v1/people/53e48a17-5a36-4820-9fbc-0beeef63164e","relationship":"self","method":"DELETE"}
         ]
     }
     
     */
 
     /*
+
         {
             "_embedded":[
                 {
@@ -30,20 +29,21 @@ public class PersonResponseConverterTests
                     "FirstName":"",
                     "LastName":"",
                     "_links":[
-                        {"hypertextReference":"http://localhost/api/v1/users/{personId}","relationship":"self","method":"GET"},
-                        {"hypertextReference":"http://localhost/api/v1/users/{userID}","relationship":"self","method":"DELETE"}
+                        {"hypertextReference":"http://localhost/api/v1/people/{personId}","relationship":"self","method":"GET"},
+                        {"hypertextReference":"http://localhost/api/v1/people/{personId}","relationship":"self","method":"DELETE"}
                     ]
                 }
             ],
             "_links":[
-                {"hypertextReference":"http://localhost/api/v1/users?pageNumber=1&pageSize=10&sort=LastName%3Aasc,FirstName%3Aasc","relationship":"self","method":"GET"}
+                {"hypertextReference":"http://localhost/api/v1/people?pageNumber=1&pageSize=10&sort=LastName%3Asc,FirstName%3Asc","relationship":"self","method":"GET"}
             ]
         }
+
     */
 
     [Test]
     [Category("Happy")]
-    public void Given_Valid_But_Minimal_JSON___When_Deserialized_With_Converter___Then_Should_Produce_Person_Re_Object()
+    public void Given_Valid_But_Minimal_JSON___When_Deserialized_With_Converter___Then_Should_Produce_Person_Resource_Object()
     {
         // Arrange...
         var personId = Guid.NewGuid();
@@ -81,19 +81,19 @@ public class PersonResponseConverterTests
 
     [Test]
     [Category("Happy")]
-    public void Given_Valid_And_More_Complete_JSON___When_Deserialized_With_Converter___Then_Should_Produce_Person_Data_Object()
+    public void Given_Valid_And_More_Complete_JSON___When_Deserialized_With_Converter___Then_Should_Produce_Person_Resource_Object()
     {
         // Arrange...
         var personId = Guid.NewGuid();
         var dob = "2001-02-03";
         var json = 
             "{" +
-            $"\"Id\":\"{personId}\"," +
-            "\"FirstName\":\"John\"," +
-            "\"LastName\":\"Doe\"," +
-            $"\"DateOfBirth\":\"{dob}\"," +
-            "\"Sex\":\"Male\"," +
-            "\"Gender\":\"Cisgender\"" +
+                $"\"Id\":\"{personId}\"," +
+                "\"FirstName\":\"John\"," +
+                "\"LastName\":\"Doe\"," +
+                $"\"DateOfBirth\":\"{dob}\"," +
+                "\"Sex\":\"Male\"," +
+                "\"Gender\":\"Cisgender\"" +
             "}";
 
         // Act...
@@ -123,18 +123,18 @@ public class PersonResponseConverterTests
 
     [Test]
     [Category("Happy")]
-    public void Given_Valid_And_More_Complete_JSON_But_With_Empty_Values___When_Deserialized_With_Converter___Then_Should_Produce_Person_Data_Object()
+    public void Given_Valid_And_More_Complete_JSON_But_With_Empty_Values___When_Deserialized_With_Converter___Then_Should_Produce_Person_Resource_Object()
     {
         // Arrange...
         var personId = Guid.NewGuid();
         var json =
             "{" +
-            $"\"Id\":\"{personId}\"," +
-            "\"FirstName\":\"John\"," +
-            "\"LastName\":\"Doe\"," +
-            "\"DateOfBirth\":\"\"," +
-            "\"Sex\":\"\"," +
-            "\"Gender\":\"\"" +
+                $"\"Id\":\"{personId}\"," +
+                "\"FirstName\":\"John\"," +
+                "\"LastName\":\"Doe\"," +
+                "\"DateOfBirth\":\"\"," +
+                "\"Sex\":\"\"," +
+                "\"Gender\":\"\"" +
             "}";
 
         // Act...
@@ -164,19 +164,19 @@ public class PersonResponseConverterTests
 
     [Test]
     [Category("Happy")]
-    public void Given_Valid_JSON_With_Links___When_Deserialized_With_Converter___Then_Should_Produce_Person_Data_Object()
+    public void Given_Valid_JSON_With_Links___When_Deserialized_With_Converter___Then_Should_Produce_Person_Resource_Object()
     {
         // Arrange...
         var personId = Guid.NewGuid();
         var json = 
             "{" +
-            $"\"Id\":\"{personId}\"," +
-            "\"FirstName\":\"John\"," +
-            "\"LastName\":\"Doe\"," +
-            "\"_links\":[" +
-            $"{{\"hypertextReference\":\"http://localhost/api/person/{personId}\",\"relationship\":\"self\",\"method\":\"GET\"}}," +
-            $"{{\"hypertextReference\":\"http://localhost/api/person/{personId}\",\"relationship\":\"self\",\"method\":\"DELETE\"}}" +
-            "]" +
+                $"\"Id\":\"{personId}\"," +
+                "\"FirstName\":\"John\"," +
+                "\"LastName\":\"Doe\"," +
+                "\"_links\":[" +
+                    $"{{\"hypertextReference\":\"http://localhost/api/person/{personId}\",\"relationship\":\"self\",\"method\":\"GET\"}}," +
+                    $"{{\"hypertextReference\":\"http://localhost/api/person/{personId}\",\"relationship\":\"self\",\"method\":\"DELETE\"}}" +
+                "]" +
             "}";
 
         // Act...
@@ -215,7 +215,7 @@ public class PersonResponseConverterTests
     [Test]
     [Category("Happy")]
     //[TestCase()]
-    public void Given_Valid_JSON_With_Embedded___When_Deserialized_With_Converter___Then_Should_Produce_Person_Data_Object()
+    public void Given_Valid_JSON_With_Embedded___When_Deserialized_With_Converter___Then_Should_Produce_Person_Resource_Object()
     {
         // Arrange...
         var personId = Guid.NewGuid();
@@ -382,7 +382,7 @@ public class PersonResponseConverterTests
     public void Given_Person_Resource_With_Links___When_Serialized_With_Converter___The_Should_Produce_Valid_JSON()
     {
         // Arrange...
-        var personId = Guid.NewGuid();
+        //var personId = Guid.NewGuid();
         var resource = new PersonResource();
         var links = new List<Link>();
         var link = new Link("http://localhost:1234/api", "self", "GET");
@@ -420,9 +420,9 @@ public class PersonResponseConverterTests
         // Arrange...
         var json =
             "{" +
-            $"\"Id\":\"{invalidPersonId}\"," +
-            "\"FirstName\":\"John\"," +
-            "\"LastName\":\"Doe\"," +
+                $"\"Id\":\"{invalidPersonId}\"," +
+                "\"FirstName\":\"John\"," +
+                "\"LastName\":\"Doe\"," +
             "}";
 
         // Act...
@@ -443,8 +443,6 @@ public class PersonResponseConverterTests
         exception?.InnerException.Should().NotBeNull();
         exception?.InnerException?.Message.Should().Be("The JSON value is not in a supported Guid format.");
 
-
-
         /*
          * The JSON value could not be converted to PersonResource.
          * 12345678901234567890123456789012345678901234567890123456789012345678901234
@@ -453,7 +451,6 @@ public class PersonResponseConverterTests
          *
          * The JSON value is not in a supported Guid format.
          */
-
     }
 
     [Test]
@@ -468,10 +465,10 @@ public class PersonResponseConverterTests
         var personId = Guid.NewGuid();
         var json =
             "{" +
-            $"\"Id\":\"{personId}\"," +
-            "\"FirstName\":\"John\"," +
-            "\"LastName\":\"Doe\"," +
-            $"\"DateOfBirth\":\"{invalidDob}\"" +
+                $"\"Id\":\"{personId}\"," +
+                "\"FirstName\":\"John\"," +
+                "\"LastName\":\"Doe\"," +
+                $"\"DateOfBirth\":\"{invalidDob}\"" +
             "}";
 
         // Act...
@@ -500,10 +497,10 @@ public class PersonResponseConverterTests
         var personId = Guid.NewGuid();
         var json =
             "{" +
-            $"\"Id\":\"{personId}\"," +
-            "\"FirstName\":\"John\"," +
-            "\"LastName\":\"Doe\"," +
-            $"\"Sex\":\"{sex}\"" +
+                $"\"Id\":\"{personId}\"," +
+                "\"FirstName\":\"John\"," +
+                "\"LastName\":\"Doe\"," +
+                $"\"Sex\":\"{sex}\"" +
             "}";
 
         // Act...
@@ -532,10 +529,10 @@ public class PersonResponseConverterTests
         var personId = Guid.NewGuid();
         var json =
             "{" +
-            $"\"Id\":\"{personId}\"," +
-            "\"FirstName\":\"John\"," +
-            "\"LastName\":\"Doe\"," +
-            $"\"Gender\":\"{gender}\"" +
+                $"\"Id\":\"{personId}\"," +
+                "\"FirstName\":\"John\"," +
+                "\"LastName\":\"Doe\"," +
+                $"\"Gender\":\"{gender}\"" +
             "}";
 
         // Act...

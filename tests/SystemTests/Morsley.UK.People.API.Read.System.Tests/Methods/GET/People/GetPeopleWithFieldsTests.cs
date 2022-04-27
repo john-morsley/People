@@ -10,7 +10,7 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
     [TestCase("Gender")]
     [TestCase("DateOfBirth")]
     [TestCase("FirstName,LastName,Sex,Gender,DateOfBirth")]
-    public async Task Given_One_User_Exists___When_A_Page_Of_Users_Is_Requested_With_Fields___Then_200_OK_And_Users_Should_Be_Shaped(string validFields)
+    public async Task Given_One_Person_Exists___When_A_Page_Of_People_Is_Requested_With_Fields___Then_200_OK_And_People_Should_Be_Shaped(string validFields)
     {
         // Arrange...
         const int pageNumber = 1;
@@ -18,9 +18,9 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
 
         ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
 
-        var user = ApplicationReadDatabase.GenerateTestPerson();
-        ApplicationReadDatabase.AddPersonToDatabase(user);
-        var users = new List<Domain.Models.Person> { user };
+        var person = ApplicationReadDatabase.GenerateTestPerson();
+        ApplicationReadDatabase.AddPersonToDatabase(person);
+        var people = new List<Domain.Models.Person> { person };
         ApplicationReadDatabase.NumberOfPeople().Should().Be(1);
 
         var url = $"/api/people?fields={validFields}";
@@ -51,7 +51,7 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
         // - Embedded
         userResource?.Embedded.Should().NotBeNull();
         userResource?.Embedded?.Count.Should().Be(1);
-        ShouldBeEquivalent(expected, userResource?.Embedded, users);
+        ShouldBeEquivalent(expected, userResource?.Embedded, people);
         ShouldBeNull(unexpected, userResource?.Embedded);
         LinksForPeopleShouldBeCorrect(userResource?.Embedded);
 
@@ -63,7 +63,7 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
 
     [Test]
     [Category("Unhappy")]
-    public async Task When_A_Page_Of_Users_Is_Requested_With_Invalid_Fields___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
+    public async Task When_A_Page_Of_People_Is_Requested_With_Invalid_Fields___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
     {
         // Arrange...
         ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
@@ -107,7 +107,7 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
     private static void ShouldBeEquivalent(
         IEnumerable<string> fieldNames, 
         IEnumerable<PersonResource> embedded,
-        IEnumerable<Domain.Models.Person> expectedUsers)
+        IEnumerable<Domain.Models.Person> expectedPeople)
     {
         foreach (var userData in embedded)
         {
@@ -115,7 +115,7 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
             userData.Data.Should().NotBeNull();
             userData.Links.Should().NotBeNull();
             userData.Embedded.Should().BeNull();
-            var expectedUser = expectedUsers.SingleOrDefault(_ => _.Id == userData.Data.Id);
+            var expectedUser = expectedPeople.SingleOrDefault(_ => _.Id == userData.Data.Id);
             expectedUser.Should().NotBeNull();
             ShouldBeEquivalent(fieldNames, userData.Data, expectedUser);
         }

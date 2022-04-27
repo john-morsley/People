@@ -95,11 +95,6 @@ public class POST_AddPerson : WriteApplicationTestFixture<WriteProgram>
         var content = await result.Content.ReadAsStringAsync();
         // ToDo --> Validate error object
 
-        //userResponseJson.Length.Should().BeGreaterThan(0);
-        //var userResponse = DeserializeUser(userResponseJson);
-        //userResponse.Should().NotBeNull();
-        //var actualUser = GetPersonFromDatabase(userResponse.Id);
-        //httpResponse.Headers.Location.Should().Be($"http://localhost/api/v1/users/{userResponse.Id}");
     }
 
     [Test]

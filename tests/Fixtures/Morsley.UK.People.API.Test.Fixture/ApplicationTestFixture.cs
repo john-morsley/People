@@ -326,31 +326,24 @@ public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
         links.Should().NotBeNull();
         links.Count.Should().Be(3);
 
-        var getUserLink = links.Single(_ => _.Method == "GET" && _.Relationship == "self");
-        getUserLink.Should().NotBeNull();
-        getUserLink.HypertextReference.Should().Be($"/api/person/{personId}");
+        var getPersonLink = links.Single(_ => _.Method == "GET" && _.Relationship == "self");
+        getPersonLink.Should().NotBeNull();
+        getPersonLink.HypertextReference.Should().Be($"/api/person/{personId}");
 
-        var updateUserLink = links.Single(_ => _.Method == "PUT" && _.Relationship == "self");
-        updateUserLink.Should().NotBeNull();
-        updateUserLink.HypertextReference.Should().Be($"/api/person/{personId}");
+        var updatePersonLink = links.Single(_ => _.Method == "PUT" && _.Relationship == "self");
+        updatePersonLink.Should().NotBeNull();
+        updatePersonLink.HypertextReference.Should().Be($"/api/person/{personId}");
 
-        var deleteUserLink = links.Single(_ => _.Method == "DELETE" && _.Relationship == "self");
-        deleteUserLink.Should().NotBeNull();
-        deleteUserLink.HypertextReference.Should().Be($"/api/person/{personId}");
+        var deletePersonLink = links.Single(_ => _.Method == "DELETE" && _.Relationship == "self");
+        deletePersonLink.Should().NotBeNull();
+        deletePersonLink.HypertextReference.Should().Be($"/api/person/{personId}");
     }
 
     protected static void LinksForPeopleShouldBeCorrect(IList<PersonResource>? embedded)
     {
         foreach (var person in embedded)
         {
-        //        userData.Should().NotBeNull();
-        //        userData.Data.Should().NotBeNull();
-        //        userData.Links.Should().NotBeNull();
-        //        userData.Embedded.Should().BeNull();
-        //        var userId = userData.Data.Id;
-        //        LinksForUserShouldBeCorrect(userData.Links, userId);
         }
-        //throw new NotImplementedException();
     }
 
     protected void ProblemDetailsShouldContainValidationIssues(string content, Dictionary<string, string> validationErrors)
@@ -417,25 +410,18 @@ public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
         }
     }
 
-    protected void ShouldBeEquivalentTo(IList<PersonResource> embedded, Person person)
-    {
-        //    var users = new List<Person> { user };
-        //    ShouldBeEquivalentTo(embedded, users);
-        throw new NotImplementedException();
-    }
-
     protected void ShouldBeEquivalentTo(IList<PersonResource> embedded, IList<Person> people)
     {
         foreach (var resource in embedded)
         {
             resource.Should().NotBeNull();
-            var embeddedUser = resource.Data;
-            var userId = embeddedUser.Id;
-            var person = people.Single(_ => _.Id == userId);
+            var embeddedPerson = resource.Data;
+            var personId = embeddedPerson.Id;
+            var person = people.Single(_ => _.Id == personId);
             person.Should().NotBeNull();
             ShouldBeEquivalentTo(resource, person);
             resource.Links.Should().NotBeNull();
-            LinksForPersonShouldBeCorrect(resource.Links!, userId);
+            LinksForPersonShouldBeCorrect(resource.Links!, personId);
         }
     }
 }

@@ -6,23 +6,23 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
     // HTTP status code should be returned.
     [Test]
     [Category("Happy")]
-    public async Task Given_User_Exists___When_Put_Update_User___Then_200_OK_And_User_Updated()
+    public async Task Given_Person_Exists___When_Put_Update_Person___Then_200_OK_And_Person_Updated()
     {
         // Arrange...
         WriteDatabase.NumberOfPeople().Should().Be(0);
 
-        var originalUser = WriteDatabase.GenerateTestPerson();
-        WriteDatabase.AddPersonToDatabase(originalUser);
+        var originalPerson = WriteDatabase.GenerateTestPerson();
+        WriteDatabase.AddPersonToDatabase(originalPerson);
 
         WriteDatabase.NumberOfPeople().Should().Be(1);
 
         await AuthenticateAsync(Username, Password);
 
         // Act...
-        var url = $"/api/person/{originalUser.Id}";
-        var updateUserRequest = GenerateTestUpdatePersonRequest(originalUser.Id, originalUser.Sex, originalUser.Gender);
-        var updateUserRequestJson = System.Text.Json.JsonSerializer.Serialize(updateUserRequest);
-        var payload = new StringContent(updateUserRequestJson, System.Text.Encoding.UTF8, "application/json");
+        var url = $"/api/person/{originalPerson.Id}";
+        var updatePersonRequest = GenerateTestUpdatePersonRequest(originalPerson.Id, originalPerson.Sex, originalPerson.Gender);
+        var updatePersonRequestJson = System.Text.Json.JsonSerializer.Serialize(updatePersonRequest);
+        var payload = new StringContent(updatePersonRequestJson, System.Text.Encoding.UTF8, "application/json");
         var response = await HttpClient!.PutAsync(url, payload);
 
         // Assert...
@@ -39,14 +39,14 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
 
         // - Person
         userResource!.Data.Should().NotBeNull();
-        var actualUser = WriteDatabase.GetPersonFromDatabase(originalUser.Id);
+        var actualPerson = WriteDatabase.GetPersonFromDatabase(originalPerson.Id);
 
         // The result of upsert should 'equal' the requested upsert...
-        ObjectComparer.PublicInstancePropertiesEqual(userResource.Data!, updateUserRequest).Should().BeTrue();
+        ObjectComparer.PublicInstancePropertiesEqual(userResource.Data!, updatePersonRequest).Should().BeTrue();
 
-        //actualUser.Should().NotBeEquivalentTo(originalUser);
+        //actualPerson.Should().NotBeEquivalentTo(originalPerson);
         // The result of upsert should 'equal' the upserted person in the database...
-        ObjectComparer.PublicInstancePropertiesEqual(userResource.Data!, actualUser, "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
+        ObjectComparer.PublicInstancePropertiesEqual(userResource.Data!, actualPerson, "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
     }
 
     // If an attempt is made to update a user via PUT and the user does not exist, then the user should be created and
@@ -54,7 +54,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
     // contain a link to the newly created resource.
     [Test]
     [Category("Happy")]
-    public async Task Given_User_Does_Not_Exist___When_Put_Update_User___Then_201_Created_And_User_Created()
+    public async Task Given_Person_Does_Not_Exist___When_Put_Update_Person___Then_201_Created_And_Person_Created()
     {
         // Arrange...
         WriteDatabase.NumberOfPeople().Should().Be(0);
@@ -63,11 +63,11 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         await AuthenticateAsync(Username, Password);
 
         // Act...
-        var userId = Guid.NewGuid();
-        var url = $"/api/person/{userId}";
-        var upsertUserRequest = GenerateTestUpdatePersonRequest(userId);
-        var upsertUserRequestJson = System.Text.Json.JsonSerializer.Serialize(upsertUserRequest);
-        var payload = new StringContent(upsertUserRequestJson, System.Text.Encoding.UTF8, "application/json");
+        var personId = Guid.NewGuid();
+        var url = $"/api/person/{personId}";
+        var upsertPersonRequest = GenerateTestUpdatePersonRequest(personId);
+        var upsertPersonRequestJson = System.Text.Json.JsonSerializer.Serialize(upsertPersonRequest);
+        var payload = new StringContent(upsertPersonRequestJson, System.Text.Encoding.UTF8, "application/json");
         var result = await HttpClient!.PutAsync(url, payload);
 
         // Assert...
@@ -82,9 +82,9 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         var personResource = DeserializePersonResource(content);
         personResource.Should().NotBeNull();
 
-        // - User
+        // - Person
         personResource!.Data.Should().NotBeNull();
-        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data!, upsertUserRequest).Should().BeTrue();
+        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data!, upsertPersonRequest).Should().BeTrue();
 
         // - Links
         personResource.Links.Should().NotBeNull();
@@ -95,7 +95,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         personResource.Embedded.Should().BeNull();
 
         // - Headers
-        result.Headers.Location.Should().Be($"https://localhost/api/person/{userId}");
+        result.Headers.Location.Should().Be($"https://localhost/api/person/{personId}");
 
         // - Databases
         WriteDatabase!.NumberOfPeople().Should().Be(1);
@@ -124,10 +124,10 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         await AuthenticateAsync(Username, Password);
 
         // Act...
-        var userId = Guid.NewGuid();
-        var url = $"/api/person/{userId}";
-        var updateUserRequestJson = System.Text.Json.JsonSerializer.Serialize("");
-        var payload = new StringContent(updateUserRequestJson, System.Text.Encoding.UTF8, "application/json");
+        var personId = Guid.NewGuid();
+        var url = $"/api/person/{personId}";
+        var updatePersonRequestJson = System.Text.Json.JsonSerializer.Serialize("");
+        var payload = new StringContent(updatePersonRequestJson, System.Text.Encoding.UTF8, "application/json");
         var httpResponse = await HttpClient!.PutAsync(url, payload);
 
         // Assert...
@@ -137,16 +137,11 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         var content = await httpResponse.Content.ReadAsStringAsync();
         // ToDo --> Validate error object
 
-        //userResponseJson.Length.Should().BeGreaterThan(0);
-        //var userResponse = DeserializeUser(userResponseJson);
-        //userResponse.Should().NotBeNull();
-        //var actualUser = GetPersonFromDatabase(userResponse.Id);
-        //httpResponse.Headers.Location.Should().Be($"http://localhost/api/v1/users/{userResponse.Id}");
     }
 
     [Test]
     [Category("Unhappy")]
-    public async Task When_Put_Invalid_Update_User___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
+    public async Task When_Put_Invalid_Update_Person___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues()
     {
         // Arrange...
         WriteDatabase.NumberOfPeople().Should().Be(0);
@@ -154,13 +149,13 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         await AuthenticateAsync(Username, Password);
 
         // Act...
-        var userId = Guid.NewGuid();
-        var url = $"/api/person/{userId}";
-        var updateUserRequest = GenerateTestUpdatePersonRequest(userId);
-        updateUserRequest.FirstName = string.Empty;
-        updateUserRequest.LastName = string.Empty;
-        var updateUserRequestJson = System.Text.Json.JsonSerializer.Serialize(updateUserRequest);
-        var payload = new StringContent(updateUserRequestJson, System.Text.Encoding.UTF8, "application/json");
+        var personId = Guid.NewGuid();
+        var url = $"/api/person/{personId}";
+        var updatePersonRequest = GenerateTestUpdatePersonRequest(personId);
+        updatePersonRequest.FirstName = string.Empty;
+        updatePersonRequest.LastName = string.Empty;
+        var updatePersonRequestJson = System.Text.Json.JsonSerializer.Serialize(updatePersonRequest);
+        var payload = new StringContent(updatePersonRequestJson, System.Text.Encoding.UTF8, "application/json");
         var result = await HttpClient!.PutAsync(url, payload);
 
         // Assert...

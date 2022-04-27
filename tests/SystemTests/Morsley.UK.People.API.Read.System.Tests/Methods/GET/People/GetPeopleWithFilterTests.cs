@@ -47,16 +47,16 @@ public class GetPeopleWithFilterTests : ReadApplicationTestFixture<ReadProgram>
     [TestCase("DateOfBirth:1998-12-05", UserDataForFilterWithDateOfBirth, "David Blue|Lisa Indigo")]
     public async Task Given_People_Exist___When_People_Are_Requested_With_Valid_Filter___Then_200_OK_And_Filtered_People_Returned(
         string validFilter, 
-        string testUsersData, 
-        string expectedUsers)
+        string testPeopleData, 
+        string expectedPeople)
     {
         // Arrange...
         const int pageNumber = 1;
         const int pageSize = 10;
 
         ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
-        var users = ApplicationReadDatabase.AddTestPeopleToDatabase(testUsersData);
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(users.Count);
+        var people = ApplicationReadDatabase.AddTestPeopleToDatabase(testPeopleData);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(people.Count);
 
         var url = $"/api/people?filter={validFilter}";
 
@@ -66,7 +66,7 @@ public class GetPeopleWithFilterTests : ReadApplicationTestFixture<ReadProgram>
         var response = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(users.Count);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(people.Count);
 
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -74,25 +74,25 @@ public class GetPeopleWithFilterTests : ReadApplicationTestFixture<ReadProgram>
         var content = await response.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var userData = DeserializePersonResource(content);
-        userData.Should().NotBeNull();
+        var personData = DeserializePersonResource(content);
+        personData.Should().NotBeNull();
 
         // - User
-        userData!.Data.Should().BeNull();
+        personData!.Data.Should().BeNull();
 
         // - Embedded
-        userData.Embedded.Should().NotBeNull();
-        userData.Embedded!.Count.Should().Be(expectedUsers.Split('|').Length);
-        foreach(var name in expectedUsers.Split('|'))
+        personData.Embedded.Should().NotBeNull();
+        personData.Embedded!.Count.Should().Be(expectedPeople.Split('|').Length);
+        foreach(var name in expectedPeople.Split('|'))
         {
             var kvp = name.Split(' ');
             var firstName = kvp[0];
             var lastName = kvp[1];
-            var expectedUser = users.Single(_ => _.FirstName == firstName && _.LastName == lastName);
-            var actualUserData = userData.Embedded.Single(_ => _.Data!.FirstName == firstName && _.Data.LastName == lastName);
-            actualUserData.Should().NotBeNull();
+            var expectedPerson = people.Single(_ => _.FirstName == firstName && _.LastName == lastName);
+            var actualPersonData = personData.Embedded.Single(_ => _.Data!.FirstName == firstName && _.Data.LastName == lastName);
+            actualPersonData.Should().NotBeNull();
 
-            ShouldBeEquivalentTo(actualUserData, expectedUser);
+            ShouldBeEquivalentTo(actualPersonData, expectedPerson);
 
             // User...
             //actualUserData.Data.Should().NotBeNull();
@@ -127,20 +127,20 @@ public class GetPeopleWithFilterTests : ReadApplicationTestFixture<ReadProgram>
             //}
 
             // Links...
-            actualUserData.Links.Should().NotBeNull();
-            actualUserData.Links!.Count.Should().Be(3);
-            LinksForPersonShouldBeCorrect(actualUserData.Links, actualUserData.Data.Id);
+            actualPersonData.Links.Should().NotBeNull();
+            actualPersonData.Links!.Count.Should().Be(3);
+            LinksForPersonShouldBeCorrect(actualPersonData.Links, actualPersonData.Data.Id);
 
             // Embedded...
-            actualUserData.Embedded.Should().BeNull();
+            actualPersonData.Embedded.Should().BeNull();
             
             //actualUser.DateOfBirth.Should().Be(expectedUser.DateOfBirth.InternationalFormat());
         }
 
         // - Links
-        userData.Links.Should().NotBeNull();
-        userData!.Links.Count.Should().Be(1);
-        LinksForPeopleShouldBeCorrect(userData.Links, pageNumber, pageSize, filter: validFilter, totalNumber: users.Count);
+        personData.Links.Should().NotBeNull();
+        personData!.Links.Count.Should().Be(1);
+        LinksForPeopleShouldBeCorrect(personData.Links, pageNumber, pageSize, filter: validFilter, totalNumber: people.Count);
     }
 
     // ToDo --> Broken by ASP.NET 6 and Minimal API validation.
@@ -148,7 +148,7 @@ public class GetPeopleWithFilterTests : ReadApplicationTestFixture<ReadProgram>
     [Category("Unhappy")]
     [TestCase("Id:ShouldNotBeUsed")]
     [TestCase("InvalidFieldName")]
-    public async Task When_A_Page_Of_Users_Is_Requested_With_Invalid_Filter___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues(string invalidFilter)
+    public async Task When_A_Page_Of_People_Is_Requested_With_Invalid_Filter___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues(string invalidFilter)
     {
         // Arrange...
         ApplicationReadDatabase.NumberOfPeople().Should().Be(0);

@@ -1,4 +1,6 @@
-﻿var count = 0;
+﻿using Morsley.UK.People.API.Example.Console;
+
+var count = 0;
 do
 {
     Console.Write("Enter the number of people to add (0 to quit): ");

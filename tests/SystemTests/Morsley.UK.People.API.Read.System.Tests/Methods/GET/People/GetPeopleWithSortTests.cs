@@ -33,9 +33,9 @@ public class GetPeopleWithSortTests : ReadApplicationTestFixture<ReadProgram>
     [TestCase("LastName:desc,FirstName:desc", TestUserData, LastNameDescFirstNameDesc)]
     [TestCase("DateOfBirth:asc", TestUserData, DateOfBirthAsc)]
     [TestCase("DateOfBirth:desc", TestUserData, DateOfBirthDesc)]
-    public async Task Given_Users_Exist___When_A_Page_Of_Users_Is_Requested_With_Valid_Sort___Then_200_OK_And_Users_Should_Be_Sorted(
+    public async Task Given_People_Exist___When_A_Page_Of_People_Is_Requested_With_Valid_Sort___Then_200_OK_And_People_Should_Be_Sorted(
         string validSort, 
-        string testUsersData, 
+        string testPeopleData, 
         string expectedOrder)
     {
         // Arrange...
@@ -43,8 +43,8 @@ public class GetPeopleWithSortTests : ReadApplicationTestFixture<ReadProgram>
         const int pageSize = 10;
 
         ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
-        var users = ApplicationReadDatabase.AddTestPeopleToDatabase(testUsersData);
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(users.Count);
+        var people = ApplicationReadDatabase.AddTestPeopleToDatabase(testPeopleData);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(people.Count);
 
         await AuthenticateAsync(Username, Password);
 
@@ -53,7 +53,7 @@ public class GetPeopleWithSortTests : ReadApplicationTestFixture<ReadProgram>
         var response = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(users.Count);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(people.Count);
 
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -61,22 +61,22 @@ public class GetPeopleWithSortTests : ReadApplicationTestFixture<ReadProgram>
         var content = await response.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var userData = DeserializePersonResource(content);
-        userData.Should().NotBeNull();
+        var personData = DeserializePersonResource(content);
+        personData.Should().NotBeNull();
 
         // - User
-        userData!.Data.Should().BeNull();
+        personData!.Data.Should().BeNull();
 
         // - Links
-        userData.Links.Should().NotBeNull();
-        userData!.Links!.Count.Should().Be(1);
-        LinksForPeopleShouldBeCorrect(userData.Links, pageNumber, pageSize, sort: validSort, totalNumber: users.Count);
+        personData.Links.Should().NotBeNull();
+        personData!.Links!.Count.Should().Be(1);
+        LinksForPeopleShouldBeCorrect(personData.Links, pageNumber, pageSize, sort: validSort, totalNumber: people.Count);
 
         // - Embedded
         var index = 0;
         foreach (var name in expectedOrder.Split('|'))
         {
-            var actualUserData = userData.Embedded!.Skip(index).Take(1).Single();
+            var actualPersonData = personData.Embedded!.Skip(index).Take(1).Single();
             index++;
 
             if (name == "[Unknown]") continue;
@@ -84,18 +84,18 @@ public class GetPeopleWithSortTests : ReadApplicationTestFixture<ReadProgram>
             var kvp = name.Split(' ');
             var firstName = kvp[0];
             var lastName = kvp[1];
-            var expectedUser = users.Single(_ => _.FirstName == firstName && _.LastName == lastName);
+            var expectedPerson = people.Single(_ => _.FirstName == firstName && _.LastName == lastName);
 
             // - User
-            ShouldBeEquivalentTo(actualUserData, expectedUser);
+            ShouldBeEquivalentTo(actualPersonData, expectedPerson);
 
             // Links...
-            actualUserData.Links.Should().NotBeNull();
-            actualUserData.Links!.Count.Should().Be(3);
-            LinksForPersonShouldBeCorrect(actualUserData.Links, actualUserData.Data.Id);
+            actualPersonData.Links.Should().NotBeNull();
+            actualPersonData.Links!.Count.Should().Be(3);
+            LinksForPersonShouldBeCorrect(actualPersonData.Links, actualPersonData.Data.Id);
 
             // Embedded...
-            actualUserData.Embedded.Should().BeNull();
+            actualPersonData.Embedded.Should().BeNull();
         }
     }
 
@@ -103,7 +103,7 @@ public class GetPeopleWithSortTests : ReadApplicationTestFixture<ReadProgram>
     [Category("Unhappy")]
     [TestCase("Id")]
     [TestCase("InvalidFieldName")] 
-    public async Task When_A_Page_Of_Users_Is_Requested_With_Invalid_Sorting___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues(
+    public async Task When_A_Page_Of_People_Is_Requested_With_Invalid_Sorting___Then_422_UnprocessableEntity_And_Errors_Object_Should_Detail_Validation_Issues(
         string invalidSort)
     {
         // Arrange...

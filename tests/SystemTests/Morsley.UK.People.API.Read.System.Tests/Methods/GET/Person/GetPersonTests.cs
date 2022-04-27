@@ -52,8 +52,8 @@ public class GetPersonTests : ReadApplicationTestFixture<ReadProgram>
         // Arrange...
         ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
 
-        var userId = Guid.NewGuid();
-        var url = $"/api/person/{userId}";
+        var personId = Guid.NewGuid();
+        var url = $"/api/person/{personId}";
 
         await AuthenticateAsync(Username, Password);
 

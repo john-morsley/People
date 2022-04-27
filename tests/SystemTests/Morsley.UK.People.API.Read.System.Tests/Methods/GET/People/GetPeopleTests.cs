@@ -4,7 +4,7 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
 {
     [Test]
     [Category("Happy")]
-    public async Task Given_No_Users_Exist___When_Page_Of_Users_Is_Requested___Then_204_NoContent()
+    public async Task Given_No_People_Exist___When_Page_Of_People_Is_Requested___Then_204_NoContent()
     {
         // Arrange...
         const int pageNumber = 1;
@@ -33,18 +33,18 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
     [TestCase(1, 1, 1, 1, false, false)]
     [TestCase(2, 1, 1, 1, false, true)]
     [TestCase(3, 2, 1, 1, true, true)]
-    public async Task Given_One_User_Exists___When_A_Page_Of_Users_Is_Requested___Then_200_OK_And_Page_Of_Users_Returned(
-        int numberOfUsers,
+    public async Task Given_One_Person_Exists___When_A_Page_Of_People_Is_Requested___Then_200_OK_And_Page_Returned(
+        int numberOfPeople,
         int pageNumber,
         int pageSize,
-        int expectedNumberOfUsers,
+        int expectedNumberOfPeople,
         bool hasBeforeLink,
         bool hasAfterLink)
     {
         // Arrange...
         ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
-        var expectedUsers = ApplicationReadDatabase.AddPeopleToDatabase(numberOfUsers);
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(numberOfUsers);
+        var expectedPeople = ApplicationReadDatabase.AddPeopleToDatabase(numberOfPeople);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(numberOfPeople);
 
         await AuthenticateAsync(Username, Password);
 
@@ -53,7 +53,7 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(numberOfUsers);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(numberOfPeople);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -61,40 +61,40 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         var content = await result.Content.ReadAsStringAsync();
         content.Length.Should().BeGreaterThan(0);
 
-        var userResource = DeserializePersonResource(content);
-        userResource.Should().NotBeNull();
+        var personResource = DeserializePersonResource(content);
+        personResource.Should().NotBeNull();
 
         // - User
-        userResource.Data.Should().BeNull();
+        personResource.Data.Should().BeNull();
 
         // - Embedded
-        userResource.Embedded.Should().NotBeNull();
-        userResource.Embedded.Count.Should().Be(expectedNumberOfUsers);
-        var embedded = userResource.Embedded;
-        ShouldBeEquivalentTo(embedded, expectedUsers);
+        personResource.Embedded.Should().NotBeNull();
+        personResource.Embedded.Count.Should().Be(expectedNumberOfPeople);
+        var embedded = personResource.Embedded;
+        ShouldBeEquivalentTo(embedded, expectedPeople);
 
         // - Links
         var expectedNumberOfLinks = 1;
         if (hasBeforeLink) expectedNumberOfLinks++;
         if (hasAfterLink) expectedNumberOfLinks++;
-        userResource.Links.Should().NotBeNull();
-        userResource.Links.Count.Should().Be(expectedNumberOfLinks);
-        LinksForPeopleShouldBeCorrect(userResource.Links, pageNumber, pageSize, expectedNumberOfUsers);
+        personResource.Links.Should().NotBeNull();
+        personResource.Links.Count.Should().Be(expectedNumberOfLinks);
+        LinksForPeopleShouldBeCorrect(personResource.Links, pageNumber, pageSize, expectedNumberOfPeople);
     }
 
     [Test]
     [Category("Happy")]
     [TestCase(0, 1, 1)]
     [TestCase(1, 2, 1)]
-    public async Task Given_One_Person_User_Exists___When_People_Are_Requested___Then_204_NoContent(
-        int numberOfUsers,
+    public async Task Given_One_Person_Exists___When_People_Are_Requested___Then_204_NoContent(
+        int numberOfPeople,
         int pageNumber,
         int pageSize)
     {
         // Arrange...
         ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
-        ApplicationReadDatabase.AddPeopleToDatabase(numberOfUsers);
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(numberOfUsers);
+        ApplicationReadDatabase.AddPeopleToDatabase(numberOfPeople);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(numberOfPeople);
 
         var url = $"/api/people?pageNumber={pageNumber}&pageSize={pageSize}";
 
@@ -105,7 +105,7 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(numberOfUsers);
+        ApplicationReadDatabase.NumberOfPeople().Should().Be(numberOfPeople);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -144,7 +144,7 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
     [Category("Unhappy")]
     [TestCase(0, 1, "PageNumber", "The pageNumber value is invalid. It must be greater than zero.")]
     [TestCase(1, 0, "PageSize", "The pageSize value is invalid. It must be greater than zero.")]
-    public async Task When_A_Page_Of_Users_Is_Requested_With_Invalid_Page_Parameters___Then_400_BadRequest(
+    public async Task When_A_Page_Of_People_Is_Requested_With_Invalid_Page_Parameters___Then_400_BadRequest(
         int pageNumber,
         int pageSize,
         string errorKey,
@@ -175,60 +175,16 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         ProblemDetailsShouldContainValidationIssues(content, validationErrors);
     }
 
-    //[Test]
-    //[Category("Happy")]
-    //public async Task Given_One_User_Exists___When_A_Page_Of_Users_Is_Requested___Then_200_OK_And_Page_Of_Users_Returned()
-    //{
-    //    // Arrange...
-    //    const int pageNumber = 1;
-    //    const int pageSize = 10;
-
-    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
-    //    var expectedUser = GeneratedTestPerson();
-    //    AddPersonToDatabase(expectedUser);
-    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
-
-    //    var url = $"/api/v1/users?pageNumber={pageNumber}&PageSize={pageSize}";
-
-    //    // Act...
-    //    var result = await HttpClient.GetAsync(url);
-
-    //    // Assert...
-    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(1);
-
-    //    result.IsSuccessStatusCode.Should().BeTrue();
-    //    result.StatusCode.Should().Be(HttpStatusCode.OK);
-
-    //    var content = await result.Content.ReadAsStringAsync();
-    //    content.Length.Should().BeGreaterThan(0);
-
-    //    var userData = DeserializePersonResource(content);
-    //    userData.Should().NotBeNull();
-
-    //    // - User
-    //    userData.User.Should().BeNull();
-
-    //    // - Embedded
-    //    userData.Embedded.Should().NotBeNull();
-    //    userData.Embedded.Count.Should().Be(1);
-    //    ShouldBeEquivalentTo(userData.Embedded, expectedUser);
-
-    //    // - Links
-    //    userData.Links.Should().NotBeNull();
-    //    userData.Links.Count.Should().Be(1);
-    //    LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize);
-    //}
-
     [Test]
     [Category("Happy")]
-    public async Task Given_Multiple_Users_Exist___When_A_Page_Of_Users_Is_Requested___Then_200_OK_And_Page_Of_Users_Returned()
+    public async Task Given_Multiple_People_Exist___When_A_Page_Of_People_Is_Requested___Then_200_OK_And_Page_Of_People_Returned()
     {
         // Arrange...
         const int pageNumber = 1;
         const int pageSize = 10;
 
         ApplicationReadDatabase!.NumberOfPeople().Should().Be(0);
-        var expectedUsers = ApplicationReadDatabase.AddPeopleToDatabase(15);
+        var expectedPeople = ApplicationReadDatabase.AddPeopleToDatabase(15);
         ApplicationReadDatabase!.NumberOfPeople().Should().Be(15);
 
         var url = $"/api/people?pageNumber={pageNumber}&PageSize={pageSize}";
@@ -255,93 +211,11 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         // - Embedded
         personResource.Embedded.Should().NotBeNull();
         personResource.Embedded!.Count.Should().Be(10);
-        ShouldBeEquivalentTo(personResource.Embedded, expectedUsers);
+        ShouldBeEquivalentTo(personResource.Embedded, expectedPeople);
 
         // - Links
         personResource.Links.Should().NotBeNull();
         personResource.Links!.Count.Should().Be(2);
         LinksForPeopleShouldBeCorrect(personResource.Links, pageNumber, pageSize, 15);
     }
-
-    //[Test]
-    //[Category("Happy")]
-    //public async Task Given_Multiple_Users_Exist___When_A_Page_Of_Users_Is_Requested___Then_200_OK_And_Page_Of_Users_Returned_With_Co()
-    //{
-    //    // Arrange...
-    //    const int pageNumber = 1;
-    //    const int pageSize = 10;
-
-    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
-    //    var expectedUsers = AddPeopleToDatabase(15);
-    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(15);
-
-    //    var url = $"/api/v1/users?pageNumber={pageNumber}&PageSize={pageSize}";
-
-    //    // Act...
-    //    var result = await HttpClient.GetAsync(url);
-
-    //    // Assert...
-    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(15);
-
-    //    result.IsSuccessStatusCode.Should().BeTrue();
-    //    result.StatusCode.Should().Be(HttpStatusCode.OK);
-
-    //    var content = await result.Content.ReadAsStringAsync();
-    //    content.Length.Should().BeGreaterThan(0);
-    //    var userData = DeserializePersonResource(content);
-    //    userData.Should().NotBeNull();
-
-    //    // - User
-    //    userData.User.Should().BeNull();
-
-    //    // - Embedded
-    //    userData.Embedded.Should().NotBeNull();
-    //    userData.Embedded.Count.Should().Be(10);
-    //    ShouldBeEquivalentTo(userData.Embedded, expectedUsers);
-
-    //    // - Links
-    //    userData.Links.Should().NotBeNull();
-    //    userData.Links.Count.Should().Be(2);
-    //    LinksForPageOfUsersShouldBeCorrect(userData.Links, pageNumber, pageSize);
-    //}
-
-    //[Test]
-    //[Category("Happy")]
-    //public async Task Given_Multiple_Users_Exist___When_A_Page_Of_Users_Is_Requested_Without_Parameters___Then_200_OK_And_Page_Of_Users_Returned_Using_Default_Values()
-    //{
-    //    // Arrange...
-    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(0);
-    //    var expectedUsers = AddPeopleToDatabase(5);
-    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(5);
-
-    //    const string url = "/api/v1/users";
-
-    //    // Act...
-    //    var result = await HttpClient.GetAsync(url);
-
-    //    // Assert...
-    //    PeopleTestFixture.NumberOfPeopleInDatabase().Should().Be(5);
-
-    //    result.IsSuccessStatusCode.Should().BeTrue();
-    //    result.StatusCode.Should().Be(HttpStatusCode.OK);
-
-    //    var content = await result.Content.ReadAsStringAsync();
-    //    content.Length.Should().BeGreaterThan(0);
-
-    //    var userData = DeserializePersonResource(content);
-    //    userData.Should().NotBeNull();
-
-    //    // - User
-    //    userData.User.Should().BeNull();
-
-    //    // - Links
-    //    userData.Links.Should().NotBeNull();
-    //    userData.Links.Count.Should().Be(1);
-    //    LinksForPageOfUsersShouldBeCorrect(userData.Links, Users.API.Models.Constants.Defaults.DefaultPageNumber, Users.API.Models.Constants.Defaults.DefaultPageSize);
-
-    //    // - Embedded
-    //    userData.Embedded.Should().NotBeNull();
-    //    userData.Embedded.Count.Should().Be(5);
-    //    ShouldBeEquivalentTo(userData.Embedded, expectedUsers);
-    //}
 }
