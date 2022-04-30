@@ -1,4 +1,6 @@
-﻿namespace Morsley.UK.People.API.Read.Endpoints;
+﻿using System.Diagnostics;
+
+namespace Morsley.UK.People.API.Read.Endpoints;
 
 /// <summary>
 /// 
@@ -21,9 +23,10 @@ public static class GetPeopleEndpoint
                     IValidator<GetPeopleRequest> validator,
                     IMapper mapper,
                     IMediator mediator,
-                    ILogger logger)
+                    ILogger logger,
+                    ActivitySource source)
                     =>
-                    await GetPeople(new GetPeopleRequest(pageNumber, pageSize, fields, filter, search, sort), validator, mapper, mediator, logger))
+                    await GetPeople(new GetPeopleRequest(pageNumber, pageSize, fields, filter, search, sort), validator, mapper, mediator, logger, source))
                    //.Accepts<GetPeopleRequest>("application/json")
                    .Produces<IPagedList<PersonResponse>>(StatusCodes.Status200OK, "application/json")
                    .Produces(StatusCodes.Status422UnprocessableEntity)
@@ -36,11 +39,14 @@ public static class GetPeopleEndpoint
         IValidator<GetPeopleRequest> validator,
         IMapper mapper, 
         IMediator mediator, 
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
+        using var activity = source.StartActivity("People API - Get People", ActivityKind.Server);
+
         if (!ValidatorHelper.IsRequestValid(request, validator, out var problemDetails)) return Results.UnprocessableEntity(problemDetails);
 
-        var pageOfPersonResponses = await PeopleService.TryGetPeople(request, mapper, mediator, logger);
+        var pageOfPersonResponses = await PeopleService.TryGetPeople(request, mapper, mediator, logger, source);
 
         if (pageOfPersonResponses.Count == 0) return Results.NoContent();
 

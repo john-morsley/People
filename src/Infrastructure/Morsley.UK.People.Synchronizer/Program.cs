@@ -1,3 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
+
 Log.Logger = new LoggerConfiguration()
    .MinimumLevel.Verbose()
    .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
@@ -9,6 +12,8 @@ try
 {
     Log.Information("Starting SYNCHRONIZER host...");
 
+    Activity.DefaultIdFormat = ActivityIdFormat.W3C;
+
     var builder = Host.CreateDefaultBuilder(args);
 
     builder.UseSerilog((context, services, configuration) => configuration
@@ -18,6 +23,7 @@ try
 
     builder.ConfigureServices((hostContext, services) => {
         var configuration = hostContext.Configuration;
+        var source = new ActivitySource("Morsley.UK.People.Synchronizer", "0.1.0");
         services.AddHostedService<Worker>();
         services.AddSingleton<IEventBus, EventBus>();
         services.AddPersistence(configuration, "ReadMongoDBSettings");
@@ -25,6 +31,7 @@ try
         services.AddSingleton<PersonAddedEventHandler>();
         services.AddSingleton<PersonDeletedEventHandler>();
         services.AddSingleton<PersonUpdatedEventHandler>();
+        services.AddSingleton(source);
     });
 
     var host = builder.Build();

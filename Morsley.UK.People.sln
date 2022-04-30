@@ -38,11 +38,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Fixtures", "Fixtures", "{F3A597F5-26FB-4136-B9ED-CF78CECC7F49}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_SolutionItems", "{F02AC20A-1C79-482F-8788-8AF566C62254}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Domain", "src\Domain\Morsley.UK.People.Domain\Morsley.UK.People.Domain.csproj", "{1DA73102-3FFD-446B-AF75-6F652D377F4B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Application", "src\Application\Morsley.UK.People.Application\Morsley.UK.People.Application.csproj", "{3D196C1D-DC88-4437-A804-596AE4383845}"

@@ -1,3 +1,6 @@
+const string serviceName = "Morsley.UK.People.API.Read";
+const string serviceVersion = "0.1.0";
+
 Log.Logger = new LoggerConfiguration()
    .MinimumLevel.Verbose()
    .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
@@ -9,6 +12,8 @@ try
 {
     Log.Information("Starting READ web host...");
 
+    Activity.DefaultIdFormat = ActivityIdFormat.W3C;
+
     var builder = WebApplication.CreateBuilder(args);
 
     // Configure Services...
@@ -17,6 +22,19 @@ try
            .ReadFrom.Configuration(context.Configuration)
            .ReadFrom.Services(services)
            .Enrich.FromLogContext());
+
+    builder.Services.AddOpenTelemetryTracing(tpb => { tpb
+        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName, serviceVersion))
+        .AddSource(serviceName)
+        .AddHttpClientInstrumentation()
+        .AddAspNetCoreInstrumentation()
+        .AddConsoleExporter()
+        .AddZipkinExporter()
+        .AddJaegerExporter();
+    });
+
+    var source = new ActivitySource("Morsley.UK.People.API.Read", "0.1.0");
+    builder.Services.AddSingleton(source);
 
     builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
     builder.Services.AddSingleton<IAuthorizationService, AuthorizationService>();

@@ -64,6 +64,12 @@ The default endpoint is: http://localhost:5341/
 
 Useername: admin/admin
 
+## Open Telemetry
+
+Jaeger --> http://localhost:16686
+Zipkin -->
+
+
 ## Tests
 
 ### Unit Tests

@@ -1,7 +1,4 @@
-﻿using Morsley.UK.People.API.Contracts.Requests;
-using Morsley.UK.People.API.Contracts.Responses;
-
-namespace Morsley.UK.People.API.Read.Services;
+﻿namespace Morsley.UK.People.API.Read.Services;
 
 internal class PersonService
 {

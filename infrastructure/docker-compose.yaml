@@ -139,3 +139,5 @@ services:
     restart: unless-stopped
     networks:
     - morsley_uk_network
+
+  # Tracing (Prometheus?)

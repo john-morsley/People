@@ -22,4 +22,8 @@
     <ProjectReference Include="..\..\Domain\Morsley.UK.People.Domain\Morsley.UK.People.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pipelines\" />
+  </ItemGroup>
+
 </Project>

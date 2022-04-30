@@ -13,6 +13,10 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
+    Log.Information("Starting Example MVC web host...");
+
+    Activity.DefaultIdFormat = ActivityIdFormat.W3C;
+
     var builder = WebApplication.CreateBuilder(args);
 
 //   builder.Services.AddLogging(configure => configure.AddSeq());
@@ -23,7 +27,6 @@ try
         .Enrich.FromLogContext());
 
     // Add services to the container.
-    builder.Services.AddControllersWithViews();
 
     builder.Services.AddOpenTelemetryTracing(configure =>
     {
@@ -37,6 +40,8 @@ try
             .AddZipkinExporter()
             .AddJaegerExporter();
     });
+
+    builder.Services.AddControllersWithViews();
 
     var app = builder.Build();
 
