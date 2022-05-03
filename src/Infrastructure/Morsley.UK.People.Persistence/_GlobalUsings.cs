@@ -3,6 +3,8 @@ global using Microsoft.Extensions.DependencyInjection;
 global using MongoDB.Driver;
 global using Morsley.UK.People.Application.Enumerations;
 global using Morsley.UK.People.Application.Interfaces;
+global using Morsley.UK.People.Application.Models;
+global using Morsley.UK.People.Common.Extensions;
 global using Morsley.UK.People.Domain.Interfaces;
 global using Morsley.UK.People.Domain.Models;
 global using Morsley.UK.People.Persistence.Configuration;

@@ -5,8 +5,10 @@ public static class PersistenceServiceCollectionExtensions
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration, string persistenceKey)
     {
         var mongoContext = new MongoContext(configuration, persistenceKey);
+
         services.AddSingleton<IMongoContext>(mongoContext);
         services.AddSingleton<IPersonRepository, PersonRepository>();
+
         return services;
     }
 }

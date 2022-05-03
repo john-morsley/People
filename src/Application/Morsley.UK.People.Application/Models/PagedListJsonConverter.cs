@@ -1,20 +1,21 @@
-﻿namespace Morsley.UK.People.API.Contracts.Shared;
+﻿namespace Morsley.UK.People.Application.Models;
 
-public class PagedListJsonConverter : JsonConverter<Morsley.UK.People.API.Contracts.Responses.PagedList<PersonResponse>>
+public class PagedListOfPersonJsonConverter : JsonConverter<Morsley.UK.People.Application.Models.PagedList<Morsley.UK.People.Domain.Models.Person>>
 {
     public override bool CanConvert(Type typeToConvert)
     {
-        return typeof(Morsley.UK.People.API.Contracts.Responses.PagedList<PersonResponse>).IsAssignableFrom(typeToConvert);
+
+        var isCovertable = typeof(Morsley.UK.People.Application.Models.PagedList<Morsley.UK.People.Domain.Models.Person>).IsAssignableFrom(typeToConvert);
+        return isCovertable;
     }
 
-    public override Morsley.UK.People.API.Contracts.Responses.PagedList<PersonResponse> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override Morsley.UK.People.Application.Models.PagedList<Morsley.UK.People.Domain.Models.Person> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartObject)  throw new JsonException("Expected StartObject token");
 
-            
-        //var pagedList = PagedList<PersonResponse>.Create();
+        //var pagedList = PagedList<Morsley.UK.People.Domain.Models.Person>.Create();
 
-        var people = new List<PersonResponse>();
+        var people = new List<Morsley.UK.People.Domain.Models.Person>();
         //uint pageNumber = 0;
         uint pageSize = 0;
         uint currentPage = 0; // ToDo --> We need a SetCurrentPage method.
@@ -27,9 +28,9 @@ public class PagedListJsonConverter : JsonConverter<Morsley.UK.People.API.Contra
             //if (reader.TokenType == JsonTokenType.EndObject) return pagedList;
             if (reader.TokenType == JsonTokenType.EndObject)
             {
-                var pagedList = new Morsley.UK.People.API.Contracts.Responses.PagedList<PersonResponse>(people);
+                var pagedList = PagedList<Morsley.UK.People.Domain.Models.Person>.Create(people);
 
-                pagedList.Count = people.Count;
+                //pagedList.Count = people.Count;
 
                 return pagedList;
             }
@@ -68,7 +69,7 @@ public class PagedListJsonConverter : JsonConverter<Morsley.UK.People.API.Contra
                                 if (reader.TokenType == JsonTokenType.EndArray) break;
                                 try
                                 {
-                                    var person = JsonSerializer.Deserialize<PersonResponse>(ref reader, options);
+                                    var person = JsonSerializer.Deserialize<Morsley.UK.People.Domain.Models.Person>(ref reader, options);
                                     if (person != null) people.Add(person);
                                 }
                                 catch (Exception e)
@@ -94,7 +95,7 @@ public class PagedListJsonConverter : JsonConverter<Morsley.UK.People.API.Contra
         throw new JsonException("Expected EndObject token");
     }
 
-    public override void Write(Utf8JsonWriter writer, Morsley.UK.People.API.Contracts.Responses.PagedList<PersonResponse> value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, Morsley.UK.People.Application.Models.PagedList<Morsley.UK.People.Domain.Models.Person> value, JsonSerializerOptions options)
     {
         writer.WriteStartObject();
 
@@ -106,11 +107,11 @@ public class PagedListJsonConverter : JsonConverter<Morsley.UK.People.API.Contra
         writer.WriteBoolean("HasNext", value.HasNext);
 
         writer.WriteStartArray("Items");
-        //foreach(var item in value)
-        //{
-        //    var json = JsonSerializer.Serialize(item, options).Replace("\\", "");
-        //    writer.WriteRawValue(json);
-        //}
+        foreach(var item in value)
+        {
+            var json = JsonSerializer.Serialize(item, options).Replace("\\", "");
+            writer.WriteRawValue(json);
+        }
         writer.WriteEndArray();
 
         writer.WriteEndObject();

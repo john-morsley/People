@@ -1,10 +1,4 @@
-﻿//using Morsley.UK.People.API.Common.VersioningAndSwagger;
-
-using Microsoft.Extensions.Logging;
-using Serilog;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
-
-namespace Morsley.UK.People.API.Common.IoC;
+﻿namespace Morsley.UK.People.API.Common.IoC;
 
 public static class ServiceCollectionExtensions
 {

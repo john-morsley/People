@@ -10,8 +10,6 @@ public class RabbitMQSettings
 
     public string? Password { get; set; }
 
-    //public string? QueueName { get; set; }
-
     public bool IsValid()
     {
         if (Host is null) return false;
@@ -26,17 +24,9 @@ public class RabbitMQSettings
 
     public override string ToString()
     {
-        var host = GetDisplayValue(Host);
-        var port = GetDisplayValue(Port);
-        var username = GetDisplayValue(Username);
-        var password = GetDisplayValue(Password);
-        return $"Host: '{host}' | Port: '{port}' | Username: '{username}' | Password: '{password}'";
-    }
-
-    private string GetDisplayValue(string? value)
-    {
-        if (value is null) return "[NULL]";
-        if (value.Length == 0) return "[EMPTY]";
-        return value;
+        return $"Host: '{Host.GetDisplayValue()}' | " +
+               $"Port: '{Port.GetDisplayValue()}' | " +
+               $"Username: '{Username.GetDisplayValue()}' | " +
+               $"Password: '{Password.GetDisplayValue()}'";
     }
 }

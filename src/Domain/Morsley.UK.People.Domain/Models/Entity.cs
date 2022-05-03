@@ -1,7 +1,4 @@
-﻿using Morsley.UK.People.Domain.Exceptions;
-using Morsley.UK.People.Domain.Interfaces;
-
-namespace Morsley.UK.People.Domain.Models;
+﻿namespace Morsley.UK.People.Domain.Models;
 
 public abstract class Entity<T> : IEntity<T>
 {
@@ -16,7 +13,8 @@ public abstract class Entity<T> : IEntity<T>
     public T Id
     {
         get { return _id; }
-        private set {
+        set 
+        {
             if (object.Equals(value, default(T))) return;
             _id = value;
         }

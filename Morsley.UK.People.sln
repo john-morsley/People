@@ -48,7 +48,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Persisten
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Domain.Unit.Tests", "tests\UnitTests\Morsley.UK.People.Domain.Unit.Tests\Morsley.UK.People.Domain.Unit.Tests.csproj", "{616F75C4-11DD-48D8-8E2D-62445513E373}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.API.Models.Tests", "tests\UnitTests\Morsley.UK.People.API.Models.Unit.Tests\Morsley.UK.People.API.Models.Tests.csproj", "{FEB4450D-AAA9-4FCF-8528-E2ED37788F03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.API.Models.Unit.Tests", "tests\UnitTests\Morsley.UK.People.API.Models.Unit.Tests\Morsley.UK.People.API.Models.Unit.Tests.csproj", "{FEB4450D-AAA9-4FCF-8528-E2ED37788F03}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.API.Read", "src\Presentation\Morsley.UK.People.API.Read\Morsley.UK.People.API.Read.csproj", "{557F5D74-902E-4C5F-96C9-767382702E04}"
 EndProject
@@ -104,6 +104,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentat
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Caching", "src\Infrastructure\Morsley.UK.People.Caching\Morsley.UK.People.Caching.csproj", "{16167428-513A-416D-B934-1491BFB2C96E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.People.Application.Unit.Tests", "tests\UnitTests\Morsley.UK.People.Application.Unit.Tests\Morsley.UK.People.Application.Unit.Tests.csproj", "{E09AAD2B-BC61-40E6-AAB7-A6454E33C728}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -203,6 +207,14 @@ Global
 		{4BA310CF-D7B6-47AD-8E4F-8594A3CE4958}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BA310CF-D7B6-47AD-8E4F-8594A3CE4958}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BA310CF-D7B6-47AD-8E4F-8594A3CE4958}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16167428-513A-416D-B934-1491BFB2C96E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16167428-513A-416D-B934-1491BFB2C96E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16167428-513A-416D-B934-1491BFB2C96E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16167428-513A-416D-B934-1491BFB2C96E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E09AAD2B-BC61-40E6-AAB7-A6454E33C728}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E09AAD2B-BC61-40E6-AAB7-A6454E33C728}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E09AAD2B-BC61-40E6-AAB7-A6454E33C728}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E09AAD2B-BC61-40E6-AAB7-A6454E33C728}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -241,6 +253,8 @@ Global
 		{ED01EC4C-965E-4DBC-9D39-13ACA74F52F2} = {044BC95F-E384-4C3B-9745-42BC20EC473D}
 		{AB1BC00E-9B12-4D92-85E1-8C6284BB238A} = {044BC95F-E384-4C3B-9745-42BC20EC473D}
 		{4BA310CF-D7B6-47AD-8E4F-8594A3CE4958} = {044BC95F-E384-4C3B-9745-42BC20EC473D}
+		{16167428-513A-416D-B934-1491BFB2C96E} = {B4DD37EA-6C56-4B47-8C37-390299A8DED7}
+		{E09AAD2B-BC61-40E6-AAB7-A6454E33C728} = {5F996085-8F9E-4DA6-9976-D1BAF9036CE8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2D352126-3CF8-48AE-9A26-7AD7B94FCCB5}

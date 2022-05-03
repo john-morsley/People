@@ -1,4 +1,4 @@
-﻿namespace Morsley.UK.People.API.SampleConsumer;
+﻿namespace Morsley.UK.People.API.Example.Console;
 
 public class Tasks
 {
@@ -16,7 +16,7 @@ public class Tasks
         {
             var person = people[i];
 
-            Console.Write($"Adding Person: {person} - ");
+            System.Console.Write($"Adding Person: {person} - ");
 
             var addPersonRequest = new AddPersonRequest
             {
@@ -29,7 +29,7 @@ public class Tasks
 
             var result = await client.PostAsync(AddPersonURL, payload);
 
-            Console.WriteLine($"Result: '{result.StatusCode}'");
+            System.Console.WriteLine($"Result: '{result.StatusCode}'");
         }
     }
 }

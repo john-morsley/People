@@ -9,7 +9,8 @@ internal class PeopleService
         ILogger logger,
         ActivitySource source)
     {
-        using var activity = source.StartActivity("People Service - Try Get People", ActivityKind.Server);
+        var name = $"PeopleService->{nameof(TryGetPeople)}";
+        using var activity = source.StartActivity(name, ActivityKind.Server);
 
         var getPeopleQuery = mapper.Map<GetPeopleQuery>(request);
         var pageOfPeople = await mediator.Send(getPeopleQuery);

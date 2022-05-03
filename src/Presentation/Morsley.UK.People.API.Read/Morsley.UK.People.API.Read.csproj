@@ -54,6 +54,7 @@
       <ProjectReference Include="..\..\Application\Morsley.UK.People.Application\Morsley.UK.People.Application.csproj" />
       <ProjectReference Include="..\..\Common\Morsley.UK.People.Common\Morsley.UK.People.Common.csproj" />
       <ProjectReference Include="..\..\Domain\Morsley.UK.People.Domain\Morsley.UK.People.Domain.csproj" />
+      <ProjectReference Include="..\..\Infrastructure\Morsley.UK.People.Caching\Morsley.UK.People.Caching.csproj" />
       <ProjectReference Include="..\..\Infrastructure\Morsley.UK.People.Messaging\Morsley.UK.People.Messaging.csproj" />
       <ProjectReference Include="..\..\Infrastructure\Morsley.UK.People.Persistence\Morsley.UK.People.Persistence.csproj" />
       <ProjectReference Include="..\Morsley.UK.People.API.Common\Morsley.UK.People.API.Common.csproj" />

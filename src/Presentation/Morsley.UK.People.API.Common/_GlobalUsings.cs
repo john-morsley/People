@@ -25,3 +25,8 @@ global using System.Dynamic;
 global using System.IO;
 global using System.Text;
 global using System.Threading.Tasks;
+global using System.Text.Encodings.Web;
+global using System.Text.Json;
+global using System.Text.Json.Serialization;
+global using System.Text.Unicode;
+global using Morsley.UK.People.API.Contracts.Shared;

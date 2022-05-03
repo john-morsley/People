@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Morsley.UK.People.API.Read.Endpoints;
+﻿namespace Morsley.UK.People.API.Read.Endpoints;
 
 /// <summary>
 /// 
@@ -42,7 +40,8 @@ public static class GetPeopleEndpoint
         ILogger logger,
         ActivitySource source)
     {
-        using var activity = source.StartActivity("People API - Get People", ActivityKind.Server);
+        var name = $"GetPeopleEndpoint->{nameof(GetPeople)}";
+        using var activity = source.StartActivity(name, ActivityKind.Server);
 
         if (!ValidatorHelper.IsRequestValid(request, validator, out var problemDetails)) return Results.UnprocessableEntity(problemDetails);
 

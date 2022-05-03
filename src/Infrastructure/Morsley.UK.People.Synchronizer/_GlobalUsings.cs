@@ -9,4 +9,5 @@ global using Morsley.UK.People.Persistence.IoC;
 global using Morsley.UK.People.Synchronizer;
 global using Serilog;
 global using Serilog.Events;
+global using System.Diagnostics;
 global using ILogger = Serilog.ILogger;

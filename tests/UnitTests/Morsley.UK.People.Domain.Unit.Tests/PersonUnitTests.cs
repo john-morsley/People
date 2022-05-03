@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.Domain.Unit.Tests;
 
-public class PeopleTests
+public class PeopleUnitTests
 {
     [Test]
     public void MinimalPersonToString()

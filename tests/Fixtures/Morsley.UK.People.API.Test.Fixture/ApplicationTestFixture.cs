@@ -152,7 +152,7 @@ public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new PersonResourceConverter(),
+                new PersonResourceJsonConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };

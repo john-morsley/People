@@ -1,3 +1,5 @@
+using Morsley.UK.People.Application.Behaviors;
+
 const string serviceName = "Morsley.UK.People.API.Read";
 const string serviceVersion = "0.1.0";
 
@@ -46,11 +48,12 @@ try
     builder.Services.Configure<JsonOptions>(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues:false));
-        options.JsonSerializerOptions.Converters.Add(new PersonResourceConverter());
+        options.JsonSerializerOptions.Converters.Add(new PersonResourceJsonConverter());
     });
 
     builder.Services.AddMessaging();
     builder.Services.AddPersistence(configuration, "ReadMongoDBSettings");
+    builder.Services.AddCaching(configuration, "RedisCacheSettings");
     builder.Services.AddApplication();
     builder.Services.AddContracts();
 

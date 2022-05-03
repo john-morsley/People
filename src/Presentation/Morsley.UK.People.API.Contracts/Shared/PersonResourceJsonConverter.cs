@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.API.Contracts.Shared;
 
-public class PersonResourceConverter : JsonConverter<PersonResource>
+public class PersonResourceJsonConverter : JsonConverter<PersonResource>
 {
     public override bool CanConvert(Type typeToConvert)
     {

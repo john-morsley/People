@@ -71,7 +71,7 @@ public abstract class BaseController : Controller
                     PropertyNameCaseInsensitive = true,
                     Converters =
                         {
-                            new PersonResourceConverter(),
+                            new PersonResourceJsonConverter(),
                             new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                         }
                 };
@@ -170,39 +170,38 @@ public abstract class BaseController : Controller
 
             var result = await client.GetAsync(url);
 
-            if (result.IsSuccessStatusCode)
+            if (!result.IsSuccessStatusCode) return null;
+
+            if (result.StatusCode != HttpStatusCode.OK)
             {
-                if (result.StatusCode == HttpStatusCode.OK)
-                {
-                    var content = await result.Content.ReadAsStringAsync();
-
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true,
-                        Converters =
-                        {
-                            new PersonResourceConverter(),
-                            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
-                        }
-                    };
-
-                    var personResource = JsonSerializer.Deserialize<PersonResource>(content, options);
-
-                    return personResource;
-                }
                 if (result.StatusCode == HttpStatusCode.NoContent)
                 {
                     return null;
                 }
+                return null;
             }
+
+            var content = await result.Content.ReadAsStringAsync();
+
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                Converters =
+                {
+                    new PersonResourceJsonConverter(),
+                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+                }
+            };
+
+            var personResource = JsonSerializer.Deserialize<PersonResource>(content, options);
+
+            return personResource;
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             throw;
         }
-
-        throw new NotImplementedException();
     }
 
     private string AddParametersToURL(string url, GetPeople getPeople)
@@ -239,7 +238,7 @@ public abstract class BaseController : Controller
                     PropertyNameCaseInsensitive = true,
                     Converters =
                     {
-                        new PersonResourceConverter(),
+                        new PersonResourceJsonConverter(),
                         new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                     }
                 };
@@ -335,7 +334,7 @@ public abstract class BaseController : Controller
                     PropertyNameCaseInsensitive = true,
                     Converters =
                     {
-                        new PersonResourceConverter(),
+                        new PersonResourceJsonConverter(),
                         new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                     }
                 };

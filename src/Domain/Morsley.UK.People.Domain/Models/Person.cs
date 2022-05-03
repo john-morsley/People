@@ -18,6 +18,10 @@ public class Person : AuditableEntity<Guid>
         SetLastName(lastName);
     }
 
+    public Person(Guid id) : base(id)
+    {
+    }
+
     public Person(Guid id, string firstName, string lastName) : base(id)
     {
         SetFirstName(firstName);

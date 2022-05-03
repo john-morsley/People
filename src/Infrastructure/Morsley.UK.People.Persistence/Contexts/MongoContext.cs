@@ -4,7 +4,7 @@ public class MongoContext : IMongoContext
 {
     private readonly IConfiguration _configuration;
     private readonly string _persistenceKey;
-    private readonly List<Func<Task>> _commands;
+    //private readonly List<Func<Task>> _commands;
     private MongoDBSettings? _mongoSettings;
 
     private IMongoDatabase? Database { get; set; }
@@ -17,19 +17,19 @@ public class MongoContext : IMongoContext
     {
         _configuration = configuration;
         _persistenceKey = persistenceKey;
-        _commands = new List<Func<Task>>();
+        //_commands = new List<Func<Task>>();
     }
 
-    public void AddCommand(Func<Task> func)
-    {
-        _commands.Add(func);
-    }
+    //public void AddCommand(Func<Task> func)
+    //{
+    //    _commands.Add(func);
+    //}
 
     public IMongoCollection<T> GetCollection<T>(string name)
     {
         ConfigureMongo();
 
-        if (Database == null) throw new InvalidOperationException("Database cannot be null.");
+        if (Database is null) throw new InvalidOperationException("Database cannot be null.");
 
         return Database.GetCollection<T>(name);
     }
@@ -42,7 +42,7 @@ public class MongoContext : IMongoContext
 
     private void ConfigureMongo()
     {
-        if (MongoClient != null) return;
+        if (MongoClient is not null) return;
         
         var section = _configuration.GetSection(_persistenceKey);
         _mongoSettings = section.Get<MongoDBSettings>();
@@ -71,7 +71,7 @@ public class MongoContext : IMongoContext
 
     public string GetConnectionString()
     {
-        if (_mongoSettings == null) throw new InvalidOperationException("MongoSettings cannot be null.");
+        if (_mongoSettings is null) throw new InvalidOperationException("MongoSettings cannot be null.");
         return GetConnectionString(_mongoSettings);
     }
 

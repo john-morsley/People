@@ -1,16 +1,14 @@
-﻿using Morsley.UK.People.Application.Models;
-
-namespace Morsley.UK.People.Persistence.Repositories;
+﻿namespace Morsley.UK.People.Persistence.Repositories;
 
 public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity : class, IEntity<Guid>
 {
-    protected readonly IMongoContext entitycontext;
-    protected readonly IMongoCollection<TEntity> entitycollection;
+    protected readonly IMongoContext MongoContext;
+    protected readonly IMongoCollection<TEntity> MongoCollection;
 
     protected Repository(IMongoContext context, string tableName)
     {
-        entitycontext = context;
-        entitycollection = entitycontext.GetCollection<TEntity>(tableName);
+        MongoContext = context;
+        MongoCollection = MongoContext.GetCollection<TEntity>(tableName);
     }
 
     public async Task<bool> ExistsAsync(Guid id)
@@ -18,7 +16,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
         try
         {
             
-            var entity = await entitycollection.Find(entity => entity.Id == id).AnyAsync();
+            var entity = await MongoCollection.Find(entity => entity.Id == id).AnyAsync();
             return entity;
         }
         catch (Exception e)
@@ -32,7 +30,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
     {
         try
         {
-            var entity = await entitycollection.Find(entity => entity.Id == id).SingleOrDefaultAsync();
+            var entity = await MongoCollection.Find(entity => entity.Id == id).SingleOrDefaultAsync();
             return entity;
         }
         catch (Exception e)
@@ -58,7 +56,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
         // ToDo --> Set Created
         try
         {
-            await entitycollection.InsertOneAsync(entity);
+            await MongoCollection.InsertOneAsync(entity);
         }
         catch (Exception e)
         {
@@ -72,7 +70,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
         // ToDo --> Set Updated
         try
         {
-            await entitycollection.ReplaceOneAsync(entity => entity.Id == update.Id, update);
+            await MongoCollection.ReplaceOneAsync(entity => entity.Id == update.Id, update);
         }
         catch (Exception e)
         {
@@ -85,7 +83,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
     {
         try
         {
-            await entitycollection.DeleteOneAsync(entity => entity.Id == id);
+            await MongoCollection.DeleteOneAsync(entity => entity.Id == id);
         }
         catch (Exception e)
         {
@@ -107,7 +105,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
 
     protected IQueryable<TEntity> AsQueryable()
     {
-        return entitycollection.AsQueryable();
+        return MongoCollection.AsQueryable();
     }
 
     protected virtual IQueryable<TEntity> Filter(IQueryable<TEntity> entities, IGetOptions options)

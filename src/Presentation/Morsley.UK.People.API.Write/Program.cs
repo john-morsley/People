@@ -31,7 +31,7 @@ try
     builder.Services.Configure<JsonOptions>(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false));
-        options.JsonSerializerOptions.Converters.Add(new PersonResourceConverter());
+        options.JsonSerializerOptions.Converters.Add(new PersonResourceJsonConverter());
     });
 
     builder.Services.AddMessaging();

@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Morsley.UK.People.Application.Models;
+﻿namespace Morsley.UK.People.Application.Models;
 
 public class PagedList<T> : List<T>, IPagedList<T>
 {

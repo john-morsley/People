@@ -1,6 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics;
-
 Log.Logger = new LoggerConfiguration()
    .MinimumLevel.Verbose()
    .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)

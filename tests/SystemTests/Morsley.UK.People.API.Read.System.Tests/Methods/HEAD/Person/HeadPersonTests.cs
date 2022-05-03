@@ -8,13 +8,15 @@ public class HeadPersonTests : ReadApplicationTestFixture<ReadProgram>
     {
         // Arrange...
         ApplicationReadDatabase!.NumberOfPeople().Should().Be(0);
+        var personId = Guid.NewGuid();
 
-        const string url = "/api/people?pagenumber=1&pagesize=10";
+        var url = $"/api/person/{personId}";
 
         await AuthenticateAsync(Username, Password);
 
-        // Act...
         var request = new HttpRequestMessage(HttpMethod.Head, url);
+
+        // Act...
         var result = await HttpClient!.SendAsync(request);
 
         // Assert...
@@ -38,7 +40,7 @@ public class HeadPersonTests : ReadApplicationTestFixture<ReadProgram>
         ApplicationReadDatabase!.AddPersonToDatabase(user);
         ApplicationReadDatabase!.NumberOfPeople().Should().Be(1);
 
-        const string url = "/api/people?PageNumber=1&PageSize=10";
+        const string url = "/api/person?PageNumber=1&PageSize=10";
 
         await AuthenticateAsync(Username, Password);
 
@@ -47,7 +49,6 @@ public class HeadPersonTests : ReadApplicationTestFixture<ReadProgram>
         var request = new HttpRequestMessage(HttpMethod.Head, url);
 
         // Act...
-
         var result = await HttpClient!.SendAsync(request);
 
         // Assert...

@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.Application.Handlers;
 
-public sealed class GetPageOfPeopleQueryHandler : IRequestHandler<GetPeopleQuery, IPagedList<Person>>
+public sealed class GetPageOfPeopleQueryHandler : IRequestHandler<GetPeopleQuery, PagedList<Person>>
 {
     private readonly IPersonRepository _personRepository;
     private readonly IMapper _mapper;
@@ -16,16 +16,17 @@ public sealed class GetPageOfPeopleQueryHandler : IRequestHandler<GetPeopleQuery
         _source = source ?? throw new ArgumentNullException(nameof(source));
     }
 
-    public async Task<IPagedList<Person>> Handle(GetPeopleQuery query, CancellationToken ct)
+    public async Task<PagedList<Person>> Handle(GetPeopleQuery query, CancellationToken ct)
     {
-        if (query == null) throw new ArgumentNullException(nameof(query));
+        var name = $"GetPageOfPeopleQueryHandler->{nameof(Handle)}";
+        using var activity = _source.StartActivity(name, ActivityKind.Server);
 
-        using var activity = _source.StartActivity(name: nameof(GetPageOfPeopleQueryHandler), ActivityKind.Server);
+        if (query == null) throw new ArgumentNullException(nameof(query));
 
         var getOptions = _mapper.Map<GetOptions>(query);
 
         var people = await _personRepository.GetPageAsync(getOptions);
 
-        return people;
+        return people as PagedList<Person>;
     }
 }

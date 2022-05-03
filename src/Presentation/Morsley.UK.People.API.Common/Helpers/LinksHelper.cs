@@ -1,17 +1,5 @@
-﻿using Morsley.UK.People.API.Contracts.Requests;
-//using Morsley.UK.People.API.Contracts.Requests;
-using Morsley.UK.People.API.Contracts.Responses;
-using Morsley.UK.People.API.Contracts.Shared;
-using Morsley.UK.People.Application.Models;
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-//using PersonResponse = Morsley.UK.People.API.Contracts.Responses.PersonResponse;
+﻿namespace Morsley.UK.People.API.Common.Helpers;
 
-namespace Morsley.UK.People.API.Common.Helpers;
 public class LinksHelper
 {
     public static ExpandoObject? AddLinks(IDictionary<string, object> shapedPerson, Guid personId)

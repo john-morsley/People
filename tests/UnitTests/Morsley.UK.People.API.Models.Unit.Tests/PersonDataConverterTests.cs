@@ -1,6 +1,6 @@
-﻿namespace Morsley.UK.People.API.Models.Tests;
+﻿namespace Morsley.UK.People.API.Models.Unit.Tests;
 
-public class PersonResponseConverterTests
+public class PersonResponseConverterUnitTests
 {
 
     /*
@@ -60,7 +60,7 @@ public class PersonResponseConverterTests
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new PersonResourceConverter(),
+                new PersonResourceJsonConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
@@ -102,7 +102,7 @@ public class PersonResponseConverterTests
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new PersonResourceConverter(),
+                new PersonResourceJsonConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
@@ -143,7 +143,7 @@ public class PersonResponseConverterTests
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new PersonResourceConverter(),
+                new PersonResourceJsonConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
@@ -185,7 +185,7 @@ public class PersonResponseConverterTests
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new PersonResourceConverter(),
+                new PersonResourceJsonConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
@@ -240,7 +240,7 @@ public class PersonResponseConverterTests
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new PersonResourceConverter(),
+                new PersonResourceJsonConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
@@ -286,7 +286,7 @@ public class PersonResponseConverterTests
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new PersonResourceConverter(),
+                new PersonResourceJsonConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
@@ -319,7 +319,7 @@ public class PersonResponseConverterTests
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new PersonResourceConverter(),
+                new PersonResourceJsonConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
@@ -363,7 +363,7 @@ public class PersonResponseConverterTests
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new PersonResourceConverter(),
+                new PersonResourceJsonConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
@@ -395,7 +395,7 @@ public class PersonResponseConverterTests
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new PersonResourceConverter(),
+                new PersonResourceJsonConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
@@ -431,7 +431,7 @@ public class PersonResponseConverterTests
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new PersonResourceConverter(),
+                new PersonResourceJsonConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
@@ -477,7 +477,7 @@ public class PersonResponseConverterTests
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new PersonResourceConverter(),
+                new PersonResourceJsonConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
@@ -509,7 +509,7 @@ public class PersonResponseConverterTests
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new PersonResourceConverter(),
+                new PersonResourceJsonConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
@@ -541,7 +541,7 @@ public class PersonResponseConverterTests
             PropertyNameCaseInsensitive = true,
             Converters =
             {
-                new PersonResourceConverter(),
+                new PersonResourceJsonConverter(),
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };

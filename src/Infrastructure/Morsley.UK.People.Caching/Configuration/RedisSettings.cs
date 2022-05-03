@@ -1,6 +1,8 @@
-﻿namespace Morsley.UK.People.Persistence.Configuration;
+﻿using Morsley.UK.People.Common.Extensions;
 
-public  class MongoDBSettings
+namespace Morsley.UK.People.Persistence.Configuration;
+
+public  class RedisSettings
 {
     public string? Host { get; set; }
 

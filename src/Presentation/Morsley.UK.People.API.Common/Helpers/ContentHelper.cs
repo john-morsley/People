@@ -1,9 +1,4 @@
-﻿using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.Unicode;
-
-namespace Morsley.UK.People.API.Common.Helpers;
+﻿namespace Morsley.UK.People.API.Common.Helpers;
 
 public class ContentHelper
 {
