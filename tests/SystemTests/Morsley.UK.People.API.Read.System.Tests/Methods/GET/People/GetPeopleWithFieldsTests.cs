@@ -18,7 +18,7 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
 
         ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
 
-        var person = ApplicationReadDatabase.GenerateTestPerson();
+        var person = ApplicationReadDatabase.GeneratePerson();
         ApplicationReadDatabase.AddPersonToDatabase(person);
         var people = new List<Domain.Models.Person> { person };
         ApplicationReadDatabase.NumberOfPeople().Should().Be(1);

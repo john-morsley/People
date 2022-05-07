@@ -117,21 +117,21 @@ public class BusTestFixture
     }
 
     [SetUp]
-    public virtual void SetUp()
+    public async virtual Task SetUp()
     {
-        //DeleteAllPeopleFromDatabase();
+        await Task.CompletedTask;
     }
 
     [TearDown]
-    public virtual void TearDown()
+    public async virtual Task TearDown()
     {
-        //DeleteAllPeopleFromDatabase();
+        await Task.CompletedTask;
     }
 
     [OneTimeTearDown]
-    public async Task OneTimeTearDown()
+    public async virtual Task OneTimeTearDown()
     {
-        await DockerTestFixture?.RunAfterTests();
+        await DockerTestFixture!.RunAfterTests();
     }
 
     public void Subscribe<T, TH>() where T : Event where TH : IEventHandler<T>

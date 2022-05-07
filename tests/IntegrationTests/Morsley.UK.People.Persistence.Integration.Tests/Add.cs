@@ -10,7 +10,7 @@ internal class Add : PersonRepositoryTests
         // Arrange...
         NumberOfPeople().Should().Be(0);
 
-        var person = GenerateTestPerson();
+        var person = GeneratePerson();
 
         var sut = new PersonRepository(MongoContext!);
 

@@ -1,18 +1,31 @@
 ﻿namespace Morsley.UK.People.Test.Fixture;
 
-public class MongoDBInDocker : InDocker
+public class RedisInDocker : InDocker
 {
-    public const string MONGODB_IMAGE = "mongo";
-    public const string MONGODB_IMAGE_TAG = "5";
+    public const string REDIS_IMAGE = "redis";
+    public const string REDIS_IMAGE_TAG = "7";
     //public const string MONGODB_CONTAINER_NAME = "IntegrationTesting_MongoDB";
-    public const string MONGODB_AUTHENTICATION_MECHANISM = "SCRAM-SHA-1";
+    //public const string MONGODB_AUTHENTICATION_MECHANISM = "SCRAM-SHA-1";
     //public const int MONGODB_PORT = 27017;
 
-    public MongoDBInDocker(
+    private ConnectionMultiplexer? _redis;
+
+    public ConnectionMultiplexer? Redis
+    {
+        get
+        {
+            return _redis;
+        }
+        private set
+        {
+            if (value is null) throw new ArgumentNullException(nameof(value), "The value for Redis cannot be set to null!");
+            _redis = value;
+        }
+    }
+
+    public RedisInDocker(
         string containerName, 
-        string username, 
-        string password, 
-        int port) : base(username, password, port)
+        int port) : base(port)
     {
         _containerName =containerName;
     }
@@ -27,7 +40,7 @@ public class MongoDBInDocker : InDocker
         var freePort = GetFreePort();
 
         // This call ensures that the latest Docker image is pulled
-        var imagesCreateParameters = new ImagesCreateParameters { FromImage = $"{MONGODB_IMAGE}:{MONGODB_IMAGE_TAG}" };
+        var imagesCreateParameters = new ImagesCreateParameters { FromImage = $"{REDIS_IMAGE}:{REDIS_IMAGE_TAG}" };
         await dockerClient.Images.CreateImageAsync(imagesCreateParameters, null, new Progress<JSONMessage>());
 
         var container = await dockerClient
@@ -35,12 +48,12 @@ public class MongoDBInDocker : InDocker
             .CreateContainerAsync(new CreateContainerParameters
             {
                 Name = _containerName,
-                Image = $"{MONGODB_IMAGE}:{MONGODB_IMAGE_TAG}",
-                Env = new List<string>
-                {
-                    $"MONGO_INITDB_ROOT_USERNAME={Username}",
-                    $"MONGO_INITDB_ROOT_PASSWORD={Password}"
-                },
+                Image = $"{REDIS_IMAGE}:{REDIS_IMAGE_TAG}",
+                //Env = new List<string>
+                //{
+                //    $"MONGO_INITDB_ROOT_USERNAME={Username}",
+                //    $"MONGO_INITDB_ROOT_PASSWORD={Password}"
+                //},
                 HostConfig = new HostConfig
                 {
                     PortBindings = new Dictionary<string, IList<PortBinding>>
@@ -60,7 +73,7 @@ public class MongoDBInDocker : InDocker
             });
 
         await dockerClient.Containers.StartContainerAsync(container.ID, new ContainerStartParameters());
-        await WaitUntilDatabaseIsAvailableAsync(_containerName, Username, Password, freePort);
+        await WaitUntilCacheIsAvailableAsync(_containerName, freePort);
 
         return (container.ID, freePort);
     }
@@ -118,7 +131,7 @@ public class MongoDBInDocker : InDocker
         await dockerClient.Volumes.RemoveAsync(volumeName);
     }
 
-    private async static Task WaitUntilDatabaseIsAvailableAsync(string containerName, string username, string password, int databasePort)
+    private async Task WaitUntilCacheIsAvailableAsync(string containerName, int cachePort)
     {
         var start = DateTime.UtcNow;
         const int maxWaitTimeSeconds = 60;
@@ -127,18 +140,11 @@ public class MongoDBInDocker : InDocker
         {
             try
             {
-                var internalIdentity = new MongoInternalIdentity("admin", username);
-                var passwordEvidence = new PasswordEvidence(password);
-                var mongoCredential = new MongoCredential(MONGODB_AUTHENTICATION_MECHANISM, internalIdentity, passwordEvidence);
+                var options = new ConfigurationOptions { EndPoints = { $"localhost:{cachePort}"}, AllowAdmin = true };
+                Redis = ConnectionMultiplexer.Connect(options);
 
-                var mongoClientSettings = new MongoClientSettings
-                {
-                    Credential = mongoCredential,
-                    Server = new MongoServerAddress("localhost", databasePort)
-                };
-
-                var client = new MongoClient(mongoClientSettings);
-                var instance = client.GetDatabase(containerName);
+                var database = Redis.GetDatabase();
+                var pong = await database.PingAsync();
 
                 connectionEstablished = true;
             }
@@ -151,7 +157,7 @@ public class MongoDBInDocker : InDocker
 
         if (!connectionEstablished)
         {
-            throw new Exception($"Connection to the MongoDB docker instance could not be established within {maxWaitTimeSeconds} seconds.");
+            throw new Exception($"Connection to the Redis cache docker instance could not be established within {maxWaitTimeSeconds} seconds.");
         }
 
         return;
@@ -166,8 +172,8 @@ public class MongoDBInDocker : InDocker
         return port;
     }
 
-    public string ConnectionString()
-    {
-        return $"mongodb://{Username}:{Password}@localhost:{Port}";
-    }
+    //public string ConnectionString()
+    //{
+    //    return $"localhost:{Port}";
+    //}
 }

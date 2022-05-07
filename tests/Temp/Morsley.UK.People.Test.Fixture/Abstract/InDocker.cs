@@ -10,6 +10,11 @@ public abstract class InDocker
 
     public string ContainerId { get; set; }
 
+    public InDocker(int port)
+    {
+        Port = port;
+    }
+
     public InDocker(string username, string password, int port)
     {
         Username = username;

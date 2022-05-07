@@ -10,7 +10,7 @@ internal class Delete : PersonRepositoryTests
         // Arrange...
         NumberOfPeople().Should().Be(0);
 
-        var person = GenerateTestPerson();
+        var person = GeneratePerson();
         AddPersonToDatabase(person);
 
         NumberOfPeople().Should().Be(1);

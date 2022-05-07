@@ -50,13 +50,13 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
     }
 
     [TearDown]
-    protected override void TearDown()
+    protected async override Task TearDown()
     {
-        _busTestFixture?.TearDown();
-        _readDatabaseTestFixture?.TearDown();
-        _writeDatabaseTestFixture?.TearDown();
+        await _busTestFixture?.TearDown();
+        await _readDatabaseTestFixture!.TearDown();
+        await _writeDatabaseTestFixture!.TearDown();
 
-        base.TearDown();
+        await base.TearDown();
     }
 
     [OneTimeTearDown]

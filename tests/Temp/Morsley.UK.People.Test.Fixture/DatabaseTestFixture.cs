@@ -12,6 +12,14 @@ public class DatabaseTestFixture
 
     public IConfiguration? Configuration => _configuration;
 
+    protected int ContainerPort
+    {
+        get {
+            if (DockerTestFixture == null) throw new InvalidOperationException("Docker has not yet been initialised!");
+            return DockerTestFixture!.GetContainerPort();
+        }
+    }
+
     public DatabaseTestFixture(string name , string persistenceKey)
     {
         if (name == null) throw new ArgumentNullException("name");
@@ -70,33 +78,16 @@ public class DatabaseTestFixture
         if (_configuration == null) Assert.Fail("Configuration should not be null!");
     }
 
-    private void UpdateConfiguration()
-    {
-        var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
-        builder.AddInMemoryCollection(GetInMemoryConfiguration());
-        var configuration = builder.Build();
-        var potentialPort = configuration[$"{_persistenceKey}:Port"];
-        if (!int.TryParse(potentialPort, out var port))
-        {
-            throw new NotImplementedException("Port was not a number!");
-        }
-        if (port != DockerTestFixture!.InDocker.Port)
-        {
-            throw new NotImplementedException("Port has not been updated!");
-        }
-        _configuration = configuration;
-    }
-
     [SetUp]
     public async virtual Task SetUp()
     {
-        await DeleteAllPeopleFromDatabase();
+        await DeleteAllFromDatabase();
     }
 
     [TearDown]
     public async virtual Task TearDown()
     {
-        await DeleteAllPeopleFromDatabase();
+        await DeleteAllFromDatabase();
     }
 
     [OneTimeTearDown]
@@ -105,70 +96,25 @@ public class DatabaseTestFixture
         await DockerTestFixture!.RunAfterTests();
     }
 
-    protected int ContainerPort
+    public IList<Person> AddPeopleToDatabase(int numberOfPeopleToAdd)
     {
-        get
-        {
-            if (DockerTestFixture == null) throw new InvalidOperationException("Docker has not yet been initialised!");
-            return DockerTestFixture!.GetContainerPort();
-        }
-    }
+        if (numberOfPeopleToAdd <= 0) return new List<Person>();
 
-    private string GetDatabaseName()
-    {
-        var databaseName = _configuration[$"{_persistenceKey}:DatabaseName"];
-        return databaseName;
-    }
-
-    private string GetTableName()
-    {
-        var tableName = _configuration[$"{_persistenceKey}:TableName"];
-        return tableName;
-    }
-
-    private async Task DeleteAllPeopleFromDatabase()
-    {
         var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(GetDatabaseName());
         var peopleTable = database.GetCollection<Person>(GetTableName());
-        await peopleTable.DeleteManyAsync("{}");
+        var people = new List<Person>();
+        for (var i = 0; i < numberOfPeopleToAdd; i++)
+        {
+            var person = GeneratePerson();
+            people.Add(person);
+        }
+        peopleTable.InsertMany(people);
+        return people;
     }
 
-    private string GetConnectionString()
-    {
-        var mongoDbInDocker = DockerTestFixture!.InDocker as MongoDBInDocker;
-        return mongoDbInDocker!.ConnectionString();
-    }
-
-    public Dictionary<string, string> GetInMemoryConfiguration()
-    {
-        var additional = new Dictionary<string, string>();
-        if (DockerTestFixture != null) additional.Add($"{_persistenceKey}:Port", ContainerPort.ToString());
-        return additional;
-    }
-
-    //protected IConfiguration GetConfiguration(Dictionary<string, string>? additional = null)
-    //{
-    //    var builder = new ConfigurationBuilder();
-
-    //    builder.AddJsonFile("appsettings.json");
-
-    //    if (additional != null && additional.Count > 0) builder.AddInMemoryCollection(additional);
-
-    //    IConfiguration configuration = builder.Build();
-
-    //    return configuration;
-    //}
-
-    //protected IConfiguration GetCurrentConfiguration()
-    //{
-    //var additional = GetInMemoryConfiguration();
-    //var configuration = GetConfiguration(additional);
-    //return configuration;
-    //}
-
-    public IList<Person> AddTestPeopleToDatabase(string personData)
+    public IList<Person> AddPeopleToDatabase(string personData)
     {
         var people = new List<Person>();
 
@@ -208,36 +154,88 @@ public class DatabaseTestFixture
         peopleTable.InsertOne(person);
     }
 
-    public IList<Person> AddPeopleToDatabase(int numberOfPeopleToAdd)
+    private async Task DeleteAllFromDatabase()
     {
-        if (numberOfPeopleToAdd <= 0) return new List<Person>();
-
         var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(GetDatabaseName());
         var peopleTable = database.GetCollection<Person>(GetTableName());
-        var people = new List<Person>();
-        for (var i = 0; i < numberOfPeopleToAdd; i++)
-        {
-            var person = GenerateTestPerson();
-            people.Add(person);
-        }
-        peopleTable.InsertMany(people);
-        return people;
+        await peopleTable.DeleteManyAsync("{}");
     }
 
-    //protected string GetTestString(string prepend = "")
-    //{
-    //    return prepend + AutoFixture.Create<string>();
-    //}
-
-    public Person GenerateTestPerson()
+    public Person GeneratePerson()
     {
         var person = AutoFixture.Create<Person>();
         person.Created = DateTime.UtcNow;
         person.Updated = null;
         return person;
     }
+
+    private string GetConnectionString()
+    {
+        var mongoDbInDocker = DockerTestFixture!.InDocker as MongoDBInDocker;
+        return mongoDbInDocker!.ConnectionString();
+    }
+
+    private string GetDatabaseName()
+    {
+        var databaseName = _configuration[$"{_persistenceKey}:DatabaseName"];
+        return databaseName;
+    }
+
+    public Dictionary<string, string> GetInMemoryConfiguration()
+    {
+        var additional = new Dictionary<string, string>();
+        if (DockerTestFixture != null) additional.Add($"{_persistenceKey}:Port", ContainerPort.ToString());
+        return additional;
+    }
+
+    public Person GetPersonFromDatabase(Guid personId)
+    {
+        var connectionString = GetConnectionString();
+        var mongoClient = new MongoClient(connectionString);
+        var database = mongoClient.GetDatabase(GetDatabaseName());
+        var mongoCollectionSettings = new MongoCollectionSettings();
+        var peopleTable = database.GetCollection<Person>(GetTableName(), mongoCollectionSettings);
+        var options = new FindOptions();
+        var person = peopleTable.Find<Person>(Person => Person.Id == personId, options).SingleOrDefault();
+        return person;
+    }
+
+    private string GetTableName()
+    {
+        var tableName = _configuration[$"{_persistenceKey}:TableName"];
+        return tableName;
+    }
+
+    //protected IConfiguration GetConfiguration(Dictionary<string, string>? additional = null)
+    //{
+    //    var builder = new ConfigurationBuilder();
+
+    //    builder.AddJsonFile("appsettings.json");
+
+    //    if (additional != null && additional.Count > 0) builder.AddInMemoryCollection(additional);
+
+    //    IConfiguration configuration = builder.Build();
+
+    //    return configuration;
+    //}
+
+    //protected IConfiguration GetCurrentConfiguration()
+    //{
+    //var additional = GetInMemoryConfiguration();
+    //var configuration = GetConfiguration(additional);
+    //return configuration;
+    //}
+
+
+    
+
+    //protected string GetTestString(string prepend = "")
+    //{
+    //    return prepend + AutoFixture.Create<string>();
+    //}
+
 
     //    //protected Person GenerateTestPerson(Guid PersonId)
     //    //{
@@ -253,19 +251,10 @@ public class DatabaseTestFixture
     //        return Person;
     //    }
 
-    public Person GetPersonFromDatabase(Guid personId)
-    {
-        var connectionString = GetConnectionString();
-        var mongoClient = new MongoClient(connectionString);
-        var database = mongoClient.GetDatabase(GetDatabaseName());
-        var mongoCollectionSettings = new MongoCollectionSettings();
-        var peopleTable = database.GetCollection<Person>(GetTableName(), mongoCollectionSettings);
-        var options = new FindOptions();
-        var person = peopleTable.Find<Person>(Person => Person.Id == personId, options).SingleOrDefault();
-        return person;
-    }
+    
 
     // Delay & retries are a crude mechanism to resolve eventual consistency
+
     public long NumberOfPeople(int delayInMilliSeconds = 0, int maximumNumberOfRetries = 1, long? expectedResult = null)
     {
         var numberOfPeople = 0L;
@@ -283,5 +272,22 @@ public class DatabaseTestFixture
             }
         }
         return numberOfPeople;
+    }
+
+    private void UpdateConfiguration()
+    {
+        var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
+        builder.AddInMemoryCollection(GetInMemoryConfiguration());
+        var configuration = builder.Build();
+        var potentialPort = configuration[$"{_persistenceKey}:Port"];
+        if (!int.TryParse(potentialPort, out var port))
+        {
+            throw new NotImplementedException("Port was not a number!");
+        }
+        if (port != DockerTestFixture!.InDocker.Port)
+        {
+            throw new NotImplementedException("Port has not been updated!");
+        }
+        _configuration = configuration;
     }
 }

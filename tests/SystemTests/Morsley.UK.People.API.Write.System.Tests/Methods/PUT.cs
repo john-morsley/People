@@ -11,7 +11,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         // Arrange...
         WriteDatabase.NumberOfPeople().Should().Be(0);
 
-        var originalPerson = WriteDatabase.GenerateTestPerson();
+        var originalPerson = WriteDatabase.GeneratePerson();
         WriteDatabase.AddPersonToDatabase(originalPerson);
 
         WriteDatabase.NumberOfPeople().Should().Be(1);

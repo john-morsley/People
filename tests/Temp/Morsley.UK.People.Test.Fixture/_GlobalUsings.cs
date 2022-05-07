@@ -10,13 +10,10 @@ global using Morsley.UK.People.API.Contracts.Responses;
 global using Morsley.UK.People.Domain.Builders;
 global using Morsley.UK.People.Domain.Enumerations;
 global using Morsley.UK.People.Domain.Models;
-global using Morsley.UK.People.Persistence.Configuration;
+global using Morsley.UK.People.Test.Fixture.Abstract;
+global using Morsley.UK.People.Test.Fixture.AutoFixture;
 global using NUnit.Framework;
-global using System.Globalization;
+global using RabbitMQ.Client;
+global using StackExchange.Redis;
 global using System.Net;
 global using System.Net.Sockets;
-global using Morsley.UK.People.Test.Fixture.AutoFixture;
-global using Morsley.UK.People.Messaging.Configuration;
-global using Morsley.UK.People.Test.Fixture.Abstract;
-global using RabbitMQ.Client;
-

@@ -4,12 +4,12 @@ public class HeadPersonTests : ReadApplicationTestFixture<ReadProgram>
 {
     [Test]
     [Category("Happy")]
-    public async Task Given_No_People_Exist___When_People_Are_Requested___Then_204_NoContent()
+    public async Task Given_No_People_Exist___When_Person_Is_Requested___Then_204_NoContent()
     {
         // Arrange...
         ApplicationReadDatabase!.NumberOfPeople().Should().Be(0);
-        var personId = Guid.NewGuid();
 
+        var personId = Guid.NewGuid();
         var url = $"/api/person/{personId}";
 
         await AuthenticateAsync(Username, Password);
@@ -36,11 +36,11 @@ public class HeadPersonTests : ReadApplicationTestFixture<ReadProgram>
     {
         // Arrange...
         ApplicationReadDatabase!.NumberOfPeople().Should().Be(0);
-        var user = ApplicationReadDatabase.GenerateTestPerson();
-        ApplicationReadDatabase!.AddPersonToDatabase(user);
+        var expected = ApplicationReadDatabase.GeneratePerson();
+        ApplicationReadDatabase!.AddPersonToDatabase(expected);
         ApplicationReadDatabase!.NumberOfPeople().Should().Be(1);
 
-        const string url = "/api/person?PageNumber=1&PageSize=10";
+        var url = $"/api/person/{expected.Id}";
 
         await AuthenticateAsync(Username, Password);
 

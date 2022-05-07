@@ -54,6 +54,7 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
                 Converters =
                 {
                     new PagedListOfPersonJsonConverter(),
+                    //new PersonResourceJsonConverter(),
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };

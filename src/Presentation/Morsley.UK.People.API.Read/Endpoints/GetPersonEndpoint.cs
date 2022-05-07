@@ -1,7 +1,4 @@
-﻿using FluentValidation;
-using System.Linq;
-
-namespace Morsley.UK.People.API.Read.Endpoints;
+﻿namespace Morsley.UK.People.API.Read.Endpoints;
 
 /// <summary>
 /// 
@@ -18,11 +15,12 @@ public static class GetPersonEndpoint
                     [FromRoute] Guid id, 
                     [FromQuery] string? fields,
                     IValidator<GetPersonRequest> validator,
-                    IMapper mapper,
-                    IMediator mediator,
-                    ILogger logger)
+                    [FromServices] IMapper mapper,
+                    [FromServices] IMediator mediator,
+                    [FromServices] ILogger logger,
+                    [FromServices] ActivitySource source)
                     =>
-                    await GetPerson(new GetPersonRequest { Id = id, Fields = fields }, validator, mapper, mediator, logger))
+                    await GetPerson(new GetPersonRequest { Id = id, Fields = fields }, validator, mapper, mediator, logger, source))
                    //.Accepts<GetPersonRequest>("application/json")
                    .Produces<PersonResponse>(StatusCodes.Status200OK, "application/json")
                    .Produces(StatusCodes.Status400BadRequest)
@@ -36,13 +34,14 @@ public static class GetPersonEndpoint
         IValidator<GetPersonRequest> validator,
         IMapper mapper,
         IMediator mediator,
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
         if (!ValidatorHelper.IsRequestValid(request, validator, out var problemDetails)) return Results.UnprocessableEntity(problemDetails);
 
         if (request.Id == Guid.Empty) return Results.BadRequest();
 
-        var personResponse = await PersonService.TryGetPerson(request, mapper, mediator, logger);
+        var personResponse = await PersonService.TryGetPerson(request, mapper, mediator, logger, source);
 
         if (personResponse == null) return Results.NoContent();
 

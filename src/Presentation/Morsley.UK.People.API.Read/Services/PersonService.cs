@@ -6,7 +6,8 @@ internal class PersonService
         GetPersonRequest request,
         IMapper mapper,
         IMediator mediator,
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
         try
         {

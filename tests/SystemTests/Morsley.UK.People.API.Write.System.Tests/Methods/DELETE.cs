@@ -15,7 +15,7 @@ public class DELETE : WriteApplicationTestFixture<WriteProgram>
         ReadDatabase!.NumberOfPeople().Should().Be(0);
         WriteDatabase.NumberOfPeople().Should().Be(0);
 
-        var userToBeDeleted = WriteDatabase.GenerateTestPerson();
+        var userToBeDeleted = WriteDatabase.GeneratePerson();
         var personId = userToBeDeleted.Id;
         WriteDatabase.AddPersonToDatabase(userToBeDeleted);
         WriteDatabase.NumberOfPeople().Should().Be(1);

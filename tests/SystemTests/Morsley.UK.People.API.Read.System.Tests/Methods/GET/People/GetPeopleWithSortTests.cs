@@ -43,7 +43,7 @@ public class GetPeopleWithSortTests : ReadApplicationTestFixture<ReadProgram>
         const int pageSize = 10;
 
         ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
-        var people = ApplicationReadDatabase.AddTestPeopleToDatabase(testPeopleData);
+        var people = ApplicationReadDatabase.AddPeopleToDatabase(testPeopleData);
         ApplicationReadDatabase.NumberOfPeople().Should().Be(people.Count);
 
         await AuthenticateAsync(Username, Password);

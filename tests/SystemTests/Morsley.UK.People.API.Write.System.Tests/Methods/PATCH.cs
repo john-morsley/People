@@ -122,7 +122,7 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
         ReadDatabase!.NumberOfPeople().Should().Be(0);
         WriteDatabase.NumberOfPeople().Should().Be(0);
 
-        var personToBeUpdated = WriteDatabase.GenerateTestPerson();
+        var personToBeUpdated = WriteDatabase.GeneratePerson();
         personToBeUpdated.Sex = Sex.Male;
         ReadDatabase.AddPersonToDatabase(personToBeUpdated);
         WriteDatabase.AddPersonToDatabase(personToBeUpdated);
@@ -329,7 +329,7 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
         ReadDatabase!.NumberOfPeople().Should().Be(0);
         WriteDatabase.NumberOfPeople().Should().Be(0);
 
-        var personToBeUpdated = WriteDatabase.GenerateTestPerson();
+        var personToBeUpdated = WriteDatabase.GeneratePerson();
         personToBeUpdated.Updated = DateTime.UtcNow;
         ReadDatabase.AddPersonToDatabase(personToBeUpdated);
         WriteDatabase.AddPersonToDatabase(personToBeUpdated);
@@ -533,7 +533,7 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
         // Arrange...
         WriteDatabase.NumberOfPeople().Should().Be(0);
 
-        var personToBeUpdated = WriteDatabase.GenerateTestPerson();
+        var personToBeUpdated = WriteDatabase.GeneratePerson();
         WriteDatabase.AddPersonToDatabase(personToBeUpdated);
 
         WriteDatabase.NumberOfPeople().Should().Be(1);

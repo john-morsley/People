@@ -4,6 +4,11 @@ public class DockerTestFixture<T> where T : InDocker
 {
     public readonly InDocker InDocker;
 
+    public DockerTestFixture(string name, int port)
+    {
+        InDocker = (T)Activator.CreateInstance(typeof(T), name, port);
+    }
+
     public DockerTestFixture(string name, string username, string password, int port)
     {
         InDocker = (T)Activator.CreateInstance(typeof(T), name, username, password, port);

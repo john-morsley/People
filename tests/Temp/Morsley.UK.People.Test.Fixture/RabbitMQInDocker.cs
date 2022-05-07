@@ -60,7 +60,7 @@ public class RabbitMQInDocker : InDocker
             });
 
         await dockerClient.Containers.StartContainerAsync(container.ID, new ContainerStartParameters());
-        await WaitUntilBusAvailableAsync(_containerName, Username, Password, freePort);
+        await WaitUntilBusIsAvailableAsync(_containerName, Username, Password, freePort);
 
         return (container.ID, freePort);
     }
@@ -118,7 +118,7 @@ public class RabbitMQInDocker : InDocker
         await dockerClient.Volumes.RemoveAsync(volumeName);
     }
 
-    private async static Task WaitUntilBusAvailableAsync(string containerName, string username, string password, int busPort)
+    private async static Task WaitUntilBusIsAvailableAsync(string containerName, string username, string password, int busPort)
     {
         var start = DateTime.UtcNow;
         const int maxWaitTimeSeconds = 60;

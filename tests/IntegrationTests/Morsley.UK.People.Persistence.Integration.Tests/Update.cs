@@ -10,7 +10,7 @@ internal class Update : PersonRepositoryTests
         // Arrange...
         NumberOfPeople().Should().Be(0);
 
-        var existing = GenerateTestPerson();
+        var existing = GeneratePerson();
         AddPersonToDatabase(existing);
 
         NumberOfPeople().Should().Be(1);

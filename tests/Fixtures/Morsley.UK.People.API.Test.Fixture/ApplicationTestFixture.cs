@@ -72,9 +72,10 @@ public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
     }
 
     [TearDown]
-    protected virtual void TearDown()
+    protected async virtual Task TearDown()
     {
         HttpClient?.Dispose();
+        await Task.CompletedTask;
     }
 
     [OneTimeTearDown]

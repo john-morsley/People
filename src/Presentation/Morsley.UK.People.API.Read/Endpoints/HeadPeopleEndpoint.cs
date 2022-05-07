@@ -25,13 +25,14 @@ public static class HeadPeopleEndpoint
                     [FromServices] ILogger logger,
                     [FromServices] ActivitySource source)
                     => 
-                   //.Accepts<GetPeopleRequest>("application/json")
+                    //.Accepts<GetPeopleRequest>("application/json")
                     await HeadPeople(new GetPeopleRequest(pageNumber, pageSize, fields, filter, search, sort), httpResponse, validator, mapper, mediator, logger, source))
-                   //.Accepts<GetPeopleRequest>("application/json")
+                    //.Accepts<GetPeopleRequest>("application/json")
                    .Produces<IPagedList<PersonResponse>>(StatusCodes.Status200OK, "application/json")
                    .WithName("HeadPeople");
     }
 
+    [HttpHead]
     private async static Task<IResult> HeadPeople(
         GetPeopleRequest request,
         HttpResponse httpResponse,

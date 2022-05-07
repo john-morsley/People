@@ -10,7 +10,7 @@ internal class Get : PersonRepositoryTests
         // Arrange...
         NumberOfPeople().Should().Be(0);
 
-        var expected = GenerateTestPerson();
+        var expected = GeneratePerson();
         AddPersonToDatabase(expected);
     
         NumberOfPeople().Should().Be(1);

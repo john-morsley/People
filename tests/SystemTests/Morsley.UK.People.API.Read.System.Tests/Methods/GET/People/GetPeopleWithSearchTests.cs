@@ -23,7 +23,7 @@ public class GetPeopleWithSearchTests : ReadApplicationTestFixture<ReadProgram>
 
         ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
         var numberOfExpectedPeople = UserDataForSearch.Split('|').Length;
-        var people = ApplicationReadDatabase.AddTestPeopleToDatabase(peopleData);
+        var people = ApplicationReadDatabase.AddPeopleToDatabase(peopleData);
         ApplicationReadDatabase.NumberOfPeople().Should().Be(numberOfExpectedPeople);
 
         await AuthenticateAsync(Username, Password);
