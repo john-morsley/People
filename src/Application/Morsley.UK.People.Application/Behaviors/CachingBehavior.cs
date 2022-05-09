@@ -11,7 +11,6 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     {
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         _source = source ?? throw new ArgumentNullException(nameof(source));
-        // ToDo --> Add real cache code...
     }
 
     public async Task<TResponse> Handle(
@@ -19,7 +18,7 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         CancellationToken cancellationToken, 
         RequestHandlerDelegate<TResponse> next)
     {
-        var name = $"CacheingBehavior->{nameof(Handle)}";
+        var name = $"CachingBehavior->{nameof(Handle)}";
         using var activity = _source.StartActivity(name, ActivityKind.Server);
 
         var key = request.CacheKey;
@@ -37,14 +36,13 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 
         var response = await next();
 
-        // ToDo --> Save the response
         var serialized = SerializeResponse(response);
         await _cache.SetValueAsync(key, serialized);
 
         return response;
     }
 
-    private TResponse DeserializeResponse(string json)
+    private TResponse? DeserializeResponse(string json)
     {
         try
         {
@@ -54,35 +52,51 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
                 Converters =
                 {
                     new PagedListOfPersonJsonConverter(),
-                    //new PersonResourceJsonConverter(),
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }
             };
             var response = JsonSerializer.Deserialize<TResponse>(json, options);
 
             return response;
-
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw;
+            var name = $"CacheingBehavior->{nameof(DeserializeResponse)}";
+            using var activity = _source.StartActivity(name, ActivityKind.Server);
+
+            // ToDo --> How do we best record this error?
         }
+
+        return null;
     }
 
-    private string SerializeResponse(TResponse response)
+    private string? SerializeResponse(TResponse response)
     {
-        var options = new JsonSerializerOptions
+        try
         {
-            PropertyNameCaseInsensitive = true,
-            Converters =
+            var options = new JsonSerializerOptions
             {
-                new PagedListOfPersonJsonConverter(),
-                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
-            }
-        };
-        var serialized = JsonSerializer.Serialize(response, options);
+                PropertyNameCaseInsensitive = true,
+                Converters =
+                {
+                    new PagedListOfPersonJsonConverter(),
+                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+                }
+            };
+            var serialized = JsonSerializer.Serialize(response, options);
 
-        return serialized;
+            return serialized;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            var name = $"CacheingBehavior->{nameof(SerializeResponse)}";
+            using var activity = _source.StartActivity(name, ActivityKind.Server);
+
+            // ToDo --> How do we best record this error?
+        }
+
+        return null;
     }
 }

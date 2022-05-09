@@ -1,7 +1,7 @@
 ﻿namespace Morsley.UK.People.API.Write.Endpoints;
 
 /// <summary>
-/// 
+/// The endpoint to use to add a Person.
 /// </summary>
 public static class AddPersonEndpoint
 {
@@ -16,9 +16,10 @@ public static class AddPersonEndpoint
                     [FromServices] IValidator<AddPersonRequest> validator,
                     [FromServices] IMapper mapper,
                     [FromServices] IMediator mediator,
-                    [FromServices] ILogger logger)
+                    [FromServices] ILogger logger,
+                    [FromServices] ActivitySource source)
                     =>
-                    await AddPerson(request, validator, mapper, mediator, logger))
+                    await AddPerson(request, validator, mapper, mediator, logger, source))
                    .Accepts<AddPersonRequest>("application/json")
                    .Produces<PersonResponse>(StatusCodes.Status200OK, "application/json")
                    .Produces(StatusCodes.Status422UnprocessableEntity)
@@ -32,13 +33,16 @@ public static class AddPersonEndpoint
         IValidator<AddPersonRequest> validator,
         IMapper mapper, 
         IMediator mediator, 
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
-        logger.Debug("AddPerson");
+        var name = $"{nameof(AddPersonEndpoint)}->{nameof(AddPerson)}";
+        logger.Debug(name);
+        using var activity = source.StartActivity(name, ActivityKind.Server);
 
         if (!ValidatorHelper.IsRequestValid(request, validator, out var problemDetails)) return Results.UnprocessableEntity(problemDetails);
 
-        var personResponse = await TryAddPerson(request, mapper, mediator, logger);
+        var personResponse = await TryAddPerson(request, mapper, mediator, logger, source);
 
         if (personResponse == null) return Results.UnprocessableEntity();
 
@@ -51,11 +55,16 @@ public static class AddPersonEndpoint
         AddPersonRequest request, 
         IMapper mapper, 
         IMediator mediator, 
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
+        var name = $"{nameof(TryAddPerson)}->{nameof(TryAddPerson)}";
+        logger.Debug(name);
+        using var activity = source.StartActivity(name, ActivityKind.Server);
+
         try
         {
-            var person = await PersonHelper.AddPerson(request, mapper, mediator, logger);
+            var person = await PersonHelper.AddPerson(request, mapper, mediator, logger, source);
             var response = PersonResponseHelper.From(person, mapper);
             return response;
         }

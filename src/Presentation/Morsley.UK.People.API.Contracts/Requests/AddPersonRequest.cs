@@ -11,4 +11,13 @@ public record AddPersonRequest
     public Gender? Gender { get; set; }
 
     public string? DateOfBirth { get; set; }
+
+    public override string ToString()
+    {
+        return $"FirstName:{FirstName.GetDisplayValue()}|" +
+               $"LastName:{LastName.GetDisplayValue()}|" +
+               $"Sex:{Sex.GetDisplayValue()}|" +
+               $"Gender:{Gender.GetDisplayValue()}|" +
+               $"DateOfBirth:{DateOfBirth.GetDisplayValue()}";
+    }
 }

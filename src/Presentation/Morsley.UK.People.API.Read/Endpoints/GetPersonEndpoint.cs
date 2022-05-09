@@ -1,7 +1,7 @@
 ﻿namespace Morsley.UK.People.API.Read.Endpoints;
 
 /// <summary>
-/// 
+/// The enpoint to use to get a Person.
 /// </summary>
 public static class GetPersonEndpoint
 {
@@ -37,6 +37,11 @@ public static class GetPersonEndpoint
         ILogger logger,
         ActivitySource source)
     {
+        logger.Debug("GetPerson");
+
+        var name = $"GetPeopleEndpoint->{nameof(GetPerson)}";
+        using var activity = source.StartActivity(name, ActivityKind.Server);
+
         if (!ValidatorHelper.IsRequestValid(request, validator, out var problemDetails)) return Results.UnprocessableEntity(problemDetails);
 
         if (request.Id == Guid.Empty) return Results.BadRequest();

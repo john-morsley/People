@@ -1,5 +1,3 @@
-using Morsley.UK.People.Application.Behaviors;
-
 const string serviceName = "Morsley.UK.People.API.Read";
 const string serviceVersion = "0.1.0";
 
@@ -30,7 +28,6 @@ try
         .AddSource(serviceName)
         .AddHttpClientInstrumentation()
         .AddAspNetCoreInstrumentation()
-        .AddConsoleExporter()
         .AddZipkinExporter()
         .AddJaegerExporter();
     });

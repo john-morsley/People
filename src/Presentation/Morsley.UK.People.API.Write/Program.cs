@@ -1,3 +1,9 @@
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+
+const string serviceName = "Morsley.UK.People.API.Write";
+const string serviceVersion = "0.1.0";
+
 Log.Logger = new LoggerConfiguration()
    .MinimumLevel.Verbose()
    .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
@@ -9,6 +15,8 @@ try
 {
     Log.Information("Starting WRITE web host...");
 
+    Activity.DefaultIdFormat = ActivityIdFormat.W3C;
+
     var builder = WebApplication.CreateBuilder(args);
 
     // Configure Services...
@@ -18,8 +26,20 @@ try
            .ReadFrom.Services(services)
            .Enrich.FromLogContext());
 
+    builder.Services.AddOpenTelemetryTracing(tpb => { tpb
+        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName, serviceVersion))
+        .AddSource(serviceName)
+        .AddHttpClientInstrumentation()
+        .AddAspNetCoreInstrumentation()
+        .AddZipkinExporter()
+        .AddJaegerExporter();
+    });
+
     //builder.Services.AddAntiforgery(); // ???
     //builder.Services.AddMvcCore(); // ???
+
+    var source = new ActivitySource("Morsley.UK.People.API.Write", "0.1.0");
+    builder.Services.AddSingleton(source);
 
     builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
     builder.Services.AddSingleton<IAuthorizationService, AuthorizationService>();

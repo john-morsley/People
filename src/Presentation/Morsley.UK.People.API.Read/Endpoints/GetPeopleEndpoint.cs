@@ -40,6 +40,8 @@ public static class GetPeopleEndpoint
         ILogger logger,
         ActivitySource source)
     {
+        logger.Debug("GetPeople");
+
         var name = $"GetPeopleEndpoint->{nameof(GetPeople)}";
         using var activity = source.StartActivity(name, ActivityKind.Server);
 

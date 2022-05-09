@@ -3,19 +3,27 @@
 public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     private readonly ILogger _logger;
+    private readonly ActivitySource _source;
 
-    public LoggingBehavior(ILogger logger)
+    public LoggingBehavior(ILogger logger, ActivitySource source)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _source = source ?? throw new ArgumentNullException(nameof(source));
     }
 
-    public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
+    public Task<TResponse> Handle(
+        TRequest request, 
+        CancellationToken cancellationToken, 
+        RequestHandlerDelegate<TResponse> next)
     {
-        // Before the request...
+        var name = $"{nameof(LoggingBehavior<TRequest, TResponse>)}->{nameof(Handle)}";
+        _logger.Debug(name);
+        using var activity = _source.StartActivity(name, ActivityKind.Server);
+
+        activity?.AddTag("RequestType", request.GetType().FullName);
+        activity?.AddTag("RequestData", request.ToString());
 
         var response = next();
-
-        // After the request...
 
         return response;
     }

@@ -16,9 +16,10 @@ public static class UpdatePersonEndpoint
                     [FromServices] IValidator<UpdatePersonRequest> validator,
                     [FromServices] IMapper mapper,
                     [FromServices] IMediator mediator,
-                    [FromServices] ILogger logger)
+                    [FromServices] ILogger logger,
+                    [FromServices] ActivitySource source)
                     =>
-                    await UpsertPerson(request, validator, mapper, mediator, logger))
+                    await UpsertPerson(request, validator, mapper, mediator, logger, source))
                     .Accepts<UpdatePersonRequest>("application/json")
                     .Produces<PersonResponse>(StatusCodes.Status200OK, "application/json")
                     .Produces(StatusCodes.Status422UnprocessableEntity)
@@ -31,7 +32,8 @@ public static class UpdatePersonEndpoint
         IValidator<UpdatePersonRequest> validator,
         IMapper mapper,
         IMediator mediator,
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
         if (!ValidatorHelper.IsRequestValid(request, validator, out var problemDetails)) return Results.UnprocessableEntity(problemDetails);
 
@@ -41,20 +43,21 @@ public static class UpdatePersonEndpoint
         if (await PersonHelper.DoesPersonExist(personId, mediator, logger))
         {
             // Update existing person...
-            return await UpdatePerson(request, mapper, mediator, logger);
+            return await UpdatePerson(request, mapper, mediator, logger, source);
         }
 
         // Add new person...
-        return await AddPerson(request, mapper, mediator, logger);
+        return await AddPerson(request, mapper, mediator, logger, source);
     }
 
     private async static Task<IResult> AddPerson(
         UpdatePersonRequest request, 
         IMapper mapper, 
         IMediator mediator, 
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
-        var personResponse = await TryAddPerson(request, mapper, mediator, logger);
+        var personResponse = await TryAddPerson(request, mapper, mediator, logger, source);
         var shapedPersonResponseWithLinks = PersonResponseHelper.ShapePersonWithLinks(personResponse);
         return Results.Created($"https://localhost/api/person/{personResponse.Id}", shapedPersonResponseWithLinks);
     }
@@ -63,9 +66,10 @@ public static class UpdatePersonEndpoint
         UpdatePersonRequest request, 
         IMapper mapper, 
         IMediator mediator, 
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
-        var personResponse = await TryUpdatePerson(request, mapper, mediator, logger);
+        var personResponse = await TryUpdatePerson(request, mapper, mediator, logger, source);
         var shapedPersonResponseWithLinks = PersonResponseHelper.ShapePersonWithLinks(personResponse);
         return Results.Ok(shapedPersonResponseWithLinks);
     }
@@ -74,11 +78,12 @@ public static class UpdatePersonEndpoint
         UpdatePersonRequest request,
         IMapper mapper,
         IMediator mediator,
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
         try
         {
-            var added = await PersonHelper.AddPerson(request, mapper, mediator, logger);
+            var added = await PersonHelper.AddPerson(request, mapper, mediator, logger, source);
             var response = PersonResponseHelper.From(added, mapper);
             return response;
         }
@@ -93,7 +98,8 @@ public static class UpdatePersonEndpoint
         UpdatePersonRequest request,
         IMapper mapper,
         IMediator mediator,
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
         try
         {

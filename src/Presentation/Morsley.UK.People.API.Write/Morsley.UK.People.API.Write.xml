@@ -144,7 +144,7 @@
         </member>
         <member name="T:Morsley.UK.People.API.Write.Endpoints.AddPersonEndpoint">
             <summary>
-            
+            The endpoint to use to add a Person.
             </summary>
         </member>
         <member name="M:Morsley.UK.People.API.Write.Endpoints.AddPersonEndpoint.MapAddPersonEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">

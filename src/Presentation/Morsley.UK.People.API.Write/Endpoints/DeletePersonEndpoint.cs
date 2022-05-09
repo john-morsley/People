@@ -15,9 +15,10 @@ public static class DeletePersonEndpoint
                     [FromRoute] Guid id,
                     [FromServices] IValidator<DeletePersonRequest> validator,
                     [FromServices] IMediator mediator,
-                    [FromServices] ILogger logger)
+                    [FromServices] ILogger logger,
+                    [FromServices] ActivitySource source)
                     =>
-                    await DeletePerson(new DeletePersonRequest { Id = id }, validator, mediator, logger))
+                    await DeletePerson(new DeletePersonRequest { Id = id }, validator, mediator, logger, source))
                    //.Accepts("application/json")
                    .Produces(StatusCodes.Status204NoContent)
                    .Produces(StatusCodes.Status404NotFound)
@@ -31,15 +32,16 @@ public static class DeletePersonEndpoint
         DeletePersonRequest request,
         IValidator<DeletePersonRequest> validator,
         IMediator mediator,
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
         if (!ValidatorHelper.IsRequestValid(request, validator, out var problemDetails)) return Results.UnprocessableEntity(problemDetails);
 
         if (request.Id == Guid.Empty) return Results.BadRequest();
 
-        if (!await DoesPersonExist(request.Id, mediator, logger)) return Results.NotFound();
+        if (!await DoesPersonExist(request.Id, mediator, logger, source)) return Results.NotFound();
 
-        await TryDeletePerson(request.Id, mediator, logger);
+        await TryDeletePerson(request.Id, mediator, logger, source);
 
         return Results.NoContent();
     }
@@ -47,7 +49,8 @@ public static class DeletePersonEndpoint
     private async static Task<bool> DoesPersonExist(
         Guid personId,
         IMediator mediator,
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
         try
         {
@@ -65,11 +68,12 @@ public static class DeletePersonEndpoint
     private async static Task TryDeletePerson(
         Guid personId,
         IMediator mediator,
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
         try
         {
-            await PersonHelper.DeletePerson(personId, mediator, logger);
+            await PersonHelper.DeletePerson(personId, mediator, logger, source);
         }
         catch (Exception e)
         {

@@ -11,6 +11,7 @@ global using Morsley.UK.People.Application.Queries;
 global using Morsley.UK.People.Common;
 global using Morsley.UK.People.Common.Extensions;
 global using Morsley.UK.People.Domain.Enumerations;
+global using Morsley.UK.People.Domain.Extensions;
 global using Morsley.UK.People.Domain.Models;
 global using Serilog;
 global using System;

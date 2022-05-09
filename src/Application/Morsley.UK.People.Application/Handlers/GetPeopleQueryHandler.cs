@@ -4,15 +4,18 @@ public sealed class GetPageOfPeopleQueryHandler : IRequestHandler<GetPeopleQuery
 {
     private readonly IPersonRepository _personRepository;
     private readonly IMapper _mapper;
+    private readonly ILogger _logger;
     private readonly ActivitySource _source;
 
     public GetPageOfPeopleQueryHandler(
         IPersonRepository personRepository,
         IMapper mapper,
+        ILogger logger,
         ActivitySource source)
     {
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger;
         _source = source ?? throw new ArgumentNullException(nameof(source));
     }
 

@@ -17,12 +17,13 @@ public static class PartiallyUpdatePersonEndpoint
                     [FromServices] IValidator<UpdatePersonRequest> validator,
                     [FromServices] IMapper mapper,
                     [FromServices] IMediator mediator,
-                    [FromServices] ILogger logger)
-                    => 
-                    await UpsertPerson(id, body, validator, mapper, mediator, logger))
-                    .Accepts<JsonPatchDocument<UpdatePersonRequest>>("application/json")
-                    .Produces<string>(StatusCodes.Status200OK, "application/json")
-                    .WithName("PartiallyUpdatePerson");
+                    [FromServices] ILogger logger,
+                    [FromServices] ActivitySource source)
+                   => 
+                   await UpsertPerson(id, body, validator, mapper, mediator, logger, source))
+                   .Accepts<JsonPatchDocument<UpdatePersonRequest>>("application/json")
+                   .Produces<string>(StatusCodes.Status200OK, "application/json")
+                   .WithName("PartiallyUpdatePerson");
     }
 
     [HttpPatch]
@@ -32,7 +33,8 @@ public static class PartiallyUpdatePersonEndpoint
         IValidator<UpdatePersonRequest> validator,
         IMapper mapper,
         IMediator mediator,
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
         JsonPatchDocument? updates = null;
         try
@@ -49,7 +51,7 @@ public static class PartiallyUpdatePersonEndpoint
             }
 
             // Add a new person...
-            return await AddPerson(id, validator, mapper, mediator, logger, updates);
+            return await AddPerson(id, validator, mapper, mediator, logger, updates, source);
         }
         catch (UnprocessableEntityException uee)
         {
@@ -88,7 +90,8 @@ public static class PartiallyUpdatePersonEndpoint
         IMapper mapper, 
         IMediator mediator, 
         ILogger logger,
-        JsonPatchDocument updates)
+        JsonPatchDocument updates,
+        ActivitySource source)
     {
         var request = new UpdatePersonRequest { Id = id };
         try
@@ -104,7 +107,7 @@ public static class PartiallyUpdatePersonEndpoint
 
         try
         {
-            var personResponse = await AddPerson(request, mapper, mediator, logger);
+            var personResponse = await AddPerson(request, mapper, mediator, logger, source);
             var shapedPersonResponseWithLinks = PersonResponseHelper.ShapePersonWithLinks(personResponse);
             return Results.Created($"https://localhost/api/person/{id}", shapedPersonResponseWithLinks);
         }
@@ -119,9 +122,10 @@ public static class PartiallyUpdatePersonEndpoint
         UpdatePersonRequest request,
         IMapper mapper,
         IMediator mediator,
-        ILogger logger)
+        ILogger logger,
+        ActivitySource source)
     {
-        var added = await PersonHelper.AddPerson(request, mapper, mediator, logger);
+        var added = await PersonHelper.AddPerson(request, mapper, mediator, logger, source);
         var response = PersonResponseHelper.From(added, mapper);
         return response;
     }

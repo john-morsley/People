@@ -2,7 +2,7 @@
 
 public sealed class AddPersonCommand : IRequest<Person>
 {
-    public Guid Id { get; set; }
+    public Guid? Id { get; set; }
 
     public string? FirstName { get; set;  }
 
@@ -13,4 +13,14 @@ public sealed class AddPersonCommand : IRequest<Person>
     public Gender? Gender { get; set; }
 
     public string? DateOfBirth { get; set; }
+
+    public override string ToString()
+    {
+        return $"Id:{Id.GetDisplayValue()}|" +
+               $"FirstName:{FirstName.GetDisplayValue()}|" +
+               $"LastName:{LastName.GetDisplayValue()}|" +
+               $"Sex:{Sex.GetDisplayValue()}|" +
+               $"Gender:{Gender.GetDisplayValue()}|" +
+               $"DateOfBirth:{DateOfBirth.GetDisplayValue()}";
+    }
 }

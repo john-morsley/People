@@ -8,4 +8,10 @@ public sealed class PersonExistsQuery : IRequest<bool>
     }
 
     public Guid Id { get; }
+
+    public override string ToString()
+    {
+        return $"Id:{Id}";
+    }
+
 }

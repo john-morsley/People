@@ -27,5 +27,4 @@ public sealed class DeletePersonCommandHandler : IRequestHandler<DeletePersonCom
         var personDeletedEvent = new PersonDeletedEvent { Id = id };
         _bus.Publish(personDeletedEvent);
     }
-
 }

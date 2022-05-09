@@ -1,6 +1,4 @@
-﻿using Morsley.UK.People.Application.Models;
-
-namespace Morsley.UK.People.Application.AutoMapper;
+﻿namespace Morsley.UK.People.Application.AutoMapper;
 
 public class GetPeopleQueryToGetOptionsConverter : ITypeConverter<GetPeopleQuery, GetOptions>
 {

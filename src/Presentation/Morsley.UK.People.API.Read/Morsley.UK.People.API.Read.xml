@@ -85,7 +85,7 @@
         </member>
         <member name="T:Morsley.UK.People.API.Read.Endpoints.GetPersonEndpoint">
             <summary>
-            
+            The enpoint to use to get a Person.
             </summary>
         </member>
         <member name="M:Morsley.UK.People.API.Read.Endpoints.GetPersonEndpoint.MapGetPersonEndpoint(Microsoft.AspNetCore.Builder.WebApplication)">
