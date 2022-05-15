@@ -11,8 +11,10 @@ public static class ApplicationServiceCollectionExtensions
         services.AddAutoMapper(assemblies);
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-        //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
+
+        services.AddValidatorsFromAssembly(Assembly.Load("Morsley.UK.People.Application"));
 
         return services;
     }

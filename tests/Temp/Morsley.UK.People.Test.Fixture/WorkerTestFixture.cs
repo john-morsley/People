@@ -1,12 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Morsley.UK.People.Application.Handlers;
-using Morsley.UK.People.Application.Interfaces;
-using Morsley.UK.People.Messaging;
-using Morsley.UK.People.Persistence.IoC;
-using Morsley.UK.People.Persistence.Repositories;
-
-namespace Morsley.UK.People.Test.Fixture;
+﻿namespace Morsley.UK.People.Test.Fixture;
 
 public class WorkerTestFixture<TProgram> where TProgram : class
 {

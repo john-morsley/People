@@ -6,6 +6,7 @@ global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Hosting;
 global using Morsley.UK.People.API.Common.Helpers;
 global using Morsley.UK.People.API.Common.IoC;
 global using Morsley.UK.People.API.Common.Swagger;

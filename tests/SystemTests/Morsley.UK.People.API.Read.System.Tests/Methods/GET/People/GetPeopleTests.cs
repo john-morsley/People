@@ -10,7 +10,7 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         const int pageNumber = 1;
         const int pageSize = 10;
 
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
+        ReadDatabase.NumberOfPeople().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -19,7 +19,7 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
+        ReadDatabase.NumberOfPeople().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -42,9 +42,9 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         bool hasAfterLink)
     {
         // Arrange...
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
-        var expectedPeople = ApplicationReadDatabase.AddPeopleToDatabase(numberOfPeople);
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(numberOfPeople);
+        ReadDatabase.NumberOfPeople().Should().Be(0);
+        var expectedPeople = ReadDatabase.AddPeopleToDatabase(numberOfPeople);
+        ReadDatabase.NumberOfPeople().Should().Be(numberOfPeople);
 
         await AuthenticateAsync(Username, Password);
 
@@ -53,7 +53,7 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(numberOfPeople);
+        ReadDatabase.NumberOfPeople().Should().Be(numberOfPeople);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -92,9 +92,9 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         int pageSize)
     {
         // Arrange...
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
-        ApplicationReadDatabase.AddPeopleToDatabase(numberOfPeople);
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(numberOfPeople);
+        ReadDatabase.NumberOfPeople().Should().Be(0);
+        ReadDatabase.AddPeopleToDatabase(numberOfPeople);
+        ReadDatabase.NumberOfPeople().Should().Be(numberOfPeople);
 
         var url = $"/api/people?pageNumber={pageNumber}&pageSize={pageSize}";
 
@@ -105,7 +105,7 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(numberOfPeople);
+        ReadDatabase.NumberOfPeople().Should().Be(numberOfPeople);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -151,7 +151,7 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         string errorValue)
     {
         // Arrange...
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
+        ReadDatabase.NumberOfPeople().Should().Be(0);
 
         await AuthenticateAsync(Username, Password);
 
@@ -160,7 +160,7 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
+        ReadDatabase.NumberOfPeople().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
@@ -183,9 +183,9 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         const int pageNumber = 1;
         const int pageSize = 10;
 
-        ApplicationReadDatabase!.NumberOfPeople().Should().Be(0);
-        var expectedPeople = ApplicationReadDatabase.AddPeopleToDatabase(15);
-        ApplicationReadDatabase!.NumberOfPeople().Should().Be(15);
+        ReadDatabase!.NumberOfPeople().Should().Be(0);
+        var expectedPeople = ReadDatabase.AddPeopleToDatabase(15);
+        ReadDatabase!.NumberOfPeople().Should().Be(15);
 
         var url = $"/api/people?pageNumber={pageNumber}&PageSize={pageSize}";
 
@@ -195,7 +195,7 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase!.NumberOfPeople().Should().Be(15);
+        ReadDatabase!.NumberOfPeople().Should().Be(15);
 
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);

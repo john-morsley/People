@@ -1,13 +1,13 @@
 {
   "profiles": {
-    "Morsley.UK.People.API.MVC": {
+    "Morsley.UK People - Example - Read/Write API via MVC": {
       "commandName": "Project",
+      "dotnetRunMessages": "true",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:7294;http://localhost:5294",
-      "dotnetRunMessages": true
+      "applicationUrl": "https://localhost:5003"
     }
   }
 }

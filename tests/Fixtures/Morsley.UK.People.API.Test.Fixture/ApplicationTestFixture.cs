@@ -425,4 +425,17 @@ public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
             LinksForPersonShouldBeCorrect(resource.Links!, personId);
         }
     }
+
+    protected IConfiguration UpdateConfiguration(
+        IConfiguration configuration,
+        IConfiguration extraConfiguration)
+    {
+        var builder = new ConfigurationBuilder()
+            .AddConfiguration(configuration)
+            .AddConfiguration(extraConfiguration);
+
+        var updatedConfiguration = builder.Build();
+
+        return updatedConfiguration;
+    }
 }

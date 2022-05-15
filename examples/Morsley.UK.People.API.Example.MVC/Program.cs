@@ -1,15 +1,12 @@
-using Serilog;
-using Serilog.Events;
-
 const string serviceName = "Morsley.UK.People.API.Example.MVC";
 const string serviceVersion = "0.1.0";
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Verbose()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .CreateBootstrapLogger();
+   .MinimumLevel.Verbose()
+   .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
+   .Enrich.FromLogContext()
+   .WriteTo.Console()
+   .CreateBootstrapLogger();
 
 try
 {
@@ -22,53 +19,58 @@ try
 //   builder.Services.AddLogging(configure => configure.AddSeq());
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
-        .ReadFrom.Configuration(context.Configuration)
-        .ReadFrom.Services(services)
-        .Enrich.FromLogContext());
+           .ReadFrom.Configuration(context.Configuration)
+           .ReadFrom.Services(services)
+           .Enrich.FromLogContext());
 
     // Add services to the container.
 
-    builder.Services.AddOpenTelemetryTracing(configure =>
+    builder.Services.AddOpenTelemetryTracing(tpb =>
     {
-        configure
-            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName, serviceVersion))
-            .AddSource(serviceName)
-            .AddHttpClientInstrumentation()
-            .AddAspNetCoreInstrumentation()
-            .AddMongoDBInstrumentation()
-            .AddZipkinExporter()
-            .AddJaegerExporter();
+        tpb.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName, serviceVersion))
+           .AddSource(serviceName)
+           .AddHttpClientInstrumentation()
+           .AddAspNetCoreInstrumentation()
+           .AddMongoDBInstrumentation()
+           .AddZipkinExporter()
+           .AddJaegerExporter();
     });
+
+    var source = new ActivitySource(serviceName, serviceVersion);
+    builder.Services.AddSingleton(source);
 
     builder.Services.AddControllersWithViews();
 
-    var app = builder.Build();
+    var application = builder.Build();
 
-    // Configure the HTTP request pipeline.
-    if (!app.Environment.IsDevelopment())
+    application.UseSerilogRequestLogging(_ => { _.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000}ms"; });
+
+    if (!application.Environment.IsDevelopment())
     {
-        app.UseExceptionHandler("/Home/Error");
+        application.UseExceptionHandler("/Home/Error");
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-        app.UseHsts();
+        application.UseHsts();
     }
 
-    app.UseHttpsRedirection();
-    app.UseStaticFiles();
+    application.UseHttpsRedirection();
+    application.UseStaticFiles();
 
-    app.UseRouting();
+    application.UseRouting();
 
-    app.UseAuthorization();
+    application.UseAuthorization();
 
-    app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+    application.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
-    app.Run();
+    application.Run();
 }
 catch (Exception e)
 {
-    Console.WriteLine(e);
-    throw;
+    Log.Fatal(e, "Host terminated unexpectedly!");
+    return 1;
 }
 finally
 {
     Log.CloseAndFlush();
 }
+
+return 0;

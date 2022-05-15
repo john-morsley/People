@@ -42,9 +42,9 @@ public class GetPeopleWithSortTests : ReadApplicationTestFixture<ReadProgram>
         const int pageNumber = 1;
         const int pageSize = 10;
 
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
-        var people = ApplicationReadDatabase.AddPeopleToDatabase(testPeopleData);
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(people.Count);
+        ReadDatabase.NumberOfPeople().Should().Be(0);
+        var people = ReadDatabase.AddPeopleToDatabase(testPeopleData);
+        ReadDatabase.NumberOfPeople().Should().Be(people.Count);
 
         await AuthenticateAsync(Username, Password);
 
@@ -53,7 +53,7 @@ public class GetPeopleWithSortTests : ReadApplicationTestFixture<ReadProgram>
         var response = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(people.Count);
+        ReadDatabase.NumberOfPeople().Should().Be(people.Count);
 
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -107,7 +107,7 @@ public class GetPeopleWithSortTests : ReadApplicationTestFixture<ReadProgram>
         string invalidSort)
     {
         // Arrange...
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
+        ReadDatabase.NumberOfPeople().Should().Be(0);
 
         var url = $"/api/people?sort={invalidSort}";
 
@@ -117,7 +117,7 @@ public class GetPeopleWithSortTests : ReadApplicationTestFixture<ReadProgram>
         var result = await HttpClient!.GetAsync(url);
 
         // Assert...
-        ApplicationReadDatabase.NumberOfPeople().Should().Be(0);
+        ReadDatabase.NumberOfPeople().Should().Be(0);
 
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);

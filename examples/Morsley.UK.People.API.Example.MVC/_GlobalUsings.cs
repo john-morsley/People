@@ -9,6 +9,8 @@ global using Morsley.UK.People.API.MVC.Models;
 global using Morsley.UK.People.Domain.Enumerations;
 global using OpenTelemetry.Resources;
 global using OpenTelemetry.Trace;
+global using Serilog;
+global using Serilog.Events;
 global using System.ComponentModel.DataAnnotations;
 global using System.Diagnostics;
 global using System.Globalization;

@@ -6,10 +6,12 @@
 // 3. Creating a Docker Redis instance for the SUT
 public class ReadApplicationTestFixture<TProgram> : SecuredApplicationTestFixture<TProgram> where TProgram : class
 {
-    public DatabaseTestFixture ApplicationReadDatabase => _readDatabaseTestFixture!;
-    public CacheTestFixture ApplicationCache => _cacheTestFixture;
+    public DatabaseTestFixture ReadDatabase => _readDatabaseTestFixture!;
+
+    public CacheTestFixture Cache => _cacheTestFixture;
 
     protected DatabaseTestFixture? _readDatabaseTestFixture;
+
     protected CacheTestFixture? _cacheTestFixture;
 
     [OneTimeSetUp]
@@ -19,9 +21,13 @@ public class ReadApplicationTestFixture<TProgram> : SecuredApplicationTestFixtur
 
         _readDatabaseTestFixture = new DatabaseTestFixture("Read_Database_Test", configuration, "ReadMongoDBSettings");
         await _readDatabaseTestFixture.CreateDatabase();
+        var readDatabaseConfiguration = _readDatabaseTestFixture.Configuration;
+        configuration = UpdateConfiguration(configuration, readDatabaseConfiguration);
 
         _cacheTestFixture = new CacheTestFixture("Cache_Test", configuration, "RedisCacheSettings");
         await _cacheTestFixture.CreateCache();
+        var cacheConfiguration = _cacheTestFixture.Configuration;
+        configuration = UpdateConfiguration(configuration, cacheConfiguration);
 
         await base.OneTimeSetUp();
     }

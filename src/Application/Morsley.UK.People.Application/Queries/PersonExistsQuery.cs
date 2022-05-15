@@ -13,5 +13,4 @@ public sealed class PersonExistsQuery : IRequest<bool>
     {
         return $"Id:{Id}";
     }
-
 }

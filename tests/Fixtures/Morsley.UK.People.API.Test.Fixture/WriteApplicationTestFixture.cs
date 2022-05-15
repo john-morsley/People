@@ -8,29 +8,45 @@
 public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixture<TProgram> where TProgram : class
 {
     public BusTestFixture BusTestFixture => _busTestFixture!;
+
     public DatabaseTestFixture ReadDatabase => _readDatabaseTestFixture!;
+
     public DatabaseTestFixture WriteDatabase => _writeDatabaseTestFixture!;
 
+    public CacheTestFixture Cache => _cacheTestFixture;
+
     protected BusTestFixture? _busTestFixture;
+
     protected DatabaseTestFixture? _readDatabaseTestFixture;
+
     protected DatabaseTestFixture? _writeDatabaseTestFixture;
+
+    protected CacheTestFixture? _cacheTestFixture;
 
     [OneTimeSetUp]
     protected async override Task OneTimeSetUp()
     {
-        var readDatabaseConfiguration = GetReadDatabaseConfiguration();
-        _readDatabaseTestFixture = new DatabaseTestFixture("Read_Database_Test", readDatabaseConfiguration, "ReadMongoDBSettings");
+        var configuration = GetConfiguration();
+
+        _readDatabaseTestFixture = new DatabaseTestFixture("Read_Database_Test", configuration, "ReadMongoDBSettings");
         await _readDatabaseTestFixture.CreateDatabase();
-        readDatabaseConfiguration = _readDatabaseTestFixture.Configuration;
+        var readDatabaseConfiguration = _readDatabaseTestFixture.Configuration;
+        configuration = UpdateConfiguration(configuration, readDatabaseConfiguration);
 
-        var writeDatabaseConfiguration = GetWriteDatabaseConfiguration();
-        _writeDatabaseTestFixture = new DatabaseTestFixture("Write_Database_Test", writeDatabaseConfiguration, "WriteMongoDBSettings");
+        _writeDatabaseTestFixture = new DatabaseTestFixture("Write_Database_Test", configuration, "WriteMongoDBSettings");
         await _writeDatabaseTestFixture.CreateDatabase();
+        var writeDatabaseConfiguration = _writeDatabaseTestFixture.Configuration;
+        configuration = UpdateConfiguration(configuration, writeDatabaseConfiguration);
 
-        var busConfiguration = GetBusConfiguration();
-        var combinedConfiguration = GetCombinedConfiguration(busConfiguration, readDatabaseConfiguration);
-        _busTestFixture = new BusTestFixture("Bus_Test", combinedConfiguration, "ReadMongoDBSettings");
+        _cacheTestFixture = new CacheTestFixture("Cache_Test", configuration, "RedisCacheSettings");
+        await _cacheTestFixture.CreateCache();
+        var cacheConfiguration = _cacheTestFixture.Configuration;
+        configuration = UpdateConfiguration(configuration, cacheConfiguration);
+
+        _busTestFixture = new BusTestFixture("Bus_Test", configuration, "ReadMongoDBSettings");
         await _busTestFixture.CreateBus();
+        var busConfiguration = _busTestFixture.Configuration;
+        configuration = UpdateConfiguration(configuration, busConfiguration);
 
         _busTestFixture.Subscribe<PersonAddedEvent, PersonAddedEventHandler>();
         _busTestFixture.Subscribe<PersonDeletedEvent, PersonDeletedEventHandler>();
@@ -42,7 +58,7 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
     [SetUp]
     protected async override Task SetUp()
     {
-        _busTestFixture!.SetUp();
+        _busTestFixture?.SetUp();
         await _readDatabaseTestFixture!.SetUp();
         await _writeDatabaseTestFixture!.SetUp();
 
@@ -80,99 +96,6 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
         return configuration;
     }
 
-    private IConfiguration GetBusConfiguration()
-    {
-        //var all = GetConfiguration();
-
-        //var section = all.GetSection("RabbitMQSettings");
-
-        //var builder = new ConfigurationBuilder();
-
-        //var settings = new Dictionary<string, string>();
-
-        //settings.Add("RabbitMQSettings:Host", section["Host"]);
-        //settings.Add("RabbitMQSettings:Port", section["Port"]);
-        //settings.Add("RabbitMQSettings:Username", section["Username"]);
-        //settings.Add("RabbitMQSettings:Password", section["Password"]);
-
-        //builder.AddInMemoryCollection(settings);
-
-        //var configuration = builder.Build();
-
-        //return configuration;
-
-        return GetConfiguration();
-    }
-
-    private IConfiguration GetReadDatabaseConfiguration()
-    {
-        //var all = GetConfiguration();
-
-        //var section = all.GetSection("ReadMongoDBSettings");
-
-        //var builder = new ConfigurationBuilder();
-
-        //var settings = new Dictionary<string, string>();
-
-        //settings.Add("MongoDBSettings:Host", section["Host"]);
-        //settings.Add("MongoDBSettings:Port", section["Port"]);
-        //settings.Add("MongoDBSettings:Username", section["Username"]);
-        //settings.Add("MongoDBSettings:Password", section["Password"]);
-        //settings.Add("MongoDBSettings:DatabaseName", section["DatabaseName"]);
-        //settings.Add("MongoDBSettings:TableName", section["TableName"]);
-
-        //builder.AddInMemoryCollection(settings);
-
-        //var configuration = builder.Build();
-
-        //return configuration;
-
-        return GetConfiguration();
-    }
-
-    private IConfiguration GetWriteDatabaseConfiguration()
-    {
-        //var all = GetConfiguration();
-
-        //var section = all.GetSection("WriteMongoDBSettings");
-
-        //var builder = new ConfigurationBuilder();
-
-        //var settings = new Dictionary<string, string>();
-
-        //settings.Add("MongoDBSettings:Host", section["Host"]);
-        //settings.Add("MongoDBSettings:Port", section["Port"]);
-        //settings.Add("MongoDBSettings:Username", section["Username"]);
-        //settings.Add("MongoDBSettings:Password", section["Password"]);
-        //settings.Add("MongoDBSettings:DatabaseName", section["DatabaseName"]);
-        //settings.Add("MongoDBSettings:TableName", section["TableName"]);
-
-        //builder.AddInMemoryCollection(settings);
-
-        //var configuration = builder.Build();
-
-        //return configuration;
-
-        return GetConfiguration();
-    }
-
-    private IConfiguration GetCombinedConfiguration(IConfiguration busConfiguration, IConfiguration readDatabaseConfiguration)
-    {
-        var builder = new ConfigurationBuilder()
-            .AddConfiguration(busConfiguration)
-            .AddConfiguration(readDatabaseConfiguration);
-
-        //var busInMemoryConfiguration = _busTestFixture!.GetInMemoryConfiguration();
-        //var readDatabaseInMemoryConfiguration = _readDatabaseTestFixture!.GetInMemoryConfiguration();
-
-        //builder.AddInMemoryCollection(busInMemoryConfiguration);
-        //builder.AddInMemoryCollection(readDatabaseInMemoryConfiguration);
-
-        var configuration = builder.Build();
-
-        return configuration;
-    }
-    
     protected override Dictionary<string, string> GetInMemoryConfiguration()
     {
         var additional = new Dictionary<string, string>();
@@ -180,6 +103,11 @@ public class WriteApplicationTestFixture<TProgram> : SecuredApplicationTestFixtu
         foreach (var additionalBusConfiguration in _busTestFixture!.GetInMemoryConfiguration())
         {
             additional.Add(additionalBusConfiguration.Key, additionalBusConfiguration.Value);
+        }
+
+        foreach (var additionalDatabaseConfiguration in _readDatabaseTestFixture!.GetInMemoryConfiguration())
+        {
+            additional.Add(additionalDatabaseConfiguration.Key, additionalDatabaseConfiguration.Value);
         }
 
         foreach (var additionalDatabaseConfiguration in _writeDatabaseTestFixture!.GetInMemoryConfiguration())

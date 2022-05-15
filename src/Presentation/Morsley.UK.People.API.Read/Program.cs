@@ -23,16 +23,18 @@ try
            .ReadFrom.Services(services)
            .Enrich.FromLogContext());
 
-    builder.Services.AddOpenTelemetryTracing(tpb => { tpb
-        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName, serviceVersion))
-        .AddSource(serviceName)
-        .AddHttpClientInstrumentation()
-        .AddAspNetCoreInstrumentation()
-        .AddZipkinExporter()
-        .AddJaegerExporter();
+    builder.Services.AddOpenTelemetryTracing(tpb => 
+    { 
+        tpb.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName, serviceVersion))
+           .AddSource(serviceName)
+           .AddHttpClientInstrumentation()
+           .AddAspNetCoreInstrumentation()
+           .AddMongoDBInstrumentation()
+           .AddZipkinExporter()
+           .AddJaegerExporter();
     });
 
-    var source = new ActivitySource("Morsley.UK.People.API.Read", "0.1.0");
+    var source = new ActivitySource(serviceName, serviceVersion);
     builder.Services.AddSingleton(source);
 
     builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
@@ -67,6 +69,13 @@ try
     var application = builder.Build();
 
     application.UseSerilogRequestLogging(_ => { _.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000}ms"; });
+
+    if (!application.Environment.IsDevelopment())
+    {
+        application.UseExceptionHandler("/Home/Error");
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        application.UseHsts();
+    }
 
     application.ConfigureSwagger();
 

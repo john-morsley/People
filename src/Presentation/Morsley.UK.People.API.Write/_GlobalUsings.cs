@@ -28,6 +28,8 @@ global using Morsley.UK.People.Common;
 global using Morsley.UK.People.Domain.Models;
 global using Morsley.UK.People.Messaging.IoC;
 global using Morsley.UK.People.Persistence.IoC;
+global using OpenTelemetry.Resources;
+global using OpenTelemetry.Trace;
 global using Serilog;
 global using Serilog.Events;
 global using System;
@@ -38,3 +40,4 @@ global using System.Text.Json;
 global using System.Text.Json.Serialization;
 global using System.Threading.Tasks;
 global using ILogger = Serilog.ILogger;
+
