@@ -2,6 +2,8 @@
 
 public interface ICache
 {
+    Task DeleteValueAsync(string key);
+
     Task<string?> GetValueAsync(string key);
 
     Task SetValueAsync(string key, string value);

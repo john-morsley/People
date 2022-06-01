@@ -9,6 +9,8 @@ public abstract class BaseController : Controller
     protected const string PersonPath = "/api/person";
     protected const string PeoplePath = "/api/people";
 
+    protected const int DefaultClientTimeout = 100;
+
     protected readonly ILogger _logger;
     protected readonly IConfiguration _configuration;
 
@@ -16,6 +18,19 @@ public abstract class BaseController : Controller
     {
         _logger = logger;
         _configuration = configuration;
+    }
+
+    private string AddParametersToURL(string url, GetPeople getPeople)
+    {
+        var parameters = new List<string>();
+        if (getPeople.PageNumber > 0) parameters.Add($"pageNumber={getPeople.PageNumber}");
+        if (getPeople.PageSize > 0) parameters.Add($"pageSize={getPeople.PageSize}");
+        if (!string.IsNullOrWhiteSpace(getPeople.Fields)) parameters.Add($"fields={getPeople.Fields}");
+        if (!string.IsNullOrWhiteSpace(getPeople.Filter)) parameters.Add($"filter={getPeople.Filter}");
+        if (!string.IsNullOrWhiteSpace(getPeople.Search)) parameters.Add($"search={getPeople.Search}");
+        if (!string.IsNullOrWhiteSpace(getPeople.Sort)) parameters.Add($"sort={getPeople.Sort}");
+        if (parameters.Count > 0) url = $"{url}?{string.Join('&', parameters)}";
+        return url;
     }
 
     private async Task AuthenticateAsync(HttpClient client, string username, string password, string url)
@@ -51,7 +66,7 @@ public abstract class BaseController : Controller
 
         try
         {
-            var client = new HttpClient();
+            var client = GetHttpClient();
 
             await AuthenticateWriteAsync(client, GetUsername(), GetPassword());
 
@@ -100,7 +115,7 @@ public abstract class BaseController : Controller
     {
         try
         {
-            var client = new HttpClient();
+            var client = GetHttpClient();
 
             await AuthenticateWriteAsync(client, GetUsername(), GetPassword());
 
@@ -141,6 +156,13 @@ public abstract class BaseController : Controller
         return Enum.Parse<Gender>(potentialGender);
     }
 
+    protected HttpClient GetHttpClient()
+    {
+        var httpClient = new HttpClient();
+        httpClient.Timeout = GetClientTimeout();
+        return new HttpClient();
+    }
+
     private async Task<string?> GetJwtTokenAsync(HttpClient client, string username, string password, string url)
     {
         var request = new LoginRequest(username, password);
@@ -161,7 +183,7 @@ public abstract class BaseController : Controller
     {
         try
         {
-            var client = new HttpClient();
+            var client = GetHttpClient();
 
             await AuthenticateReadAsync(client, GetUsername(), GetPassword());
 
@@ -204,24 +226,12 @@ public abstract class BaseController : Controller
         }
     }
 
-    private string AddParametersToURL(string url, GetPeople getPeople)
-    {
-        var parameters = new List<string>();
-        if (getPeople.PageNumber > 0) parameters.Add($"pageNumber={getPeople.PageNumber}");
-        if (getPeople.PageSize > 0) parameters.Add($"pageSize={getPeople.PageSize}");
-        if (!string.IsNullOrWhiteSpace(getPeople.Fields)) parameters.Add($"fields={getPeople.Fields}");
-        if (!string.IsNullOrWhiteSpace(getPeople.Filter)) parameters.Add($"filter={getPeople.Filter}");
-        if (!string.IsNullOrWhiteSpace(getPeople.Search)) parameters.Add($"search={getPeople.Search}");
-        if (!string.IsNullOrWhiteSpace(getPeople.Sort)) parameters.Add($"sort={getPeople.Sort}");
-        if (parameters.Count > 0) url = $"{url}?{string.Join('&', parameters)}";
-        return url;
-    }
-
     protected async Task<PersonResource> GetPersonAsync(string path)
     {
         try
         {
-            var client = new HttpClient();
+            var client = GetHttpClient();
+            //client.Timeout = GetClientTimeout();
 
             await AuthenticateReadAsync(client, GetUsername(), GetPassword());
 
@@ -257,15 +267,22 @@ public abstract class BaseController : Controller
         throw new NotImplementedException();
     }
 
+    private TimeSpan GetClientTimeout()
+    {
+        var potentialSeconds = _configuration["Client:Timeout"];
+
+        if (int.TryParse(potentialSeconds, out var seconds))
+        {
+            return TimeSpan.FromSeconds(seconds);
+        }
+
+        return TimeSpan.FromSeconds(DefaultClientTimeout);
+    }
+
     private static Sex? GetSex(string? potentialSex)
     {
         if (potentialSex == null) return null;
         return Enum.Parse<Sex>(potentialSex);
-    }
-
-    private string GetUsername()
-    {
-        return _configuration["Authentication:Username"];
     }
 
     protected int? GetDay(string? date)
@@ -275,11 +292,23 @@ public abstract class BaseController : Controller
         return result.Day;
     }
 
+    private Guid? GetId(string potentialGuid)
+    {
+        if (string.IsNullOrWhiteSpace(potentialGuid)) return null;
+        if (!Guid.TryParse(potentialGuid, out var guid)) return null;
+        return guid;
+    }
+
     protected int? GetMonth(string? date)
     {
         if (string.IsNullOrWhiteSpace(date)) return null;
         if (!IsValidDate(date, out var result)) return null;
         return result.Month;
+    }
+
+    private string GetUsername()
+    {
+        return _configuration["Authentication:Username"];
     }
 
     protected int? GetYear(string? date)
@@ -314,7 +343,7 @@ public abstract class BaseController : Controller
 
         try
         {
-            var client = new HttpClient();
+            var client = GetHttpClient();
 
             await AuthenticateWriteAsync(client, GetUsername(), GetPassword());
 
@@ -359,10 +388,5 @@ public abstract class BaseController : Controller
         return null;
     }
 
-    private Guid? GetId(string potentialGuid)
-    {
-        if (string.IsNullOrWhiteSpace(potentialGuid)) return null;
-        if (!Guid.TryParse(potentialGuid, out var guid)) return null;
-        return guid;
-    }
+    
 }

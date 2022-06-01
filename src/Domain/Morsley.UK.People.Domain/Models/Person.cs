@@ -132,4 +132,9 @@ public class Person : AuditableEntity<Guid>
         if (dt == null) return "[Null]";
         return $"{dt.Value.Year:0000}-{dt.Value.Month:00}-{dt.Value.Day:00}";
     }
+
+    public static string GetCacheKey(Guid personId)
+    {
+        return $"Person-->Id:{personId}";
+    }
 }

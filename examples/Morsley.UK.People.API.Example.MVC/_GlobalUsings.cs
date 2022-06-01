@@ -6,6 +6,7 @@ global using Morsley.UK.People.API.Contracts.Shared;
 global using Morsley.UK.People.API.Example.MVC.Helpers;
 global using Morsley.UK.People.API.Example.MVC.Models;
 global using Morsley.UK.People.API.MVC.Models;
+global using Morsley.UK.People.Common;
 global using Morsley.UK.People.Domain.Enumerations;
 global using OpenTelemetry.Resources;
 global using OpenTelemetry.Trace;

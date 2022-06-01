@@ -11,7 +11,7 @@ internal class Get : PersonRepositoryTests
         NumberOfPeople().Should().Be(0);
 
         var expected = GeneratePerson();
-        AddPersonToDatabase(expected);
+        await AddPerson(expected);
     
         NumberOfPeople().Should().Be(1);
 
@@ -32,7 +32,7 @@ internal class Get : PersonRepositoryTests
         // Arrange...
         NumberOfPeople().Should().Be(0);
 
-        var people = AddPeopleToDatabase(10);
+        var people = AddPeople(10);
 
         NumberOfPeople().Should().Be(10);
 
@@ -61,7 +61,7 @@ internal class Get : PersonRepositoryTests
         // Arrange...
         NumberOfPeople().Should().Be(0);
 
-        var people = AddPeopleToDatabase(10);
+        var people = AddPeople(10);
 
         NumberOfPeople().Should().Be(10);
 
@@ -94,11 +94,11 @@ internal class Get : PersonRepositoryTests
         // Arrange...
         NumberOfPeople().Should().Be(0);
 
-        AddPeopleToDatabase(10);
+        AddPeople(10);
 
-        var people = AddPeopleToDatabase(10);
+        var people = AddPeople(10);
 
-        AddPeopleToDatabase(10);
+        AddPeople(10);
 
         NumberOfPeople().Should().Be(30);
 
@@ -131,12 +131,12 @@ internal class Get : PersonRepositoryTests
         // Arrange...
         NumberOfPeople().Should().Be(0);
 
-        AddPeopleToDatabase(5);
+        AddPeople(5);
 
         var expected = new Person(Guid.NewGuid(), "John", "Morsley");
-        AddPersonToDatabase(expected);
+        await AddPerson(expected);
 
-        AddPeopleToDatabase(5);
+        AddPeople(5);
 
         NumberOfPeople().Should().Be(11);
 
@@ -170,15 +170,15 @@ internal class Get : PersonRepositoryTests
         // Arrange...
         NumberOfPeople().Should().Be(0);
 
-        AddPeopleToDatabase(5);
+        AddPeople(5);
 
         var john = new Person(Guid.NewGuid(), "John", "Doe");
-        AddPersonToDatabase(john);
+        await AddPerson(john);
 
         var jane = new Person(Guid.NewGuid(), "Jane", "Doe");
-        AddPersonToDatabase(jane);
+        await AddPerson(jane);
 
-        AddPeopleToDatabase(5);
+        AddPeople(5);
 
         NumberOfPeople().Should().Be(12);
 

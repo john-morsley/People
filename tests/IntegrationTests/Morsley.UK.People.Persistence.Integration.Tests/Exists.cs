@@ -2,7 +2,7 @@
 
 internal class Exists : PersonRepositoryTests
 {
-    public Exists() : base("Ecists_Test") { }
+    public Exists() : base("Exists_Test") { }
 
     // ToDo --> Write a test for the above
 }

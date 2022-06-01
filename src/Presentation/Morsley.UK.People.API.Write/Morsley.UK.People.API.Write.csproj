@@ -24,8 +24,8 @@
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.1" />
       <PackageReference Include="MediatR" Version="10.0.1" />
       <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.2.0" />
-      <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="6.0.4" />
-      <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.4" />
+      <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="6.0.5" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.5" />
       <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
       <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
       <PackageReference Include="MongoDB.Driver.Core.Extensions.OpenTelemetry" Version="1.0.0" />
@@ -55,6 +55,7 @@
       <ProjectReference Include="..\..\Application\Morsley.UK.People.Application\Morsley.UK.People.Application.csproj" />
       <ProjectReference Include="..\..\Common\Morsley.UK.People.Common\Morsley.UK.People.Common.csproj" />
       <ProjectReference Include="..\..\Domain\Morsley.UK.People.Domain\Morsley.UK.People.Domain.csproj" />
+      <ProjectReference Include="..\..\Infrastructure\Morsley.UK.People.Caching\Morsley.UK.People.Caching.csproj" />
       <ProjectReference Include="..\..\Infrastructure\Morsley.UK.People.Messaging\Morsley.UK.People.Messaging.csproj" />
       <ProjectReference Include="..\..\Infrastructure\Morsley.UK.People.Persistence\Morsley.UK.People.Persistence.csproj" />
       <ProjectReference Include="..\Morsley.UK.People.API.Common\Morsley.UK.People.API.Common.csproj" />

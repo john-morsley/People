@@ -57,12 +57,21 @@ public class PersonHelper
         ILogger logger,
         ActivitySource source)
     {
-        var name = $"{nameof(PersonHelper)}->{nameof(DeletePerson)}";
-        logger.Debug(name);
-        using var activity = source.StartActivity(name, ActivityKind.Server);
+        try
+        {
+            var name = $"{nameof(PersonHelper)}->{nameof(DeletePerson)}";
+            logger.Debug(name);
+            using var activity = source.StartActivity(name, ActivityKind.Server);
 
-        var deletePersonCommand = new DeletePersonCommand(id);
-        await mediator.Send(deletePersonCommand);
+            var deletePersonCommand = new DeletePersonCommand(id);
+            await mediator.Send(deletePersonCommand);
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public async static Task<bool> DoesPersonExist(

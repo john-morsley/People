@@ -109,7 +109,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Caching",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Application.Unit.Tests", "tests\UnitTests\Morsley.UK.People.Application.Unit.Tests\Morsley.UK.People.Application.Unit.Tests.csproj", "{E09AAD2B-BC61-40E6-AAB7-A6454E33C728}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.People.Application.Integration.Tests", "tests\IntegrationTests\Morsley.UK.People.Application.Integration.Tests\Morsley.UK.People.Application.Integration.Tests.csproj", "{BAFEA7B7-1DEE-4FED-883B-94324C3BD00F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Application.Integration.Tests", "tests\IntegrationTests\Morsley.UK.People.Application.Integration.Tests\Morsley.UK.People.Application.Integration.Tests.csproj", "{BAFEA7B7-1DEE-4FED-883B-94324C3BD00F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.People.Tests.Common.Unit.Tests", "Morsley.UK.People.Tests.Common.Unit.Tests\Morsley.UK.People.Tests.Common.Unit.Tests.csproj", "{17F2296D-776D-425B-A869-2C5B09852B87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -221,6 +223,10 @@ Global
 		{BAFEA7B7-1DEE-4FED-883B-94324C3BD00F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAFEA7B7-1DEE-4FED-883B-94324C3BD00F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAFEA7B7-1DEE-4FED-883B-94324C3BD00F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17F2296D-776D-425B-A869-2C5B09852B87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17F2296D-776D-425B-A869-2C5B09852B87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17F2296D-776D-425B-A869-2C5B09852B87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17F2296D-776D-425B-A869-2C5B09852B87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -262,6 +268,7 @@ Global
 		{16167428-513A-416D-B934-1491BFB2C96E} = {B4DD37EA-6C56-4B47-8C37-390299A8DED7}
 		{E09AAD2B-BC61-40E6-AAB7-A6454E33C728} = {5F996085-8F9E-4DA6-9976-D1BAF9036CE8}
 		{BAFEA7B7-1DEE-4FED-883B-94324C3BD00F} = {FC3088F5-62F4-441B-9ED3-103E6F03E156}
+		{17F2296D-776D-425B-A869-2C5B09852B87} = {5F996085-8F9E-4DA6-9976-D1BAF9036CE8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2D352126-3CF8-48AE-9A26-7AD7B94FCCB5}

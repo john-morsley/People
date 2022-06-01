@@ -65,7 +65,7 @@
         {
             foreach (var link in Model.Links)
             {
-                if (link.Method == "GET") continue;
+                //if (link.Method == "GET") continue;
                 TempData[$"{link.Method}_{personId}"] = link.HypertextReference;
                 <a href="@(ButtonHelper.GetHypertextReference(url, link.Method, link.HypertextReference))" 
                    class="btn btn-sm btn-@(ButtonHelper.GetBootstrapColour(link.Method)) btn-width" data-link="@link.HypertextReference">@(ButtonHelper.GetButtonText(link.Method))</a>

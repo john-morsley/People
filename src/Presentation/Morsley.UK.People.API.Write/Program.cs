@@ -54,6 +54,7 @@ try
 
     builder.Services.AddMessaging();
     builder.Services.AddPersistence(configuration, "WriteMongoDBSettings");
+    builder.Services.AddCaching(configuration, "RedisCacheSettings");
     builder.Services.AddApplication();
     builder.Services.AddContracts();
 

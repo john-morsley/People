@@ -28,8 +28,8 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
             Gender = Gender.Cisgender,
             DateOfBirth = new DateTime(1955, 10, 28, 0, 0, 0, DateTimeKind.Utc)
         };
-        ReadDatabase.AddPersonToDatabase(billGates);
-        WriteDatabase.AddPersonToDatabase(billGates);
+        await ReadDatabase.AddPerson(billGates);
+        await WriteDatabase.AddPerson(billGates);
 
         ReadDatabase!.NumberOfPeople().Should().Be(1);
         WriteDatabase.NumberOfPeople().Should().Be(1);
@@ -124,8 +124,8 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
 
         var personToBeUpdated = WriteDatabase.GeneratePerson();
         personToBeUpdated.Sex = Sex.Male;
-        ReadDatabase.AddPersonToDatabase(personToBeUpdated);
-        WriteDatabase.AddPersonToDatabase(personToBeUpdated);
+        await ReadDatabase.AddPerson(personToBeUpdated);
+        await WriteDatabase.AddPerson(personToBeUpdated);
 
         ReadDatabase!.NumberOfPeople().Should().Be(1);
         WriteDatabase.NumberOfPeople().Should().Be(1);
@@ -227,8 +227,8 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
         WriteDatabase.NumberOfPeople().Should().Be(0);
 
         var alanTuring = new Person { FirstName = "Alan", LastName = "Turing", Created = DateTime.UtcNow };
-        ReadDatabase.AddPersonToDatabase(alanTuring);
-        WriteDatabase.AddPersonToDatabase(alanTuring);
+        await ReadDatabase.AddPerson(alanTuring);
+        await WriteDatabase.AddPerson(alanTuring);
 
         ReadDatabase!.NumberOfPeople().Should().Be(1);
         WriteDatabase.NumberOfPeople().Should().Be(1);
@@ -247,55 +247,61 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
         var result = await HttpClient!.PatchAsync(url, payload);
 
         // Assert...
-        result.IsSuccessStatusCode.Should().BeTrue();
-        result.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await result.Content.ReadAsStringAsync();
-        content.Length.Should().BeGreaterThan(0);
-
-        var personResource = DeserializePersonResource(content);
-        personResource.Should().NotBeNull();
-
-        // - Person
-        personResource!.Data.Should().NotBeNull();
-
-        // - Links
-        personResource.Links.Should().NotBeNull();
-        personResource.Links!.Count.Should().Be(3);
-        LinksForPersonShouldBeCorrect(personResource.Links, personResource.Data!.Id);
-
-        // - Embedded
-        personResource.Embedded.Should().BeNull();
-
-        // - Confirm that the update was successful
-        var actualWritePerson = WriteDatabase.GetPersonFromDatabase(alanTuring.Id);
-        actualWritePerson.Should().NotBeNull();
-        actualWritePerson.Gender.Should().Be(Gender.Bigender);
-        actualWritePerson.Sex.Should().Be(Sex.Male);
-        actualWritePerson.DateOfBirth.Should().Be(new DateTime(1912, 06, 23, 0, 0, 0, DateTimeKind.Utc));
-
-        // - Databases
-        ReadDatabase!.NumberOfPeople().Should().Be(1);
-        WriteDatabase!.NumberOfPeople().Should().Be(1);
-
-        // Verify that the person in the write database is what we expect it to be...
-        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualWritePerson, "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
-
-        // Verify that the person in the read database is what we expect it to be...
-        Person actualReadPerson = null;
-        for (var i = 0; i < 50; i++)
+        using (new AssertionScope())
         {
-            actualReadPerson = ReadDatabase.GetPersonFromDatabase(personResource.Data.Id);
-            if (actualReadPerson.Gender == Gender.Bigender &&
-                actualReadPerson.Sex == Sex.Male &&
-                actualReadPerson.DateOfBirth == new DateTime(1912, 6, 23, 0, 0, 0, DateTimeKind.Utc)) break;
-            await Task.Delay(25);
-        }
-        if (actualReadPerson is null) Assert.Fail("Could not get actual read person!");
-        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualReadPerson, "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        // Verify that both read and write instances are equal...
-        actualReadPerson.Should().BeEquivalentTo(actualWritePerson);
+            var content = await result.Content.ReadAsStringAsync();
+            content.Length.Should().BeGreaterThan(0);
+
+            var personResource = DeserializePersonResource(content);
+            personResource.Should().NotBeNull();
+
+            // - Person
+            personResource!.Data.Should().NotBeNull();
+
+            // - Links
+            personResource.Links.Should().NotBeNull();
+            personResource.Links!.Count.Should().Be(3);
+            LinksForPersonShouldBeCorrect(personResource.Links, personResource.Data!.Id);
+
+            // - Embedded
+            personResource.Embedded.Should().BeNull();
+
+            // - Confirm that the update was successful
+            var actualWritePerson = WriteDatabase.GetPersonFromDatabase(alanTuring.Id);
+            actualWritePerson.Should().NotBeNull();
+            actualWritePerson.Gender.Should().Be(Gender.Bigender);
+            actualWritePerson.Sex.Should().Be(Sex.Male);
+            actualWritePerson.DateOfBirth.Should().Be(new DateTime(1912, 06, 23, 0, 0, 0, DateTimeKind.Utc));
+
+            // - Databases
+            ReadDatabase!.NumberOfPeople().Should().Be(1);
+            WriteDatabase!.NumberOfPeople().Should().Be(1);
+
+            // Verify that the person in the write database is what we expect it to be...
+            ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualWritePerson, "Addresses", "Emails",
+                "Phones", "Created", "Updated").Should().BeTrue();
+
+            // Verify that the person in the read database is what we expect it to be...
+            Person actualReadPerson = null;
+            for (var i = 0; i < 50; i++)
+            {
+                actualReadPerson = ReadDatabase.GetPersonFromDatabase(personResource.Data.Id);
+                if (actualReadPerson.Gender == Gender.Bigender &&
+                    actualReadPerson.Sex == Sex.Male &&
+                    actualReadPerson.DateOfBirth == new DateTime(1912, 6, 23, 0, 0, 0, DateTimeKind.Utc)) break;
+                await Task.Delay(25);
+            }
+
+            if (actualReadPerson is null) Assert.Fail("Could not get actual read person!");
+            ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualReadPerson, "Addresses", "Emails",
+                "Phones", "Created", "Updated").Should().BeTrue();
+
+            // Verify that both read and write instances are equal...
+            actualReadPerson.Should().BeEquivalentTo(actualWritePerson);
+        }
 
         // Will produce the following JSON Patch Document:
         /*
@@ -331,8 +337,8 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
 
         var personToBeUpdated = WriteDatabase.GeneratePerson();
         personToBeUpdated.Updated = DateTime.UtcNow;
-        ReadDatabase.AddPersonToDatabase(personToBeUpdated);
-        WriteDatabase.AddPersonToDatabase(personToBeUpdated);
+        await ReadDatabase.AddPerson(personToBeUpdated);
+        await WriteDatabase.AddPerson(personToBeUpdated);
 
         ReadDatabase.NumberOfPeople().Should().Be(1);
         WriteDatabase.NumberOfPeople().Should().Be(1);
@@ -534,7 +540,7 @@ public class PATCH_PartiallyUpdatePerson : WriteApplicationTestFixture<WriteProg
         WriteDatabase.NumberOfPeople().Should().Be(0);
 
         var personToBeUpdated = WriteDatabase.GeneratePerson();
-        WriteDatabase.AddPersonToDatabase(personToBeUpdated);
+        await WriteDatabase.AddPerson(personToBeUpdated);
 
         WriteDatabase.NumberOfPeople().Should().Be(1);
 

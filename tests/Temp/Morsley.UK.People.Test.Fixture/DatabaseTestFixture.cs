@@ -96,7 +96,7 @@ public class DatabaseTestFixture
         await DockerTestFixture!.RunAfterTests();
     }
 
-    public IList<Person> AddPeopleToDatabase(int numberOfPeopleToAdd)
+    public IList<Person> AddPeople(int numberOfPeopleToAdd)
     {
         if (numberOfPeopleToAdd <= 0) return new List<Person>();
 
@@ -114,7 +114,7 @@ public class DatabaseTestFixture
         return people;
     }
 
-    public IList<Person> AddPeopleToDatabase(string personData)
+    public async Task<IList<Person>> AddPeople(string personData)
     {
         var people = new List<Person>();
 
@@ -138,20 +138,20 @@ public class DatabaseTestFixture
                 }
             }
             var person = builder.Build();
-            AddPersonToDatabase(person);
+            await AddPerson(person);
             people.Add(person);
         }
 
         return people;
     }
 
-    public void AddPersonToDatabase(Person person)
+    public async Task AddPerson(Person person)
     {
         var connectionString = GetConnectionString();
         var mongoClient = new MongoClient(connectionString);
         var database = mongoClient.GetDatabase(GetDatabaseName());
         var peopleTable = database.GetCollection<Person>(GetTableName());
-        peopleTable.InsertOne(person);
+        await peopleTable.InsertOneAsync(person);
     }
 
     private async Task DeleteAllFromDatabase()
@@ -254,7 +254,6 @@ public class DatabaseTestFixture
     
 
     // Delay & retries are a crude mechanism to resolve eventual consistency
-
     public long NumberOfPeople(int delayInMilliSeconds = 0, int maximumNumberOfRetries = 1, long? expectedResult = null)
     {
         var numberOfPeople = 0L;

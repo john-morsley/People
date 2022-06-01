@@ -1,4 +1,6 @@
-﻿namespace Morsley.UK.People.Caching.Contexts;
+﻿using Morsley.UK.People.Caching.Configuration;
+
+namespace Morsley.UK.People.Caching.Contexts;
 
 public class RedisContext : IRedisContext
 {

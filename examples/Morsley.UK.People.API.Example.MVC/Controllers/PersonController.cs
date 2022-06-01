@@ -9,24 +9,43 @@ public class PersonController : BaseController
     [HttpGet]
     public IActionResult Create()
     {
+        var name = Logging.FormatMessage($"{nameof(PersonController)}-{nameof(Create)}-GET");
+        _logger.Debug(name);
+
         var person = new Person();
         person.FirstName = $"FirstName-{Guid.NewGuid()}";
         person.LastName = $"LastName-{Guid.NewGuid()}";
+
         return View(person);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromForm] Person person)
     {
-        if (!ModelState.IsValid) return View(person);
+        var name = $"{nameof(PersonController)}-{nameof(Create)}-POST";
+        _logger.Debug(Logging.FormatMessage(name));
+
+        _logger.Debug(Logging.FormatMessage($"{name} - Person: {person}"));
+
+        if (!ModelState.IsValid)
+        {
+            _logger.Debug(Logging.FormatMessage($"{name} - Person is not valid"));
+            
+            return View(person);
+        }
+
+        _logger.Debug(Logging.FormatMessage($"{name} - Creating Person..."));
 
         var resource = await CreatePersonAsync(person);
 
         if (resource is null)
         {
+            _logger.Debug(Logging.FormatMessage($"{name} - Could not create person"));
             // ToDo --> Status message: "Could not create person"?
             return RedirectToAction("Index", "Home");
         }
+
+        _logger.Debug(Logging.FormatMessage($"{name} - Person created"));
 
         var getLink = resource!.Links!.Single(_ => _.Method == "GET" && _.Relationship == "self");
         if (getLink is null) throw new InvalidOperationException("Expected GET/self link!");

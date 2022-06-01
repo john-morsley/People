@@ -1,7 +1,7 @@
-﻿namespace Morsley.UK.People.Messaging;
+﻿//namespace Morsley.UK.People.Messaging;
 
-// Listens
-public class Subscriber
-{
+//// Listens
+//public class Subscriber
+//{
 
-}
+//}

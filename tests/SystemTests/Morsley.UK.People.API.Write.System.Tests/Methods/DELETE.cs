@@ -14,18 +14,20 @@ public class DELETE : WriteApplicationTestFixture<WriteProgram>
         // Arrange...
         ReadDatabase!.NumberOfPeople().Should().Be(0);
         WriteDatabase.NumberOfPeople().Should().Be(0);
+        Cache.NumberOfPeople().Should().Be(0);
 
-        var userToBeDeleted = WriteDatabase.GeneratePerson();
-        var personId = userToBeDeleted.Id;
-        WriteDatabase.AddPersonToDatabase(userToBeDeleted);
+        var personToBeDeleted = WriteDatabase.GeneratePerson();
+        var personId = personToBeDeleted.Id;
+        await WriteDatabase.AddPerson(personToBeDeleted);
         WriteDatabase.NumberOfPeople().Should().Be(1);
-        ReadDatabase.AddPersonToDatabase(userToBeDeleted);
+        await ReadDatabase.AddPerson(personToBeDeleted);
         ReadDatabase.NumberOfPeople().Should().Be(1);
 
         await AuthenticateAsync(Username, Password);
 
-        // Act...
         var url = $"/api/person/{personId}";
+
+        // Act...
         var result = await HttpClient!.DeleteAsync(url);
 
         // Assert...
@@ -48,42 +50,48 @@ public class DELETE : WriteApplicationTestFixture<WriteProgram>
     /// It should also result in that person being deleted from the write database immediately.
     /// It should also result in that person being deleted from the read database given eventual consistency.
     /// </notes>
-    //[Test]
-    //[Category("Happy")]
-    //public async Task Given_Person_Exists_And_Is_In_The_Cache___When_Delete_Is_Attempted___Then_NoContent_And_Person_Deleted_And_Removed_From_Cache()
-    //{
-    //    // Arrange...
-    //    ReadDatabase!.NumberOfPeople().Should().Be(0);
-    //    WriteDatabase.NumberOfPeople().Should().Be(0);
-    //    //Cache.
+    [Test]
+    [Category("Happy")]
+    public async Task Given_Person_Exists_And_Is_In_The_Cache___When_Delete_Is_Attempted___Then_NoContent_And_Person_Deleted_And_Removed_From_Cache()
+    {
+        // Arrange...
+        ReadDatabase!.NumberOfPeople().Should().Be(0);
+        WriteDatabase.NumberOfPeople().Should().Be(0);
+        //Cache.NumberOfPeople().Should().Be(0);
 
-    //    var userToBeDeleted = WriteDatabase.GeneratePerson();
-    //    var personId = userToBeDeleted.Id;
-    //    WriteDatabase.AddPersonToDatabase(userToBeDeleted);
-    //    WriteDatabase.NumberOfPeople().Should().Be(1);
-    //    ReadDatabase.AddPersonToDatabase(userToBeDeleted);
-    //    ReadDatabase.NumberOfPeople().Should().Be(1);
+        var personToBeDeleted = WriteDatabase.GeneratePerson();
+        var personId = personToBeDeleted.Id;
+        await WriteDatabase.AddPerson(personToBeDeleted);
+        WriteDatabase.NumberOfPeople().Should().Be(1);
+        await ReadDatabase.AddPerson(personToBeDeleted);
+        ReadDatabase.NumberOfPeople().Should().Be(1);
+        await Cache.AddPerson(personToBeDeleted);
+        //Cache.NumberOfPeople().Should().Be(1);
 
-    //    await AuthenticateAsync(Username, Password);
+        await AuthenticateAsync(Username, Password);
 
-    //    // Act...
-    //    var url = $"/api/person/{personId}";
-    //    var result = await HttpClient!.DeleteAsync(url);
+        // Act...
+        var url = $"/api/person/{personId}";
+        var result = await HttpClient!.DeleteAsync(url);
 
-    //    // Assert...
-    //    result.IsSuccessStatusCode.Should().BeTrue();
-    //    result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        // Assert...
+        using (new AssertionScope())
+        {
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-    //    var content = await result.Content.ReadAsStringAsync();
-    //    content.Length.Should().Be(0);
+            var content = await result.Content.ReadAsStringAsync();
+            content.Length.Should().Be(0);
 
-    //    var shouldNotExistPerson = WriteDatabase.GetPersonFromDatabase(personId);
-    //    shouldNotExistPerson.Should().BeNull();
+            var shouldNotExistPerson = WriteDatabase.GetPersonFromDatabase(personId);
+            shouldNotExistPerson.Should().BeNull();
 
-    //    // - Database
-    //    WriteDatabase.NumberOfPeople().Should().Be(0);
-    //    ReadDatabase!.NumberOfPeople(delayInMilliSeconds: 50, maximumNumberOfRetries: 200, expectedResult: 1).Should().Be(0);
-    //}
+            // - Database
+            WriteDatabase.NumberOfPeople().Should().Be(0);
+            ReadDatabase!.NumberOfPeople(delayInMilliSeconds: 50, maximumNumberOfRetries: 200, expectedResult: 0).Should().Be(0);
+            //Cache.NumberOfPeople().Should().Be(0);
+        }
+    }
 
     [Test]
     [Category("Unhappy")]

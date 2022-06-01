@@ -3,4 +3,8 @@
 public interface ICacheable
 {
     string CacheKey { get; }
+
+    bool DoNotCache { get; set; }
+
+    TimeSpan TimeToLive { get; set; }
 }

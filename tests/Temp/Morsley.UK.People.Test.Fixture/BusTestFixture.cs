@@ -10,13 +10,14 @@ public class BusTestFixture
 
     public IConfiguration? Configuration => _configuration;
 
+    private readonly string _messagingKey;
     private readonly string _persistenceKey;
 
     private IEventBus? _eventBus;
 
     private string _name;
 
-    public BusTestFixture(string name, IConfiguration configuration, string persistenceKey)
+    public BusTestFixture(string name, IConfiguration configuration, string messagingKey, string persistenceKey)
     {
         if (name == null) throw new ArgumentNullException("name");
         if (name.Length == 0) throw new ArgumentOutOfRangeException("name");
@@ -31,6 +32,7 @@ public class BusTestFixture
 
         _name = name;
         _configuration = configuration;
+        _messagingKey = messagingKey;
         _persistenceKey = persistenceKey;
     }
 
@@ -43,9 +45,9 @@ public class BusTestFixture
 
         //var settings = _configuration["RabbitMQSettings"];
 
-        var potentialPort = _configuration["RabbitMQSettings:Port"];
-        var username = _configuration["RabbitMQSettings:Username"];
-        var password = _configuration["RabbitMQSettings:Password"];
+        var potentialPort = _configuration[$"{_messagingKey}:Port"];
+        var username = _configuration[$"{_messagingKey}:Username"];
+        var password = _configuration[$"{_messagingKey}:Password"];
 
         if (!int.TryParse(potentialPort, out var port))
         {
@@ -87,9 +89,17 @@ public class BusTestFixture
 
     private void UpdateConfiguration()
     {
-        var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
-        builder.AddInMemoryCollection(GetInMemoryConfiguration());
-        var configuration = builder.Build();
+        //var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
+        //builder.AddInMemoryCollection(GetInMemoryConfiguration());
+        //var configuration = builder.Build();
+
+        var configurator = new Configurator();
+        var extra = GetInMemoryConfiguration();
+        configurator.AddConfiguration(_configuration);
+        configurator.AddConfiguration(extra);
+        var configuration = configurator.Build();
+
+
         var potentialPort = configuration["RabbitMQSettings:Port"];
         if (!int.TryParse(potentialPort, out var port))
         {

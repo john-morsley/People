@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.Application.Queries;
 
-public sealed class GetPeopleQuery : ICacheable, IRequest<PagedList<Person>>
+public sealed class GetPeopleQuery : Cacheable, IRequest<PagedList<Person>>
 {
     public uint PageNumber { get; set; }
 
@@ -21,5 +21,5 @@ public sealed class GetPeopleQuery : ICacheable, IRequest<PagedList<Person>>
                $"Filter:{Filter.GetDisplayValue()}";
     }
 
-    public string CacheKey => ToString();
+    public override string CacheKey => PagedList<Person>.GetCacheKey(PageNumber, PageSize, Search, Sort, Filter);
 }

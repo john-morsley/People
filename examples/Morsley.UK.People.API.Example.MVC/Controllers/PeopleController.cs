@@ -9,6 +9,8 @@ public class PeopleController : BaseController
     [HttpGet]
     public IActionResult Get()
     {
+
+
         var getPeople = new GetPeople();
 
         ViewBag.URL = $"{Request.Scheme}://{Request.Host}";
@@ -19,6 +21,8 @@ public class PeopleController : BaseController
     [HttpPost]
     public async Task<IActionResult> Get(GetPeople getPeople)
     {
+
+
         var resource = await GetPeopleAsync(getPeople);
 
         getPeople.Resource = resource;

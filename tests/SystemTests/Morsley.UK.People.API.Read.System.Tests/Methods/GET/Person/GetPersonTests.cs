@@ -10,7 +10,7 @@ public class GetPersonTests : ReadApplicationTestFixture<ReadProgram>
         ReadDatabase.NumberOfPeople().Should().Be(0);
 
         var expected = ReadDatabase.GeneratePerson();
-        ReadDatabase.AddPersonToDatabase(expected);
+        await ReadDatabase.AddPerson(expected);
 
         ReadDatabase.NumberOfPeople().Should().Be(1);
 

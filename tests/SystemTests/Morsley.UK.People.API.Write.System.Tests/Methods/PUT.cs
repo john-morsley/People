@@ -12,7 +12,7 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         WriteDatabase.NumberOfPeople().Should().Be(0);
 
         var originalPerson = WriteDatabase.GeneratePerson();
-        WriteDatabase.AddPersonToDatabase(originalPerson);
+        WriteDatabase.AddPerson(originalPerson);
 
         WriteDatabase.NumberOfPeople().Should().Be(1);
 
@@ -71,46 +71,49 @@ public class PUT_UpdatePerson : WriteApplicationTestFixture<WriteProgram>
         var result = await HttpClient!.PutAsync(url, payload);
 
         // Assert...
-        WriteDatabase.NumberOfPeople().Should().Be(1);
+        using (new AssertionScope())
+        {
+            WriteDatabase.NumberOfPeople().Should().Be(1);
 
-        result.IsSuccessStatusCode.Should().BeTrue();
-        result.StatusCode.Should().Be(HttpStatusCode.Created);
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var content = await result.Content.ReadAsStringAsync();
-        content.Length.Should().BeGreaterThan(0);
+            var content = await result.Content.ReadAsStringAsync();
+            content.Length.Should().BeGreaterThan(0);
 
-        var personResource = DeserializePersonResource(content);
-        personResource.Should().NotBeNull();
+            var personResource = DeserializePersonResource(content);
+            personResource.Should().NotBeNull();
 
-        // - Person
-        personResource!.Data.Should().NotBeNull();
-        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data!, upsertPersonRequest).Should().BeTrue();
+            // - Person
+            personResource!.Data.Should().NotBeNull();
+            ObjectComparer.PublicInstancePropertiesEqual(personResource.Data!, upsertPersonRequest).Should().BeTrue();
 
-        // - Links
-        personResource.Links.Should().NotBeNull();
-        personResource.Links!.Count.Should().Be(3);
-        LinksForPersonShouldBeCorrect(personResource.Links, personResource.Data!.Id);
+            // - Links
+            personResource.Links.Should().NotBeNull();
+            personResource.Links!.Count.Should().Be(3);
+            LinksForPersonShouldBeCorrect(personResource.Links, personResource.Data!.Id);
 
-        // - Embedded
-        personResource.Embedded.Should().BeNull();
+            // - Embedded
+            personResource.Embedded.Should().BeNull();
 
-        // - Headers
-        result.Headers.Location.Should().Be($"https://localhost/api/person/{personId}");
+            // - Headers
+            result.Headers.Location.Should().Be($"https://localhost/api/person/{personId}");
 
-        // - Databases
-        WriteDatabase!.NumberOfPeople().Should().Be(1);
-        ReadDatabase!.NumberOfPeople(delayInMilliSeconds: 50, maximumNumberOfRetries: 200, expectedResult: 1).Should().Be(1);
+            // - Databases
+            WriteDatabase!.NumberOfPeople().Should().Be(1);
+            ReadDatabase!.NumberOfPeople(delayInMilliSeconds: 50, maximumNumberOfRetries: 200, expectedResult: 1).Should().Be(1);
 
-        // Verify that the person in the write database is what we expect it to be ...
-        var actualWritePerson = WriteDatabase.GetPersonFromDatabase(personResource.Data.Id);
-        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualWritePerson, "Id", "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
+            // Verify that the person in the write database is what we expect it to be ...
+            var actualWritePerson = WriteDatabase.GetPersonFromDatabase(personResource.Data.Id);
+            ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualWritePerson, "Id", "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
 
-        // Verify that the person in the read database is what we expect it to be ...
-        var actualReadPerson = WriteDatabase.GetPersonFromDatabase(personResource.Data.Id);
-        ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualReadPerson, "Id", "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
+            // Verify that the person in the read database is what we expect it to be ...
+            var actualReadPerson = WriteDatabase.GetPersonFromDatabase(personResource.Data.Id);
+            ObjectComparer.PublicInstancePropertiesEqual(personResource.Data, actualReadPerson, "Id", "Addresses", "Emails", "Phones", "Created", "Updated").Should().BeTrue();
 
-        // Verify that both read and write instances are equal...
-        actualReadPerson.Should().BeEquivalentTo(actualWritePerson);
+            // Verify that both read and write instances are equal...
+            actualReadPerson.Should().BeEquivalentTo(actualWritePerson);
+        }
     }
 
     // 

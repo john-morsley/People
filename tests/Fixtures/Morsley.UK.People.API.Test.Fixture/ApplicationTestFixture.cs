@@ -20,6 +20,8 @@ public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
 
     private int _applicationPort;
 
+    protected IConfiguration? _configuration;
+
     protected global::AutoFixture.Fixture? AutoFixture;
 
     protected int ApplicationPort
@@ -74,6 +76,7 @@ public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
     [TearDown]
     protected async virtual Task TearDown()
     {
+        _configuration = null;
         HttpClient?.Dispose();
         await Task.CompletedTask;
     }
@@ -81,6 +84,7 @@ public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
     [OneTimeTearDown]
     protected async virtual Task OneTimeTearDown()
     {
+        _configuration = null;
         await Task.CompletedTask;
     }
 
@@ -219,6 +223,8 @@ public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
 
     public IConfiguration GetConfiguration()
     {
+        if (_configuration is not null) return _configuration;
+
         var builder = new ConfigurationBuilder();
 
         builder.AddJsonFile("appsettings.json");
@@ -227,9 +233,9 @@ public abstract class ApplicationTestFixture<TProgram>  where TProgram : class
 
         if (additional.Count > 0) builder.AddInMemoryCollection(additional);
 
-        IConfiguration configuration = builder.Build();
+        _configuration = builder.Build();
 
-        return configuration;
+        return _configuration;
     }
 
     protected virtual Dictionary<string, string> GetInMemoryConfiguration()

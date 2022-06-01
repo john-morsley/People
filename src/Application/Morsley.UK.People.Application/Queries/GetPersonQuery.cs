@@ -1,6 +1,6 @@
 ﻿namespace Morsley.UK.People.Application.Queries;
 
-public sealed class GetPersonQuery : IRequest<Person>
+public sealed class GetPersonQuery : Cacheable, IRequest<Person>
 {
     public Guid Id { get; set; }
 
@@ -9,4 +9,5 @@ public sealed class GetPersonQuery : IRequest<Person>
         return $"Id:{Id}";
     }
 
+    public override string CacheKey => Person.GetCacheKey(Id);
 }

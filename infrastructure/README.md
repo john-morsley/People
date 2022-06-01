@@ -4,6 +4,7 @@ To test the application locally you must create the necessary infrastructure:
 
 - MongoDB (Read)
 - MongoDB (Write)
+- MongoDB (Users)
 - RabbitMQ
 - Redis Cache (Read)
 - Redis Cache GUI

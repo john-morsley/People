@@ -19,7 +19,7 @@ public class GetPeopleWithFieldsTests : ReadApplicationTestFixture<ReadProgram>
         ReadDatabase.NumberOfPeople().Should().Be(0);
 
         var person = ReadDatabase.GeneratePerson();
-        ReadDatabase.AddPersonToDatabase(person);
+        await ReadDatabase.AddPerson(person);
         var people = new List<Domain.Models.Person> { person };
         ReadDatabase.NumberOfPeople().Should().Be(1);
 

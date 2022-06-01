@@ -24,6 +24,7 @@ global using Morsley.UK.People.API.Write.Endpoints;
 global using Morsley.UK.People.Application.Commands;
 global using Morsley.UK.People.Application.IoC;
 global using Morsley.UK.People.Application.Queries;
+global using Morsley.UK.People.Caching.IoC;
 global using Morsley.UK.People.Common;
 global using Morsley.UK.People.Domain.Models;
 global using Morsley.UK.People.Messaging.IoC;
@@ -40,4 +41,3 @@ global using System.Text.Json;
 global using System.Text.Json.Serialization;
 global using System.Threading.Tasks;
 global using ILogger = Serilog.ILogger;
-

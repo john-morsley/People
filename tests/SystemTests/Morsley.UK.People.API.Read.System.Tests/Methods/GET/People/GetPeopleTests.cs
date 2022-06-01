@@ -43,7 +43,7 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
     {
         // Arrange...
         ReadDatabase.NumberOfPeople().Should().Be(0);
-        var expectedPeople = ReadDatabase.AddPeopleToDatabase(numberOfPeople);
+        var expectedPeople = ReadDatabase.AddPeople(numberOfPeople);
         ReadDatabase.NumberOfPeople().Should().Be(numberOfPeople);
 
         await AuthenticateAsync(Username, Password);
@@ -93,7 +93,7 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
     {
         // Arrange...
         ReadDatabase.NumberOfPeople().Should().Be(0);
-        ReadDatabase.AddPeopleToDatabase(numberOfPeople);
+        ReadDatabase.AddPeople(numberOfPeople);
         ReadDatabase.NumberOfPeople().Should().Be(numberOfPeople);
 
         var url = $"/api/people?pageNumber={pageNumber}&pageSize={pageSize}";
@@ -184,7 +184,7 @@ public class GetPeopleTests : ReadApplicationTestFixture<ReadProgram>
         const int pageSize = 10;
 
         ReadDatabase!.NumberOfPeople().Should().Be(0);
-        var expectedPeople = ReadDatabase.AddPeopleToDatabase(15);
+        var expectedPeople = ReadDatabase.AddPeople(15);
         ReadDatabase!.NumberOfPeople().Should().Be(15);
 
         var url = $"/api/people?pageNumber={pageNumber}&PageSize={pageSize}";

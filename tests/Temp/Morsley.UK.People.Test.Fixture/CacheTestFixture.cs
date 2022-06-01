@@ -1,4 +1,9 @@
-﻿namespace Morsley.UK.People.Test.Fixture;
+﻿using Morsley.UK.People.Application.Models;
+using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace Morsley.UK.People.Test.Fixture;
 
 public class CacheTestFixture
 {
@@ -7,7 +12,7 @@ public class CacheTestFixture
     protected IConfiguration? _configuration;
     protected readonly string _cacheKey;
     private string _name;
-
+    
     public IConfiguration? Configuration => _configuration;
 
     protected int ContainerPort
@@ -35,19 +40,19 @@ public class CacheTestFixture
         }
     }
 
-    public CacheTestFixture(string name, string cacheKey)
-    {
-        if (name == null) throw new ArgumentNullException("name");
-        if (name.Length == 0) throw new ArgumentOutOfRangeException("name");
+    //public CacheTestFixture(string name, string cacheKey)
+    //{
+    //    if (name == null) throw new ArgumentNullException("name");
+    //    if (name.Length == 0) throw new ArgumentOutOfRangeException("name");
 
-        //AutoFixture = new global::AutoFixture.Fixture();
-        //AutoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
-        ////AutoFixture.Customizations.Add(new AddPersonRequestSpecimenBuilder());
-        //AutoFixture.Customizations.Add(new PersonSpecimenBuilder());
+    //    //AutoFixture = new global::AutoFixture.Fixture();
+    //    //AutoFixture.Customizations.Add(new DateOfBirthSpecimenBuilder());
+    //    ////AutoFixture.Customizations.Add(new AddPersonRequestSpecimenBuilder());
+    //    //AutoFixture.Customizations.Add(new PersonSpecimenBuilder());
 
-        _name = name;
-        _cacheKey = cacheKey;
-    }
+    //    _name = name;
+    //    _cacheKey = cacheKey;
+    //}
 
     public CacheTestFixture(string name, IConfiguration configuration, string cacheKey)
     {
@@ -93,6 +98,15 @@ public class CacheTestFixture
         if (_configuration == null) Assert.Fail("Configuration should not be null!");
     }
 
+    public async Task AddPerson(Person person)
+    {
+        var key = Person.GetCacheKey(person.Id);
+
+        var serialized = SerializeResponse(person);
+        var database = GetDatabase();
+        await database.StringSetAsync(key, serialized);
+    }
+
     [SetUp]
     public async virtual Task SetUp()
     {
@@ -113,9 +127,14 @@ public class CacheTestFixture
 
     private async Task DeleteAllFromCacheAsync()
     {
-        var server = Redis?.GetServer("localhost", ContainerPort);
+        var server = GetServer();
         if (server is null) throw new InvalidOperationException("Did not expect server to be null!");
         await server!.FlushAllDatabasesAsync();
+    }
+
+    private IDatabase GetDatabase()
+    {
+        return _redis?.GetDatabase();
     }
 
     public Dictionary<string, string> GetInMemoryConfiguration()
@@ -124,6 +143,45 @@ public class CacheTestFixture
         if (DockerTestFixture != null) additional.Add($"{_cacheKey}:Port", ContainerPort.ToString());
         return additional;
     }
+
+    private IServer? GetServer()
+    {
+        var server = Redis?.GetServer("localhost", ContainerPort);
+        return server;
+    }
+
+    public int NumberOfPeople()
+    {
+        var server = GetServer();
+        if (server is null) throw new InvalidOperationException("Did not expect server to be null!");
+
+        var numberOfKeys = 0;
+        var keys = server.Keys();
+        foreach (var key in keys)
+        {
+
+            numberOfKeys++;
+        }
+
+        return numberOfKeys;
+    }
+
+    private string SerializeResponse(Person person)
+    {
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters =
+            {
+                new PagedListOfPersonJsonConverter(),
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            }
+        };
+        var serialized = JsonSerializer.Serialize(person, options);
+
+        return serialized;
+    }
+
 
     private void UpdateConfiguration()
     {

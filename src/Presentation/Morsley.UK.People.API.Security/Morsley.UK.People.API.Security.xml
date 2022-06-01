@@ -55,6 +55,24 @@
             <param name="Email"></param>
             <param name="Role"></param>
         </member>
+        <member name="P:Morsley.UK.People.API.Security.Models.User.Id">
+            <summary></summary>
+        </member>
+        <member name="P:Morsley.UK.People.API.Security.Models.User.FirstName">
+            <summary></summary>
+        </member>
+        <member name="P:Morsley.UK.People.API.Security.Models.User.LastName">
+            <summary></summary>
+        </member>
+        <member name="P:Morsley.UK.People.API.Security.Models.User.Username">
+            <summary></summary>
+        </member>
+        <member name="P:Morsley.UK.People.API.Security.Models.User.Email">
+            <summary></summary>
+        </member>
+        <member name="P:Morsley.UK.People.API.Security.Models.User.Role">
+            <summary></summary>
+        </member>
         <member name="T:Morsley.UK.People.API.Security.Services.AuthenticationService">
             <summary>
             
@@ -100,6 +118,33 @@
             <param name="Issuer"></param>
             <param name="Audience"></param>
             <param name="TimeToLiveInMintes"></param>
+        </member>
+        <member name="P:Morsley.UK.People.API.Security.Token.GenerateTokenParameters.FirstName">
+            <summary></summary>
+        </member>
+        <member name="P:Morsley.UK.People.API.Security.Token.GenerateTokenParameters.LastName">
+            <summary></summary>
+        </member>
+        <member name="P:Morsley.UK.People.API.Security.Token.GenerateTokenParameters.Username">
+            <summary></summary>
+        </member>
+        <member name="P:Morsley.UK.People.API.Security.Token.GenerateTokenParameters.Email">
+            <summary></summary>
+        </member>
+        <member name="P:Morsley.UK.People.API.Security.Token.GenerateTokenParameters.Role">
+            <summary></summary>
+        </member>
+        <member name="P:Morsley.UK.People.API.Security.Token.GenerateTokenParameters.Key">
+            <summary></summary>
+        </member>
+        <member name="P:Morsley.UK.People.API.Security.Token.GenerateTokenParameters.Issuer">
+            <summary></summary>
+        </member>
+        <member name="P:Morsley.UK.People.API.Security.Token.GenerateTokenParameters.Audience">
+            <summary></summary>
+        </member>
+        <member name="P:Morsley.UK.People.API.Security.Token.GenerateTokenParameters.TimeToLiveInMintes">
+            <summary></summary>
         </member>
         <member name="T:Morsley.UK.People.API.Security.Token.JWT">
             <summary>

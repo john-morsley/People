@@ -55,7 +55,7 @@ public class GetPeopleWithFilterTests : ReadApplicationTestFixture<ReadProgram>
         const int pageSize = 10;
 
         ReadDatabase.NumberOfPeople().Should().Be(0);
-        var people = ReadDatabase.AddPeopleToDatabase(testPeopleData);
+        var people = await ReadDatabase.AddPeople(testPeopleData);
         ReadDatabase.NumberOfPeople().Should().Be(people.Count);
 
         var url = $"/api/people?filter={validFilter}";

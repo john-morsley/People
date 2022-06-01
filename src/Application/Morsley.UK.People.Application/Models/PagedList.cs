@@ -123,4 +123,13 @@ public class PagedList<T> : List<T>, IPagedList<T>
         //throw new NotImplementedException();
     }
 
+    public static string GetCacheKey(uint pageNumber, uint pageSize, string? search, string? sort, string? filter)
+    {
+        return $"PagedList<{typeof(T).Name}>-->" +
+               $"PageNumber:{pageNumber}|" +
+               $"PageSize:{pageSize}|" +
+               $"Search:{search.GetDisplayValue()}|" +
+               $"Sort:{sort.GetDisplayValue()}|" +
+               $"Filter:{filter.GetDisplayValue()}";
+    }
 }

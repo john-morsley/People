@@ -36,7 +36,7 @@ public class HeadPeopleTests : ReadApplicationTestFixture<ReadProgram>
         // Arrange...
         ReadDatabase.NumberOfPeople().Should().Be(0);
         var person = ReadDatabase.GeneratePerson();
-        ReadDatabase.AddPersonToDatabase(person);
+        await ReadDatabase.AddPerson(person);
         ReadDatabase.NumberOfPeople().Should().Be(1);
 
         const string url = "/api/people?PageNumber=1&PageSize=10";

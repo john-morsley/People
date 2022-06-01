@@ -21,6 +21,7 @@ global using Morsley.UK.People.Persistence.IoC;
 global using Morsley.UK.People.Persistence.Repositories;
 global using Morsley.UK.People.Test.Fixture.Abstract;
 global using Morsley.UK.People.Test.Fixture.AutoFixture;
+global using Morsley.UK.People.Tests.Common;
 global using NUnit.Framework;
 global using RabbitMQ.Client;
 global using StackExchange.Redis;

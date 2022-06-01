@@ -11,7 +11,7 @@ internal class Delete : PersonRepositoryTests
         NumberOfPeople().Should().Be(0);
 
         var person = GeneratePerson();
-        AddPersonToDatabase(person);
+        await AddPerson(person);
 
         NumberOfPeople().Should().Be(1);
 

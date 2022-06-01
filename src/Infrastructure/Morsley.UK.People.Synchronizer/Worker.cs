@@ -16,12 +16,31 @@ public class Worker : BackgroundService
         var readSettings = GetReadSettings();
         var writeSettings = GetWriteSettings();
 
+        var oldRead = 0L;
+        var oldWrite = 0L;
+        var force = true;
         while (!stoppingToken.IsCancellationRequested)
         {
-            var read = NumberOfPeopleInDatabase(readSettings);
-            var write = NumberOfPeopleInDatabase(writeSettings);
-            _logger.Debug("Read: {read} | Write: {write}", read, write);
             await Task.Delay(1000, stoppingToken);
+
+            try
+            {
+                var newRead = NumberOfPeopleInDatabase(readSettings);
+                var newWrite = NumberOfPeopleInDatabase(writeSettings);
+                
+                if (newRead != oldRead || newWrite != oldWrite || force)
+                {
+                    force = false;
+                    _logger.Information("Read: {read} | Write: {write}", newRead, newWrite);
+                }
+                oldRead = newRead;
+                oldWrite = newWrite;
+            }
+            catch
+            {
+                _logger.Warning("Encountered an unexpected error! Is the infrastructure OK?");
+                force = true;
+            }
         }
     }
 

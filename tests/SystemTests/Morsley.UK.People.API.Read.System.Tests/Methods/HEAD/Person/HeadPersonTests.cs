@@ -37,7 +37,7 @@ public class HeadPersonTests : ReadApplicationTestFixture<ReadProgram>
         // Arrange...
         ReadDatabase!.NumberOfPeople().Should().Be(0);
         var expected = ReadDatabase.GeneratePerson();
-        ReadDatabase!.AddPersonToDatabase(expected);
+        await ReadDatabase!.AddPerson(expected);
         ReadDatabase!.NumberOfPeople().Should().Be(1);
 
         var url = $"/api/person/{expected.Id}";

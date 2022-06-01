@@ -1,6 +1,6 @@
-﻿namespace Morsley.UK.People.Messaging;
+﻿//namespace Morsley.UK.People.Messaging;
 
-public class Publisher
-{
+//public class Publisher
+//{
 
-}
+//}

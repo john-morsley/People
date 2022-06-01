@@ -1,4 +1,6 @@
-﻿namespace Morsley.UK.People.API.Example.MVC.Models;
+﻿using Morsley.UK.People.Common.Extensions;
+
+namespace Morsley.UK.People.API.Example.MVC.Models;
 
 public class Person : IValidatableObject
 {
@@ -25,18 +27,19 @@ public class Person : IValidatableObject
     [Range(0, 9999)]
     public string? Year { get; set; }
 
-    [EmailAddress]
-    public string? Email { get; set; }
+    //[EmailAddress]
+    //public string? Email { get; set; }
 
-    [Phone]
-    public string? Mobile { get; set; }
+    //[Phone]
+    //public string? Mobile { get; set; }
 
-    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    private int? GetNumber(string? value)
     {
-        if (!IsValidDate())
-        {
-            yield return new ValidationResult("That date is not valid!");
-        }
+        if (value is null) return null;
+
+        if (int.TryParse(value, out var number)) return number;
+
+        return null;
     }
 
     private bool IsValidDate()
@@ -56,12 +59,32 @@ public class Person : IValidatableObject
         return DateOnly.TryParseExact(potentialDate, validFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out _);
     }
 
-    private int? GetNumber(string? value)
+    public override string ToString()
     {
-        if (value is null) return null;
+        var fn = FirstName.GetDisplayValue();
+        var ln = LastName.GetDisplayValue();
+        var s = Sex.GetDisplayValue();
+        var g = Gender.GetDisplayValue();
+        var d = Day.GetDisplayValue();
+        var m = Month.GetDisplayValue();
+        var y = Year.GetDisplayValue();
 
-        if (int.TryParse(value, out var number)) return number;
+        var output = $"{nameof(FirstName)}:{fn}|" +
+                     $"{nameof(LastName)}:{ln}|" +
+                     $"{nameof(Sex)}:{s}|" +
+                     $"{nameof(Gender)}:{g}|" +
+                     $"{nameof(Day)}:{d}|" +
+                     $"{nameof(Month)}:{m}|" +
+                     $"{nameof(Year)}:{y}|";
 
-        return null;
+        return output;
+    }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (!IsValidDate())
+        {
+            yield return new ValidationResult("That date is not valid!");
+        }
     }
 }

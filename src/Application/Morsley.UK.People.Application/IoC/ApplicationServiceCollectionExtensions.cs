@@ -2,7 +2,7 @@
 
 public static class ApplicationServiceCollectionExtensions
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplication(this IServiceCollection services, bool logging = true, bool validation = true, bool caching = true)
     {
         var executingAssembly = Assembly.GetExecutingAssembly();
         services.AddMediatR(executingAssembly);
@@ -10,9 +10,9 @@ public static class ApplicationServiceCollectionExtensions
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         services.AddAutoMapper(assemblies);
 
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
+        //if (logging) services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+        //if (validation) services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        //if (caching) services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
 
         services.AddValidatorsFromAssembly(Assembly.Load("Morsley.UK.People.Application"));
 

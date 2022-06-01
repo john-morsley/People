@@ -11,7 +11,7 @@ internal class Update : PersonRepositoryTests
         NumberOfPeople().Should().Be(0);
 
         var existing = GeneratePerson();
-        AddPersonToDatabase(existing);
+        await AddPerson(existing);
 
         NumberOfPeople().Should().Be(1);
 

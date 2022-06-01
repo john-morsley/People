@@ -1,6 +1,4 @@
-﻿using Morsley.UK.People.Common.Extensions;
-
-namespace Morsley.UK.People.Persistence.Configuration;
+﻿namespace Morsley.UK.People.Caching.Configuration;
 
 public  class RedisSettings
 {

@@ -20,6 +20,12 @@ public class Cache : ICache
         return _context.GetDatabase();
     }
 
+    public async Task DeleteValueAsync(string key)
+    {
+        var database = GetDatabase();
+        await database.KeyDeleteAsync(key);
+    }
+
     public async Task<string?> GetValueAsync(string key)
     {
         var database = GetDatabase();
