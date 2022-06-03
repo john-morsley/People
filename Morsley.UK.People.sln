@@ -111,7 +111,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Applicati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Application.Integration.Tests", "tests\IntegrationTests\Morsley.UK.People.Application.Integration.Tests\Morsley.UK.People.Application.Integration.Tests.csproj", "{BAFEA7B7-1DEE-4FED-883B-94324C3BD00F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.People.Tests.Common.Unit.Tests", "Morsley.UK.People.Tests.Common.Unit.Tests\Morsley.UK.People.Tests.Common.Unit.Tests.csproj", "{17F2296D-776D-425B-A869-2C5B09852B87}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.People.Tests.Common.Unit.Tests", "tests\UnitTests\Morsley.UK.People.Tests.Common.Unit.Tests\Morsley.UK.People.Tests.Common.Unit.Tests.csproj", "{17F2296D-776D-425B-A869-2C5B09852B87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

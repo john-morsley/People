@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\tests\Common\Morsley.UK.People.Tests.Common\Morsley.UK.People.Tests.Common.csproj" />
+    <ProjectReference Include="..\..\Common\Morsley.UK.People.Tests.Common\Morsley.UK.People.Tests.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
