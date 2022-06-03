@@ -1,0 +1,17 @@
+﻿global using AutoFixture;
+global using AutoFixture.Kernel;
+global using FluentAssertions.Equivalency;
+global using Microsoft.Extensions.Configuration;
+global using Morsley.UK.People.API.Models.Request;
+global using Morsley.UK.People.API.Models.Response;
+global using Morsley.UK.People.Domain.Builders;
+global using Morsley.UK.People.Domain.Enumerations;
+global using Morsley.UK.People.Domain.Models;
+global using Morsley.UK.People.Persistence.Configuration;
+global using Morsley.UK.People.Test.Fixture.AutoFixture;
+global using NUnit.Framework;
+global using Docker.DotNet;
+global using Docker.DotNet.Models;
+global using MongoDB.Driver;
+global using System.Net;
+global using System.Net.Sockets;

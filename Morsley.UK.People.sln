@@ -58,7 +58,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.API.Test.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.API.Security", "src\Presentation\Morsley.UK.People.API.Security\Morsley.UK.People.API.Security.csproj", "{A0D3C185-99AB-4D6B-8C81-F452ED28F629}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Test.Fixture", "tests\Temp\Morsley.UK.People.Test.Fixture\Morsley.UK.People.Test.Fixture.csproj", "{80EDA268-2A9E-44C5-92CF-B4584D675508}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.Test.Fixture", "tests\Fixtures\Morsley.UK.People.Test.Fixture\Morsley.UK.People.Test.Fixture.csproj", "{80EDA268-2A9E-44C5-92CF-B4584D675508}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Morsley.UK.People.API.Write", "src\Presentation\Morsley.UK.People.API.Write\Morsley.UK.People.API.Write.csproj", "{5A31E05C-C47A-45F1-B64A-AAD0C4548DAB}"
 EndProject

@@ -31,7 +31,7 @@
     <ProjectReference Include="..\..\..\src\Application\Morsley.UK.People.Application\Morsley.UK.People.Application.csproj" />
     <ProjectReference Include="..\..\..\src\Domain\Morsley.UK.People.Domain\Morsley.UK.People.Domain.csproj" />
     <ProjectReference Include="..\..\..\src\Infrastructure\Morsley.UK.People.Persistence\Morsley.UK.People.Persistence.csproj" />
-    <ProjectReference Include="..\..\Temp\Morsley.UK.People.Test.Fixture\Morsley.UK.People.Test.Fixture.csproj" />
+    <ProjectReference Include="..\..\..\tests\Fixtures\Morsley.UK.People.Test.Fixture\Morsley.UK.People.Test.Fixture.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,39 +1,34 @@
-﻿namespace Morsley.UK.People.Test.Fixture
+﻿namespace Morsley.UK.People.Test.Fixture;
+
+public class DockerTestFixture<T> where T : InDocker
 {
-    public class DockerTestFixture
+    public readonly InDocker InDocker;
+
+    public DockerTestFixture(string name, int port)
     {
-        private string? _dockerContainerId;
-        private int _dockerContainerPort;
+        InDocker = (T)Activator.CreateInstance(typeof(T), name, port);
+    }
 
-        private readonly string _username;
-        private readonly string _password;
+    public DockerTestFixture(string name, string username, string password, int port)
+    {
+        InDocker = (T)Activator.CreateInstance(typeof(T), name, username, password, port);
+    }
 
-        public DockerTestFixture(string username, string password)
-        {
-            _username = username;
-            _password = password;
-        }
+    public async Task RunBeforeTests()
+    {
+        (string dockerContainerId, int dockerContainerPort) = await InDocker.EnsureDockerStartedAndGetContainerIdAndPortAsync();
 
-        public async Task RunBeforeTests()
-        {
-            (_dockerContainerId, var dockerContainerPort) = await MongoDBInDocker.EnsureDockerStartedAndGetContainerIdAndPortAsync(_username, _password);
+        InDocker.Port = Convert.ToInt32(dockerContainerPort);
+        InDocker.ContainerId = dockerContainerId;
+    }
 
-            _dockerContainerPort = Convert.ToInt32(dockerContainerPort);
-        }
+    public async Task RunAfterTests()
+    {
+        await InDocker.EnsureDockerContainersStoppedAndRemovedAsync(InDocker.ContainerId);
+    }
 
-        public async Task RunAfterTests()
-        {
-            await MongoDBInDocker.EnsureDockerContainersStoppedAndRemovedAsync(_dockerContainerId);
-        }
-
-        public int GetContainerPort()
-        {
-            return _dockerContainerPort;
-        }
-
-        public string MongoDBConnectionString
-        {
-            get { return MongoDBInDocker.ConnectionString(_username, _password, _dockerContainerPort); }
-        }
+    public int GetContainerPort()
+    {
+        return InDocker.Port;
     }
 }

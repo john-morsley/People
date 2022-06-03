@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.17.0" />
+    <PackageReference Include="Docker.DotNet" Version="3.125.5" />
+    <PackageReference Include="FluentAssertions" Version="6.5.1" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\Domain\Morsley.UK.People.Domain\Morsley.UK.People.Domain.csproj" />
+    <ProjectReference Include="..\src\Infrastructure\Morsley.UK.People.Persistence\Morsley.UK.People.Persistence.csproj" />
+    <ProjectReference Include="..\src\Presentation\Morsley.UK.People.API.Models\Morsley.UK.People.API.Models.csproj" />
+  </ItemGroup>
+
+</Project>
